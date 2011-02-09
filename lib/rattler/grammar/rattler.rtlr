@@ -1,0 +1,149 @@
+require 'rattler/grammar'
+
+grammar Rattler::Grammar::Metagrammar
+
+include Rattler::Parsers
+
+%whitespace (space+ | ('#' [^\n]*))* {
+  
+  grammar         <-  heading rules EOF                                         <Grammar>
+  
+  heading         <-  requires module_decl? includes                            {|r,m,i| heading r, m, i }
+  
+  requires        <-  require_decl*                                             {|r| {:requires => r} }
+  
+  module_decl     <-  parser_decl | grammar_decl
+  
+  includes        <-  include_decl*                                             {|i| {:includes => i} }
+  
+  require_decl    <-  ~require_word literal ~eol
+  
+  parser_decl     <-  ~parser_word constant (~'<' constant)? ~eol               {|p,b| parser_decl p, b }
+  
+  grammar_decl    <-  ~grammar_word constant ~eol                               {|g| {:grammar_name => g} }
+  
+  include_decl    <-  ~include_word constant ~eol
+  
+  require_word    <-  @('require' !(alnum | '_'))
+  
+  parser_word     <-  @('parser' !(alnum | '_'))
+  
+  grammar_word    <-  @('grammar' !(alnum | '_'))
+  
+  include_word    <-  @('include' !(alnum | '_'))
+  
+  rules           <-  (ws_directive | rule | ws_block_close)+                   <Rules>
+  
+  ws_directive    <-  ws_block_open                                             {|e| start_ws e }
+                    | ws_decl                                                   {|e| set_ws e }
+  
+  ws_block_open   <-  ws_decl ~'{'
+  
+  ws_decl         <-  ~'%whitespace' ws_expr
+  
+  ws_block_close  <-  ~'}'                                                      { end_ws }
+  
+  ws_expr         <-  ws_expr ~'|' terms                                        <Choice>
+                    | terms
+  
+  rule            <-  identifier ~'<-' expression                               {|n,e| rule n, e }
+  
+  expression      <-  expression ~'|' attributed                                <Choice>
+                    | attributed
+  
+  attributed      <-  attributed attribute                                      <DispatchAction>
+                    | attributed action                                         <DirectAction>
+                    | terms
+  
+  attribute       <-  ~'<' option? ~'>'
+  
+  option          <-  @(name method?)
+  
+  method          <-  ~'.' var_name
+  
+  action          <-  ~'{' @(('{' [^}]* '}' | [^{}])*) ~'}'
+                    | ~'<' method ~'>'                                          {|m| "|_| _.#{m}" }
+  
+  terms           <-  terms term                                                <Sequence>
+                    | term
+  
+  term            <-  fail_expr | labeled | prefixed | suffixed | primary
+  
+  fail_expr       <-  fail_word fail_arg                                        <Fail>
+  
+  fail_word       <-  @('fail' ('_rule' | '_parse')? !(alnum | '_'))
+  
+  fail_arg        <-  ~'(' literal ~')'
+                    | literal
+  
+  labeled         <-  label (prefixed | prefixable)                             <Label>
+  
+  label           <-  var_name ~':'
+  
+  prefixed        <-  ~'&' prefixable                                           <Assert>
+                    | ~'!' prefixable                                           <Disallow>
+                    | ~'~' prefixable                                           <Skip>
+                    | ~'@' prefixable                                           <Token>
+  
+  prefixable      <-  suffixed | primary
+  
+  suffixed        <-  primary ~'?'                                              <Optional>
+                    | primary ~'*'                                              <ZeroOrMore>
+                    | primary ~'+'                                              <OneOrMore>
+  
+  primary         <-  ~'(' expression ~')'
+                    | atom
+  
+  atom            <-  eof_symbol                                                <Eof>
+                    | @posix_name                                               {|n| posix_class n }
+                    | identifier !'<-'                                          <Apply>
+                    | literal                                                   {|e| literal e }
+                    | class                                                     {|e| char_class e }
+                    | regexp                                                    <Match>
+                    | ~'.'                                                      { Match[/./] }
+  
+  literal         <-  /(["'])(?:\\.|(?:(?!\1).))*\1/
+  
+  class           <-  @('[' (!']' range)+  ']')
+  
+  regexp          <-  /\/(?:\\.|[^\/])+\/(?:[iomx]+(?!\w))?/
+  
+  name            <-  var_name
+                    | constant
+  
+  identifier      <-  !eof_symbol @(alnum | '_')+
+  
+  var_name        <-  @(lower (alnum | '_')*)
+  
+  constant        <-  @((const_name '::')* const_name)
+  
+  const_name      <-  @(upper (alnum | '_')*)
+  
+  eof_symbol      <-  @('EOF' !(alnum | '_'))
+  
+}
+
+  range           <-  @(  '[:' posix_name ':]'
+                        | class_char ('-' class_char)?)
+  
+  posix_name      <-  ( 'alnum'
+                      | 'alpha'
+                      | 'ascii'
+                      | 'blank'
+                      | 'cntrl'
+                      | 'digit'
+                      | 'graph'
+                      | 'lower'
+                      | 'print'
+                      | 'punct'
+                      | 'space'
+                      | 'upper'
+                      | 'xdigit'
+                      | 'word'  ) !(alnum | '_')
+  
+  class_char      <-  @(  '\\' [0-3] [0-7] [0-7]
+                        | '\\x' xdigit xdigit
+                        | '\\' .
+                        | [^\\\]] )
+  
+  eol             <-  ~(blank* (EOF | ';' | ("\r"? "\n") | ('#' [^\n]*)))

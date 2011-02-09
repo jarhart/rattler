@@ -1,6 +1,56 @@
 = rattler
 
-Description goes here.
+== DESCRIPTION:
+
+Rattler - Ruby Tool for Language Recognition
+
+== FEATURES/PROBLEMS:
+
+* Uses readable PEG-like grammars
+* A packrat parser to cache results for backtracking
+* A parser that supports directly left-recursive grammars
+* Whitespace can be specified once
+* Automatic parse error reporting
+* Optimizing parser generator
+
+== SYNOPSIS:
+
+  require 'rubygems'
+  require 'rattler'
+  
+  class Calculator < Rattler::Runtime::WDMParser
+    grammar %{
+      %whitespace space*
+      
+      start   <-  expr EOF
+      
+      expr    <-  expr ~'+' term            {|a, b| a + b }
+                | expr ~'-' term            {|a, b| a - b }
+                | term
+      
+      term    <-  term ~'*' primary         {|a, b| a * b }
+                | term ~'/' primary         {|a, b| a / b }
+                | primary
+      
+      primary <-  ~'(' expr ~')'
+                | @(digit+ ('.' digit+)?)   {|_| _.to_f }
+    }
+  end
+  
+  begin
+    puts Calculator.parse!(expr)
+  rescue Rattler::Runtime::SyntaxError => e
+    puts e
+  end
+
+== REQUIREMENTS:
+
+* Ruby 1.8.7 or greater
+* RSpec recommended
+
+== INSTALL:
+
+sudo gem install rattler
 
 == Contributing to rattler
  
