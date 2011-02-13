@@ -2,9 +2,15 @@
 
 == DESCRIPTION:
 
-Rattler - Ruby Tool for Language Recognition
+= Rattler - Ruby Tool for Language Recognition
 
-== FEATURES/PROBLEMS:
+Rattler is a parser generator for Ruby based on parsing expression grammars.
+Rattler's purpose is to make language design and recognition as simple and fun
+as possible. To that end, the normal parsing expression grammar syntax is
+extended with simple features to overcome some of the limitations of pure
+PEG grammars.
+
+== FEATURES:
 
 * Uses readable PEG-like grammars
 * A packrat parser to cache results for backtracking
@@ -12,6 +18,17 @@ Rattler - Ruby Tool for Language Recognition
 * Whitespace can be specified once
 * Automatic parse error reporting
 * Optimizing parser generator
+* Compatible with Ruby 1.8.7 and 1.9.2, tested with MRI and JRuby on Linux and
+  Windows
+
+== PROBLEMS/LIMITATIONS:
+
+* The start rule has to be called "start" (soon to be fixed)
+* Indirect left-recursion is not yet supported
+* Optimizations are very limited at this point
+* Matching specific words can be tedius, required negative lookahead after each
+* Only strings can be parsed, so files have to be read completely before parsing
+* There are undoubtedly many bugs
 
 == SYNOPSIS:
 
