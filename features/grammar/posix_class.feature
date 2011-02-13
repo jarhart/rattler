@@ -1,7 +1,24 @@
 Feature: POSIX Character Classes
   
-  The names of POSIX character classes can be used as a shortcut to using them
-  in character class expressions, e.g. "digit" is equivalent to "[[:digit:]]".
+  The uppercase names of POSIX character classes can be used as a shortcut to
+  using them in character class expressions, e.g. "DIGIT" and "[[:digit:]]" are
+  equivalent.
+  
+  The POSIX character classes are:
+    ALNUM - Alphanumeric characters
+    ALPHA - Alphabetic characters
+    ASCII - ASCII characters
+    BLANK - Space and tab
+    CNTRL - Control characters
+    DIGIT - Digits
+    GRAPH - Visible characters
+    LOWER - Lowercase characters
+    PRINT - Visible characters and spaces
+    PUNCT - Punctuation characters
+    SPACE - Whitespace characters
+    UPPER - Uppercase characters
+    XDIGIT - Hexadecimal digits
+    WORD - Alphanumeric characters plus "_" (Ruby 1.9 only)
   
   In order to write more consistent and readable grammars
   As a language designer
@@ -46,4 +63,12 @@ Feature: POSIX Character Classes
     """
     When I parse "abcDEF"
     Then the parse result should be ["a", "b", "c"]
+  
+  Scenario: UPPER
+    Given a grammar with:
+    """
+    start <- UPPER+
+    """
+    When I parse "ABCdef"
+    Then the parse result should be ["A", "B", "C"]
   
