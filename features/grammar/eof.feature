@@ -1,5 +1,9 @@
 Feature: EOF Symbol
-  In order to
+  
+  The symbol "EOF" means to match the end of the source, i.e. match only if
+  there is no more input.
+  
+  In order to match the end of the input
   As a language designer
   I want to use the EOF symbol in my grammar
   

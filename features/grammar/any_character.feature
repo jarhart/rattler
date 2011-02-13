@@ -1,7 +1,10 @@
-Feature: Any Character Symbol
+Feature: "Any Character" Symbol
+
+  The "." (period) means match any single character.
+
   In order to match any single character
   As a language designer
-  I want to use the "any character" symbol in my grammar
+  I want to use the "." symbol in my grammar
   
   Scenario Outline: Parsing
     Given a grammar with:
@@ -14,4 +17,5 @@ Feature: Any Character Symbol
   Examples:
     | input | result |
     | "foo" | "f"    |
+    | " ba" | " "    |
     | ""    | FAIL   |

@@ -1,4 +1,7 @@
 Feature: Skip Operator
+  
+  The "~" operator before an expression means to match but ignore the result.
+  
   In order to match syntax without it being included in the parse results
   As a language designer
   I want to use a "skip" prefix operator in my grammar

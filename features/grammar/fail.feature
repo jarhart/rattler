@@ -1,4 +1,11 @@
 Feature: Fail Expressions
+  
+  A "fail" expression means alway fail here with a specified message. It can
+  used to provide more meaningful messages when a parse fails. The syntax is
+  either "fail", "fail_rule" or "fail_parse" followed by the message specified
+  as a string literal. Using "fail_rule" causes the entire rule to fail and
+  "fail_parse" causes the entire parse to fail.
+  
   In order to define my own failure messages
   As a language designer
   I want to use fail expressions in my grammar

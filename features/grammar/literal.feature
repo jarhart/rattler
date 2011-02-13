@@ -1,4 +1,8 @@
 Feature: Literal Expressions
+  
+  A string literal is like a normal Ruby string literal and it means to match
+  if that exact text is next in the input.
+  
   In order to define symbols and keywords
   As a language designer
   I want to use string literals in my grammar
@@ -12,6 +16,7 @@ Feature: Literal Expressions
     Then the parse result should be <result>
   
   Examples:
-    | input   | result  |
-    | "while" | "while" |
-    | "whip"  | FAIL    |
+    | input    | result  |
+    | "while"  | "while" |
+    | " while" | FAIL    |
+    | "whip"   | FAIL    |

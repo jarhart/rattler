@@ -1,4 +1,9 @@
 Feature: Character Classes
+
+  Character classes are sets of characters between "[" and "]" and mean match
+  any single character in the set. They are identical to character classes in
+  Ruby's regular expressions.
+  
   In order to match specific sets of character
   As a language designer
   I want to use character classes in my grammar

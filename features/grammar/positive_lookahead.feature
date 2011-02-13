@@ -1,4 +1,9 @@
 Feature: Positive Lookahead Operator
+  
+  The "&" operator before an expression means to match only if the expression
+  would match here but never consume any input. This is known as zero-width
+  positive lookahead.
+  
   In order to define zero-width positive lookahead expressions
   As a language designer
   I want to use the positive lookahead operator in my grammar
