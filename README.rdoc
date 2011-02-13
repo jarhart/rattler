@@ -2,7 +2,7 @@
 
 == DESCRIPTION:
 
-= Rattler - Ruby Tool for Language Recognition
+=== Rattler - Ruby Tool for Language Recognition
 
 Rattler is a parser generator for Ruby based on parsing expression grammars.
 Rattler's purpose is to make language design and recognition as simple and fun
