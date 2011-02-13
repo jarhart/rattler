@@ -11,9 +11,9 @@ Feature: Regular Expressions
 
   Scenario Outline: Parsing
     Given a grammar with:
-    """
-    start <- /\d+/
-    """
+      """
+      integer <- /\d+/
+      """
     When I parse <input>
     Then the parse result should be <result>
   

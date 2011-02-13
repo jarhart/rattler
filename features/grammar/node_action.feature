@@ -13,7 +13,7 @@ Feature: Node Actions
   Scenario: Explicit node class
     Given a grammar with:
       """
-      start <- /\d+/ <IntegerNode>
+      integer <- @DIGIT+ <IntegerNode>
       """
       And a class definition:
         """
@@ -25,7 +25,7 @@ Feature: Node Actions
   Scenario: Default node class
     Given a grammar with:
       """
-      start <- /\d+/ <>
+      integer <- @DIGIT+ <>
       """
     When I parse "42"
     Then the parse result should be Rattler::Runtime::ParseNode["42"]

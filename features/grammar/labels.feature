@@ -8,7 +8,7 @@ Feature: Labels
   Scenario: Normal symantic action
     Given a grammar with:
       """
-      start <- numer:/\d+/ "/" denom:/\d+/ { numer.to_i / denom.to_i }
+      fraction <- numer:/\d+/ "/" denom:/\d+/ { numer.to_i / denom.to_i }
       """
     When I parse "6/2"
     Then the parse result should be 3
@@ -16,7 +16,7 @@ Feature: Labels
   Scenario: Node action
     Given a grammar with:
       """
-      start <- numer:/\d+/ "/" denom:/\d+/ <Fraction>
+      fraction <- numer:/\d+/ "/" denom:/\d+/ <Fraction>
       """
       And a class definition:
         """

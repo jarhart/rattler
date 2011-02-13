@@ -9,9 +9,9 @@ Feature: Zero-Or-More
   
   Scenario Outline: Capturing Expression
     Given a grammar with:
-    """
-    start <- ALPHA*
-    """
+      """
+      letters <- ALPHA*
+      """
     When I parse <input>
     Then the parse result should be <result>
       And the parse position should be <pos>
@@ -24,15 +24,15 @@ Feature: Zero-Or-More
   
   Scenario Outline: Non-Capturing Expression
     Given a grammar with:
-    """
-    start <- ~ALPHA*
-    """
+      """
+      dashes <- ~"-"*
+      """
     When I parse <input>
     Then the parse result should be <result>
       And the parse position should be <pos>
   
   Examples:
     | input | result | pos |
-    | "A"   | true   | 1   |
-    | "foo" | true   | 3   |
-    | "234" | true   | 0   |
+    | "-"   | true   | 1   |
+    | "---" | true   | 3   |
+    | "foo" | true   | 0   |

@@ -8,9 +8,9 @@ Feature: "Any Character" Symbol
   
   Scenario Outline: Parsing
     Given a grammar with:
-    """
-    start <- .
-    """
+      """
+      char <- .
+      """
     When I parse <input>
     Then the parse result should be <result>
   

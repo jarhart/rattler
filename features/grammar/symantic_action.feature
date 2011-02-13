@@ -15,7 +15,7 @@ Feature: Symantic Actions
   Scenario: Single token
     Given a grammar with:
       """
-      start <- /\d+/ {|_| _.to_i }
+      integer <- /\d+/ {|_| _.to_i }
       """
     When I parse "42"
     Then the parse result should be 42
@@ -23,7 +23,7 @@ Feature: Symantic Actions
   Scenario: Shortcut form
     Given a grammar with:
       """
-      start <- /\d+/ <.to_i>
+      integer <- /\d+/ <.to_i>
       """
     When I parse "23"
     Then the parse result should be 23
@@ -32,7 +32,7 @@ Feature: Symantic Actions
     Given a grammar with:
       """
       %whitespace SPACE*
-      start <- /\d+/ /\d+/ {|a,b| a.to_i * b.to_i }
+      product <- /\d+/ /\d+/ {|a,b| a.to_i * b.to_i }
       """
     When I parse "3 16"
     Then the parse result should be 48
@@ -40,7 +40,7 @@ Feature: Symantic Actions
   Scenario: Sequence with non-capturing expressions
     Given a grammar with:
       """
-      start <- ~"(" /\d+/ ~"+" /\d+/ ~")" {|a,b| a.to_i + b.to_i }
+      sum <- ~"(" /\d+/ ~"+" /\d+/ ~")" {|a,b| a.to_i + b.to_i }
       """
     When I parse "(23+17)"
     Then the parse result should be 40
@@ -48,7 +48,7 @@ Feature: Symantic Actions
   Scenario: Sequence with labeled expressions
     Given a grammar with:
       """
-      start <- "(" left:/\d+/ "+" right:/\d+/ ")" { left.to_i + right.to_i }
+      sum <- "(" left:/\d+/ "+" right:/\d+/ ")" { left.to_i + right.to_i }
       """
     When I parse "(17+29)"
     Then the parse result should be 46

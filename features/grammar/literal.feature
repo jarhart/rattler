@@ -9,9 +9,9 @@ Feature: Literal Expressions
   
   Scenario Outline: Parsing
     Given a grammar with:
-    """
-    start <- "while"
-    """
+      """
+      a <- "while"
+      """
     When I parse <input>
     Then the parse result should be <result>
   

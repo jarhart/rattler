@@ -10,9 +10,9 @@ Feature: Character Classes
   
   Scenario Outline: Parsing
     Given a grammar with:
-    """
-    start <- [A-Za-z_]
-    """
+      """
+      word_char <- [A-Za-z_]
+      """
     When I parse <input>
     Then the parse result should be <result>
   

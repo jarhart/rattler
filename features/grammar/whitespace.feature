@@ -12,20 +12,20 @@ Feature: Whitespace
   
   Scenario: Block form
     Given a grammar with:
-    """
-    %whitespace SPACE* {
-      start <- /\w+/
-    }
-    """
+      """
+      %whitespace SPACE* {
+        word <- /\w+/
+      }
+      """
     When I parse "  foo"
     Then the parse result should be "foo"
   
   Scenario: Shorcut form
     Given a grammar with:
-    """
-    %whitespace SPACE*
-    start <- /\w+/
-    """
+      """
+      %whitespace SPACE*
+      word <- /\w+/
+      """
     When I parse "  foo"
     Then the parse result should be "foo"
     

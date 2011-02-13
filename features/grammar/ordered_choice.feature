@@ -10,9 +10,9 @@ Feature: Ordered Choice Expressions
 
   Scenario Outline: Parsing
     Given a grammar with:
-    """
-    start <- "A" | "B"
-    """
+      """
+      expr <- "A" | "B"
+      """
     When I parse <input>
     Then the parse result should be <result>
   

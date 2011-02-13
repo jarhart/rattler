@@ -9,9 +9,9 @@ Feature: Optional Operator
   
   Scenario Outline: Capturing Expression
     Given a grammar with:
-    """
-    start <- ALPHA?
-    """
+      """
+      expr <- ALPHA?
+      """
     When I parse <input>
     Then the parse result should be <result>
       And the parse position should be <pos>
@@ -24,15 +24,15 @@ Feature: Optional Operator
   
   Scenario Outline: Non-Capturing Expression
     Given a grammar with:
-    """
-    start <- ~ALPHA?
-    """
+      """
+      expr <- ~"_"?
+      """
     When I parse <input>
     Then the parse result should be <result>
       And the parse position should be <pos>
   
   Examples:
     | input | result | pos |
-    | "A"   | true   | 1   |
-    | "foo" | true   | 1   |
-    | "234" | true   | 0   |
+    | "_"   | true   | 1   |
+    | "___" | true   | 1   |
+    | "foo" | true   | 0   |

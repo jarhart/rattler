@@ -9,9 +9,9 @@ Feature: One-Or-More
   
   Scenario Outline: Capturing Expression
     Given a grammar with:
-    """
-    start <- DIGIT+
-    """
+      """
+      digits <- DIGIT+
+      """
     When I parse <input>
     Then the parse result should be <result>
       And the parse position should be <pos>
@@ -24,15 +24,15 @@ Feature: One-Or-More
   
   Scenario Outline: Non-Capturing Expression
     Given a grammar with:
-    """
-    start <- ~DIGIT+
-    """
+      """
+      dashes <- ~"-"+
+      """
     When I parse <input>
     Then the parse result should be <result>
       And the parse position should be <pos>
   
   Examples:
     | input | result | pos |
-    | "5"   | true   | 1   |
-    | "234" | true   | 3   |
+    | "-"   | true   | 1   |
+    | "---" | true   | 3   |
     | "foo" | false  | 0   |

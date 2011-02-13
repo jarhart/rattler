@@ -10,19 +10,19 @@ Feature: Nonterminals
   
   Scenario: Simple example
     Given a grammar with:
-    """
-    start <-  foo* "b"
-    foo   <-  "a"
-    """
+      """
+      expr  <-  a* "b"
+      a     <-  "a"
+      """
     When I parse "aaab"
     Then the parse result should be [["a", "a", "a"], "b"]
   
   Scenario: Recursive definition
     Given a grammar with:
-    """
-    start <-  foo "b"
-    foo   <-  "a" foo
-            | "a"
-    """
+      """
+      expr  <-  as "b"
+      as    <-  "a" as
+              | "a"
+      """
     When I parse "aaab"
     Then the parse result should be [["a", ["a", "a"]], "b"]

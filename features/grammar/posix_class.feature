@@ -26,49 +26,48 @@ Feature: POSIX Character Classes
   
   Scenario: ALNUM
     Given a grammar with:
-    """
-    start <- ALNUM+
-    """
+      """
+      expr <- ALNUM+
+      """
     When I parse "abc123"
     Then the parse result should be ["a", "b", "c", "1", "2", "3"]
   
   Scenario: ALPHA
     Given a grammar with:
-    """
-    start <- ALPHA+
-    """
+      """
+      expr <- ALPHA+
+      """
     When I parse "abc123"
     Then the parse result should be ["a", "b", "c"]
   
   Scenario: BLANK
     Given a grammar with:
-    """
-    start <- BLANK+
-    """
+      """
+      expr <- BLANK+
+      """
     When I parse "   abc"
     Then the parse result should be [" ", " ", " "]
   
   Scenario: DIGIT
     Given a grammar with:
-    """
-    start <- DIGIT+
-    """
+      """
+      expr <- DIGIT+
+      """
     When I parse "123abc"
     Then the parse result should be ["1", "2", "3"]
   
   Scenario: LOWER
     Given a grammar with:
-    """
-    start <- LOWER+
-    """
+      """
+      expr <- LOWER+
+      """
     When I parse "abcDEF"
     Then the parse result should be ["a", "b", "c"]
   
   Scenario: UPPER
     Given a grammar with:
-    """
-    start <- UPPER+
-    """
+      """
+      expr <- UPPER+
+      """
     When I parse "ABCdef"
     Then the parse result should be ["A", "B", "C"]
-  

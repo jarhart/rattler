@@ -11,25 +11,25 @@ Feature: Token Operator
   
   Scenario: Nested sequences and repeats
     Given a grammar with:
-    """
-    start <- @("-"? DIGIT+ ("." DIGIT+)?)
-    """
+      """
+      number <- @("-"? DIGIT+ ("." DIGIT+)?)
+      """
     When I parse "23.45"
     Then the parse result should be "23.45"
   
   Scenario: With whitespace defined
     Given a grammar with:
-    """
-    %whitespace SPACE*
-    start <- @("-"? DIGIT+ ("." DIGIT+)?)
-    """
+      """
+      %whitespace SPACE*
+      number <- @("-"? DIGIT+ ("." DIGIT+)?)
+      """
     When I parse "23 . 45"
     Then the parse result should be "23"
   
   Scenario: With non-capturing sub-expressions
     Given a grammar with:
-    """
-    start <- @(DIGIT+ ~"*" DIGIT+)
-    """
+      """
+      product <- @(DIGIT+ ~"*" DIGIT+)
+      """
     When I parse "23*45"
     Then the parse result should be "23*45"

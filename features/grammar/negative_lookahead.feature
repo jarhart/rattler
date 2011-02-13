@@ -10,9 +10,9 @@ Feature: Negative Lookahead Operator
   
   Scenario Outline: Parsing
     Given a grammar with:
-    """
-    start <- "A" !"B"
-    """
+      """
+      a <- "A" !"B"
+      """
     When I parse <input>
     Then the parse result should be <result>
   

@@ -9,9 +9,9 @@ Feature: EOF Symbol
   
   Background: A grammar with the EOF symbol
     Given a grammar with:
-    """
-    start <- EOF
-    """
+      """
+      end <- EOF
+      """
   
   Scenario: At end-of-input
     When I parse "foo"
