@@ -32,7 +32,7 @@ module Rattler::Grammar
     # @option opts [Array<String>] includes ([])
     def initialize(rules, opts={})
       @__rules__ = rules
-      @start_rule = opts[:start_rule] || rules.first
+      @start_rule = opts[:start_rule] || rules.first.name
       @grammar_name = opts[:grammar_name]
       @parser_name = opts[:parser_name]
       @base_name = opts[:base_name] || DEFAULT_PARSER_BASE
@@ -46,7 +46,11 @@ module Rattler::Grammar
     
     # @return the parse rules
     def rules
-      @rules ||= @__rules__.optimized
+      @rules ||= begin
+        r = @__rules__.optimized
+        r.start_rule = start_rule
+        r
+      end
     end
     
   end

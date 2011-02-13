@@ -15,8 +15,8 @@ PEG grammars.
 * Uses readable PEG-like grammars
 * A packrat parser to cache results for backtracking
 * A parser that supports directly left-recursive grammars
-* Whitespace can be specified once and skipped automatically
-* Automatic parse error reporting
+* Whitespace can be specified in one place and skipped automatically
+* Automatic and custom parse error reporting
 * Optimizing parser generator
 * Generated parsers are relatively readable
 * Compatible with Ruby 1.8.7 and 1.9.2, tested with MRI and JRuby on Linux and
@@ -24,7 +24,6 @@ PEG grammars.
 
 == PROBLEMS/LIMITATIONS:
 
-* The start rule has to be called "start" (soon to be fixed)
 * Indirect left-recursion is not yet supported
 * Optimizations are very limited at this point
 * Matching specific words can be tedius, requiring negative lookahead after each

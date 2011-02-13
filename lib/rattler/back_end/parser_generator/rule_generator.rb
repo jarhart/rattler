@@ -55,7 +55,14 @@ module Rattler::BackEnd::ParserGenerator
     end
     
     def gen_rules(rules)
+      gen_start_rule rules.start_rule if rules.start_rule
       @g.intersperse(rules, :newlines => 2) {|_| generate _ }
+    end
+    
+    def gen_start_rule(start_rule)
+      (@g << "# @private").newline
+      @g.block('def start_rule #:nodoc:') { @g << ":#{start_rule}"}.newline
+      @g.newline
     end
     
     def gen_rule(rule)

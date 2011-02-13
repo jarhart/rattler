@@ -21,6 +21,8 @@ module Rattler::Parsers
       children.each {|rule| @by_name[rule.name] = rule }
     end
     
+    attr_accessor :start_rule
+    
     def rule(name)
       @by_name[name]
     end
