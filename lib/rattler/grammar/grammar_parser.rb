@@ -19,8 +19,6 @@ module Rattler::Grammar
       @ws = nil
     end
     
-    start_rule :grammar
-    
     private
     
     def start_ws(e)
@@ -59,7 +57,7 @@ module Rattler::Grammar
     end
     
     def posix_class(name)
-      char_class("[[:#{name}:]]")
+      char_class("[[:#{name.downcase}:]]")
     end
     
   end

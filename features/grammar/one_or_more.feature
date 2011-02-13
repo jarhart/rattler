@@ -10,7 +10,7 @@ Feature: One-Or-More
   Scenario Outline: Capturing Expression
     Given a grammar with:
     """
-    start <- digit+
+    start <- DIGIT+
     """
     When I parse <input>
     Then the parse result should be <result>
@@ -25,7 +25,7 @@ Feature: One-Or-More
   Scenario Outline: Non-Capturing Expression
     Given a grammar with:
     """
-    start <- ~digit+
+    start <- ~DIGIT+
     """
     When I parse <input>
     Then the parse result should be <result>

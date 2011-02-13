@@ -5,6 +5,10 @@ include Rattler::Parsers
 describe Rattler::Grammar::GrammarParser do
   include Rattler::Util::ParserSpecHelper
   
+  let :posix_names do
+    %w{ALNUM ALPHA BLANK CNTRL DIGIT GRAPH LOWER PRINT PUNCT SPACE UPPER XDIGIT WORD}
+  end
+  
   it 'skips normal whitespace' do
     parsing("  \n\t foo").as(:identifier).should result_in('foo').at(8)
   end
@@ -104,7 +108,7 @@ describe Rattler::Grammar::GrammarParser do
   
   describe '#match(:posix_name)' do
     it 'recognizes posix names' do
-      for name in %w{alnum alpha blank cntrl digit graph lower print punct space upper xdigit}
+      for name in posix_names
         parsing(name).as(:posix_name).should result_in(name).at(name.length)
         parsing(name + 'a').as(:posix_name).should fail
         parsing(name + '0').as(:posix_name).should fail
@@ -115,7 +119,7 @@ describe Rattler::Grammar::GrammarParser do
   
   describe '#match(:range)' do
     it 'recognizes posix character classes as class ranges' do
-      for name in %w{alnum alpha blank cntrl digit graph lower print punct space upper xdigit}
+      for name in posix_names
         parsing("[:#{name}:] ").as(:range).should result_in("[:#{name}:]").
           at(name.length + 4)
       end
@@ -154,9 +158,9 @@ describe Rattler::Grammar::GrammarParser do
     end
     
     it 'recognizes posix character class names as regexp atoms' do
-      for name in %w{alnum alpha blank cntrl digit graph lower print punct space upper xdigit}
+      for name in posix_names - ['WORD']
         parsing(" #{name} ").as(:atom).
-        should result_in(Match[Regexp.compile("[[:#{name}:]]")]).
+        should result_in(Match[Regexp.compile("[[:#{name.downcase}:]]")]).
         at(name.length + 1)
       end
     end

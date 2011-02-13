@@ -4,7 +4,7 @@ grammar Rattler::Grammar::Metagrammar
 
 include Rattler::Parsers
 
-%whitespace (space+ | ('#' [^\n]*))* {
+%whitespace (SPACE+ | ('#' [^\n]*))* {
   
   grammar         <-  heading rules EOF                                         <Grammar>
   
@@ -24,13 +24,13 @@ include Rattler::Parsers
   
   include_decl    <-  ~include_word constant ~eol
   
-  require_word    <-  @('require' !(alnum | '_'))
+  require_word    <-  @('require' !(ALNUM | '_'))
   
-  parser_word     <-  @('parser' !(alnum | '_'))
+  parser_word     <-  @('parser' !(ALNUM | '_'))
   
-  grammar_word    <-  @('grammar' !(alnum | '_'))
+  grammar_word    <-  @('grammar' !(ALNUM | '_'))
   
-  include_word    <-  @('include' !(alnum | '_'))
+  include_word    <-  @('include' !(ALNUM | '_'))
   
   rules           <-  (ws_directive | rule | ws_block_close)+                   <Rules>
   
@@ -71,7 +71,7 @@ include Rattler::Parsers
   
   fail_expr       <-  fail_word fail_arg                                        <Fail>
   
-  fail_word       <-  @('fail' ('_rule' | '_parse')? !(alnum | '_'))
+  fail_word       <-  @('fail' ('_rule' | '_parse')? !(ALNUM | '_'))
   
   fail_arg        <-  ~'(' literal ~')'
                     | literal
@@ -111,39 +111,39 @@ include Rattler::Parsers
   name            <-  var_name
                     | constant
   
-  identifier      <-  !eof_symbol @(alnum | '_')+
+  identifier      <-  !eof_symbol @(ALNUM | '_')+
   
-  var_name        <-  @(lower (alnum | '_')*)
+  var_name        <-  @(LOWER (ALNUM | '_')*)
   
   constant        <-  @((const_name '::')* const_name)
   
-  const_name      <-  @(upper (alnum | '_')*)
+  const_name      <-  @(UPPER (ALNUM | '_')*)
   
-  eof_symbol      <-  @('EOF' !(alnum | '_'))
+  eof_symbol      <-  @('EOF' !(ALNUM | '_'))
   
 }
 
   range           <-  @(  '[:' posix_name ':]'
                         | class_char ('-' class_char)?)
   
-  posix_name      <-  ( 'alnum'
-                      | 'alpha'
-                      | 'ascii'
-                      | 'blank'
-                      | 'cntrl'
-                      | 'digit'
-                      | 'graph'
-                      | 'lower'
-                      | 'print'
-                      | 'punct'
-                      | 'space'
-                      | 'upper'
-                      | 'xdigit'
-                      | 'word'  ) !(alnum | '_')
+  posix_name      <-  ( 'ALNUM'
+                      | 'ALPHA'
+                      | 'ASCII'
+                      | 'BLANK'
+                      | 'CNTRL'
+                      | 'DIGIT'
+                      | 'GRAPH'
+                      | 'LOWER'
+                      | 'PRINT'
+                      | 'PUNCT'
+                      | 'SPACE'
+                      | 'UPPER'
+                      | 'XDIGIT'
+                      | 'WORD'  ) !(ALNUM | '_')
   
   class_char      <-  @(  '\\' [0-3] [0-7] [0-7]
-                        | '\\x' xdigit xdigit
+                        | '\\x' XDIGIT XDIGIT
                         | '\\' .
                         | [^\\\]] )
   
-  eol             <-  ~(blank* (EOF | ';' | ("\r"? "\n") | ('#' [^\n]*)))
+  eol             <-  ~(BLANK* (EOF | ';' | ("\r"? "\n") | ('#' [^\n]*)))

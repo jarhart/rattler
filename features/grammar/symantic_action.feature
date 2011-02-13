@@ -31,7 +31,7 @@ Feature: Symantic Actions
   Scenario: Sequence
     Given a grammar with:
       """
-      %whitespace space*
+      %whitespace SPACE*
       start <- /\d+/ /\d+/ {|a,b| a.to_i * b.to_i }
       """
     When I parse "3 16"

@@ -13,7 +13,7 @@ Feature: Whitespace
   Scenario: Block form
     Given a grammar with:
     """
-    %whitespace space* {
+    %whitespace SPACE* {
       start <- /\w+/
     }
     """
@@ -23,7 +23,7 @@ Feature: Whitespace
   Scenario: Shorcut form
     Given a grammar with:
     """
-    %whitespace space*
+    %whitespace SPACE*
     start <- /\w+/
     """
     When I parse "  foo"

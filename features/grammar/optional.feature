@@ -10,7 +10,7 @@ Feature: Optional Operator
   Scenario Outline: Capturing Expression
     Given a grammar with:
     """
-    start <- alpha?
+    start <- ALPHA?
     """
     When I parse <input>
     Then the parse result should be <result>
@@ -25,7 +25,7 @@ Feature: Optional Operator
   Scenario Outline: Non-Capturing Expression
     Given a grammar with:
     """
-    start <- ~alpha?
+    start <- ~ALPHA?
     """
     When I parse <input>
     Then the parse result should be <result>

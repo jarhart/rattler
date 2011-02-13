@@ -10,7 +10,7 @@ Feature: POSIX Character Classes
   Scenario: ALNUM
     Given a grammar with:
     """
-    start <- alnum+
+    start <- ALNUM+
     """
     When I parse "abc123"
     Then the parse result should be ["a", "b", "c", "1", "2", "3"]
@@ -18,7 +18,7 @@ Feature: POSIX Character Classes
   Scenario: ALPHA
     Given a grammar with:
     """
-    start <- alpha+
+    start <- ALPHA+
     """
     When I parse "abc123"
     Then the parse result should be ["a", "b", "c"]
@@ -26,7 +26,7 @@ Feature: POSIX Character Classes
   Scenario: BLANK
     Given a grammar with:
     """
-    start <- blank+
+    start <- BLANK+
     """
     When I parse "   abc"
     Then the parse result should be [" ", " ", " "]
@@ -34,7 +34,7 @@ Feature: POSIX Character Classes
   Scenario: DIGIT
     Given a grammar with:
     """
-    start <- digit+
+    start <- DIGIT+
     """
     When I parse "123abc"
     Then the parse result should be ["1", "2", "3"]
@@ -42,7 +42,7 @@ Feature: POSIX Character Classes
   Scenario: LOWER
     Given a grammar with:
     """
-    start <- lower+
+    start <- LOWER+
     """
     When I parse "abcDEF"
     Then the parse result should be ["a", "b", "c"]

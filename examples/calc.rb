@@ -3,7 +3,7 @@ require 'rattler'
 
 class Calculator < Rattler::Runtime::WDMParser
   grammar %{
-    %whitespace space*
+    %whitespace SPACE*
     
     start   <-  expr EOF
     
@@ -16,7 +16,7 @@ class Calculator < Rattler::Runtime::WDMParser
               | primary
     
     primary <-  ~'(' expr ~')'
-              | @('-'? digit+ ('.' digit+)?)    <.to_f>
+              | @('-'? DIGIT+ ('.' DIGIT+)?)    <.to_f>
   }
 end
 

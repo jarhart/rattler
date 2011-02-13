@@ -12,7 +12,7 @@ Feature: Token Operator
   Scenario: Nested sequences and repeats
     Given a grammar with:
     """
-    start <- @("-"? digit+ ("." digit+)?)
+    start <- @("-"? DIGIT+ ("." DIGIT+)?)
     """
     When I parse "23.45"
     Then the parse result should be "23.45"
@@ -20,8 +20,8 @@ Feature: Token Operator
   Scenario: With whitespace defined
     Given a grammar with:
     """
-    %whitespace space*
-    start <- @("-"? digit+ ("." digit+)?)
+    %whitespace SPACE*
+    start <- @("-"? DIGIT+ ("." DIGIT+)?)
     """
     When I parse "23 . 45"
     Then the parse result should be "23"
@@ -29,7 +29,7 @@ Feature: Token Operator
   Scenario: With non-capturing sub-expressions
     Given a grammar with:
     """
-    start <- @(digit+ ~"*" digit+)
+    start <- @(DIGIT+ ~"*" DIGIT+)
     """
     When I parse "23*45"
     Then the parse result should be "23*45"

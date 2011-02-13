@@ -8,6 +8,11 @@ module Rattler
       include Rattler::Parsers
       
       # @private
+      def start_rule
+        :grammar
+      end
+      
+      # @private
       def match_grammar #:nodoc:
         p0 = @scanner.pos
         begin
@@ -852,7 +857,7 @@ module Rattler
       
       # @private
       def match_posix_name #:nodoc:
-        @scanner.scan(/(?>alnum|alpha|ascii|blank|cntrl|digit|graph|lower|print|punct|space|upper|xdigit|word)(?>(?![[:alnum:]]|_))/)
+        @scanner.scan(/(?>ALNUM|ALPHA|ASCII|BLANK|CNTRL|DIGIT|GRAPH|LOWER|PRINT|PUNCT|SPACE|UPPER|XDIGIT|WORD)(?>(?![[:alnum:]]|_))/)
       end
       
       # @private
