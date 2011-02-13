@@ -9,9 +9,10 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Jason Arhart"]
-  s.date = %q{2011-02-08}
+  s.date = %q{2011-02-13}
   s.description = %q{Simple language recognition tool for Ruby based on packrat parsing}
   s.email = %q{jarhart@gmail.com}
+  s.executables = ["rtlr.bat", "rtlr"]
   s.extra_rdoc_files = [
     "LICENSE.txt",
     "README.rdoc"
@@ -57,7 +58,6 @@ Gem::Specification.new do |s|
     "lib/rattler/grammar/grammar_parser.rb",
     "lib/rattler/grammar/metagrammar.rb",
     "lib/rattler/grammar/rattler.rtlr",
-    "lib/rattler/grammar/rattler2.rtlr",
     "lib/rattler/parsers.rb",
     "lib/rattler/parsers/action_code.rb",
     "lib/rattler/parsers/apply.rb",
@@ -108,6 +108,7 @@ Gem::Specification.new do |s|
     "features/grammar/character_class.feature",
     "features/grammar/eof.feature",
     "features/grammar/fail.feature",
+    "features/grammar/labels.feature",
     "features/grammar/literal.feature",
     "features/grammar/negative_lookahead.feature",
     "features/grammar/node_action.feature",
@@ -120,6 +121,7 @@ Gem::Specification.new do |s|
     "features/grammar/regex.feature",
     "features/grammar/sequence.feature",
     "features/grammar/skip_operator.feature",
+    "features/grammar/start_rule.feature",
     "features/grammar/symantic_action.feature",
     "features/grammar/token.feature",
     "features/grammar/whitespace.feature",
@@ -138,12 +140,14 @@ Gem::Specification.new do |s|
     "spec/rattler/back_end/parser_generator/match_generator_spec.rb",
     "spec/rattler/back_end/parser_generator/one_or_more_generator_spec.rb",
     "spec/rattler/back_end/parser_generator/optional_generator_spec.rb",
+    "spec/rattler/back_end/parser_generator/rule_generator_spec.rb",
     "spec/rattler/back_end/parser_generator/sequence_generator_spec.rb",
     "spec/rattler/back_end/parser_generator/skip_generator_spec.rb",
     "spec/rattler/back_end/parser_generator/token_generator_spec.rb",
     "spec/rattler/back_end/parser_generator/zero_or_more_generator_spec.rb",
     "spec/rattler/back_end/ruby_generator_spec.rb",
     "spec/rattler/grammar/grammar_parser_spec.rb",
+    "spec/rattler/grammar/grammar_spec.rb",
     "spec/rattler/parsers/action_code_spec.rb",
     "spec/rattler/parsers/apply_spec.rb",
     "spec/rattler/parsers/assert_spec.rb",
