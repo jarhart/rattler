@@ -95,7 +95,7 @@ module Rattler
     end
     
     def open_output(g)
-      if g == '-'
+      if @ofname == '-'
         yield $stdout
       else
         open_to_write(full_dest_name(g)) {|io| yield io }
