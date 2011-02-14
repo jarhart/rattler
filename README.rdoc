@@ -10,6 +10,10 @@ as possible. To that end, the normal parsing expression grammar syntax is
 extended with simple features to overcome some of the limitations of pure
 PEG grammars.
 
+A language syntax is specified in a grammar using the Rattler syntax. Parser
+classes and modules can be generated statically using the "rtlr" command or
+dynamically from strings.
+
 == FEATURES:
 
 * Uses readable PEG-like grammars
@@ -30,30 +34,110 @@ PEG grammars.
 * Only strings can be parsed, so files have to be read completely before parsing
 * There are undoubtedly many bugs
 
-== SYNOPSIS:
+== EXAMPLES:
+
+=== Example 1: Statically generated parser class
+
+==== In file calculator.rtlr:
+  
+  parser Calculator < Rattler::Runtime::WDMParser
+  
+  %whitespace SPACE*
+  
+  start   <-  expr EOF
+  
+  expr    <-  expr ~'+' term            {|a, b| a + b }
+            | expr ~'-' term            {|a, b| a - b }
+            | term
+  
+  term    <-  term ~'*' primary         {|a, b| a * b }
+            | term ~'/' primary         {|a, b| a / b }
+            | primary
+  
+  primary <-  ~'(' expr ~')'
+            | @(DIGIT+ ('.' DIGIT+)?)   {|_| _.to_f }
+  
+==== In a shell:
+
+  $ rtlr calculator.rtlr
+  calculator.rtlr -> calculator.rb
+
+==== In file calculator.rb:
+
+  require 'rubygems'
+  require 'rattler'
+  require 'calculator'
+  
+  begin
+    puts Calculator.parse!(expr)
+  rescue Rattler::Runtime::SyntaxError => e
+    puts e
+  end
+
+=== Example 2: Statically generated grammar module
+
+==== calculator.rtlr:
+
+  grammar CalculatorGrammar
+  
+  %whitespace SPACE*
+  
+  start   <-  expr EOF
+  
+  expr    <-  expr ~'+' term            {|a, b| a + b }
+            | expr ~'-' term            {|a, b| a - b }
+            | term
+  
+  term    <-  term ~'*' primary         {|a, b| a * b }
+            | term ~'/' primary         {|a, b| a / b }
+            | primary
+  
+  primary <-  ~'(' expr ~')'
+            | @(DIGIT+ ('.' DIGIT+)?)   {|_| _.to_f }
+
+==== In a shell:
+
+  $ rtlr calculator.rtlr
+  calculator.rtlr -> calculator_grammar.rb
+
+==== calculator.rb:
+
+  require 'rubygems'
+  require 'rattler'
+  require 'calculator_grammar'
+ 
+  class Calculator < Rattler::Runtime::WDMParser
+    include CalculatorGrammar
+  end
+ 
+  begin
+    puts Calculator.parse!(expr)
+  rescue Rattler::Runtime::SyntaxError => e
+    puts e
+  end
+
+=== Example 3: Dynamically generated parser class
 
   require 'rubygems'
   require 'rattler'
   
-  class Calculator < Rattler::Runtime::WDMParser
-    grammar %{
-      %whitespace SPACE*
-      
-      start   <-  expr EOF
-      
-      expr    <-  expr ~'+' term            {|a, b| a + b }
-                | expr ~'-' term            {|a, b| a - b }
-                | term
-      
-      term    <-  term ~'*' primary         {|a, b| a * b }
-                | term ~'/' primary         {|a, b| a / b }
-                | primary
-      
-      primary <-  ~'(' expr ~')'
-                | @(DIGIT+ ('.' DIGIT+)?)   {|_| _.to_f }
-    }
-  end
-  
+  Calculator = Rattler::compile_parser %{
+    %whitespace SPACE*
+    
+    start   <-  expr EOF
+    
+    expr    <-  expr ~'+' term            {|a, b| a + b }
+              | expr ~'-' term            {|a, b| a - b }
+              | term
+    
+    term    <-  term ~'*' primary         {|a, b| a * b }
+              | term ~'/' primary         {|a, b| a / b }
+              | primary
+    
+    primary <-  ~'(' expr ~')'
+              | @(DIGIT+ ('.' DIGIT+)?)   {|_| _.to_f }
+  }, :type => :wdm
+ 
   begin
     puts Calculator.parse!(expr)
   rescue Rattler::Runtime::SyntaxError => e

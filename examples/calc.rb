@@ -5,7 +5,7 @@ class Calculator < Rattler::Runtime::WDMParser
   grammar %{
     %whitespace SPACE*
     
-    start   <-  expr EOF
+    start   <-  (expr | quit) EOF
     
     expr    <-  expr ~'+' term                  {|a,b| a + b }
               | expr ~'-' term                  {|a,b| a - b }
@@ -17,6 +17,8 @@ class Calculator < Rattler::Runtime::WDMParser
     
     primary <-  ~'(' expr ~')'
               | @('-'? DIGIT+ ('.' DIGIT+)?)    <.to_f>
+    
+    quit    <-  'quit'                          { abort "\n" }
   }
 end
 
