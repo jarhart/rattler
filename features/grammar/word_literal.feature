@@ -2,9 +2,9 @@ Feature: Word Literal Expressions
   
   A word literal is like a string literal but delimited with backquotes (`) and
   it means to match the literal only if it is not followed by a word character.
-  It is useful for matching whole words only. What is considered a word
-  character can be defined using the %word_character directive. By default a
-  word charactacter is an alphanumeric character or the underscore character.
+  It is useful when you want to match whole words only. What is considered a
+  word character can be defined using the %word_character directive. By default
+  a word charactacter is an alphanumeric character or the underscore character.
   
   In order to define keywords
   As a language designer
