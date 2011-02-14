@@ -21,7 +21,9 @@ pkg
 .eprj
 
 ## PROJECT::SPECIFIC
+Gemfile.lock
 archive
+tmp
 
 # Have editor/IDE/OS specific files you need to ignore? Consider using a global gitignore: 
 #
