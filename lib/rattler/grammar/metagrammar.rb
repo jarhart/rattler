@@ -8,7 +8,7 @@ module Rattler
       include Rattler::Parsers
       
       # @private
-      def start_rule
+      def start_rule #:nodoc:
         :grammar
       end
       
@@ -78,7 +78,7 @@ module Rattler
       def match_require_decl #:nodoc:
         p0 = @scanner.pos
         begin
-          match(:require_word) &&
+          @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>(?>require)(?>(?![[:alnum:]_])))/) &&
           (r0_0 = match(:literal)) &&
           match(:eol) &&
           r0_0
@@ -92,7 +92,7 @@ module Rattler
       def match_parser_decl #:nodoc:
         p0 = @scanner.pos
         begin
-          match(:parser_word) &&
+          @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>(?>parser)(?>(?![[:alnum:]_])))/) &&
           (r0_0 = match(:constant)) &&
           (r0_1 = ((r = begin
             p1 = @scanner.pos
@@ -116,7 +116,7 @@ module Rattler
       def match_grammar_decl #:nodoc:
         p0 = @scanner.pos
         begin
-          match(:grammar_word) &&
+          @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>(?>grammar)(?>(?![[:alnum:]_])))/) &&
           (r0_0 = match(:constant)) &&
           match(:eol) &&
           ({:grammar_name => r0_0})
@@ -130,7 +130,7 @@ module Rattler
       def match_include_decl #:nodoc:
         p0 = @scanner.pos
         begin
-          match(:include_word) &&
+          @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>(?>include)(?>(?![[:alnum:]_])))/) &&
           (r0_0 = match(:constant)) &&
           match(:eol) &&
           r0_0
@@ -141,89 +141,44 @@ module Rattler
       end
       
       # @private
-      def match_require_word #:nodoc:
-        p0 = @scanner.pos
-        begin
-          @scanner.skip(/(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*/) &&
-          @scanner.scan(/(?>require)(?>(?![[:alnum:]]|_))/)
-        end || begin
-          @scanner.pos = p0
-          false
-        end
-      end
-      
-      # @private
-      def match_parser_word #:nodoc:
-        p0 = @scanner.pos
-        begin
-          @scanner.skip(/(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*/) &&
-          @scanner.scan(/(?>parser)(?>(?![[:alnum:]]|_))/)
-        end || begin
-          @scanner.pos = p0
-          false
-        end
-      end
-      
-      # @private
-      def match_grammar_word #:nodoc:
-        p0 = @scanner.pos
-        begin
-          @scanner.skip(/(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*/) &&
-          @scanner.scan(/(?>grammar)(?>(?![[:alnum:]]|_))/)
-        end || begin
-          @scanner.pos = p0
-          false
-        end
-      end
-      
-      # @private
-      def match_include_word #:nodoc:
-        p0 = @scanner.pos
-        begin
-          @scanner.skip(/(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*/) &&
-          @scanner.scan(/(?>include)(?>(?![[:alnum:]]|_))/)
-        end || begin
-          @scanner.pos = p0
-          false
-        end
-      end
-      
-      # @private
       def match_rules #:nodoc:
         a0 = []
-        while r = match(:ws_directive) ||
+        while r = match(:directive) ||
         match(:rule) ||
-        match(:ws_block_close)
+        match(:block_close)
           a0 << r
         end
         Rules.parsed(select_captures(a0)) unless a0.empty?
       end
       
       # @private
-      def match_ws_directive #:nodoc:
-        ((r = match(:ws_block_open)) && (start_ws r)) ||
-        ((r = match(:ws_decl)) && (set_ws r))
+      def match_directive #:nodoc:
+        match(:ws_directive) ||
+        match(:wc_directive)
       end
       
       # @private
-      def match_ws_block_open #:nodoc:
-        p0 = @scanner.pos
+      def match_ws_directive #:nodoc:
         begin
-          (r0_0 = match(:ws_decl)) &&
-          @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>\{)/) &&
-          r0_0
-        end || begin
-          @scanner.pos = p0
-          false
-        end
+          p0 = @scanner.pos
+          begin
+            (r0_0 = match(:ws_decl)) &&
+            @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>\{)/) &&
+            (start_ws r0_0)
+          end || begin
+            @scanner.pos = p0
+            false
+          end
+        end ||
+        ((r = match(:ws_decl)) && (set_ws r))
       end
       
       # @private
       def match_ws_decl #:nodoc:
         p0 = @scanner.pos
         begin
-          @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>%whitespace)/) &&
-          match(:ws_expr)
+          @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>(?>%whitespace)(?>(?![[:alnum:]_])))/) &&
+          match(:unattributed)
         end || begin
           @scanner.pos = p0
           false
@@ -231,26 +186,37 @@ module Rattler
       end
       
       # @private
-      def match_ws_block_close #:nodoc:
-        @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>\})/) &&
-        (end_ws )
-      end
-      
-      # @private
-      def match_ws_expr #:nodoc:
+      def match_wc_directive #:nodoc:
         begin
           p0 = @scanner.pos
           begin
-            (r0_0 = match(:ws_expr)) &&
-            @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>\|)/) &&
-            (r0_1 = match(:terms)) &&
-            Choice.parsed(select_captures([r0_0, r0_1]))
+            (r0_0 = match(:wc_decl)) &&
+            @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>\{)/) &&
+            (start_wc r0_0)
           end || begin
             @scanner.pos = p0
             false
           end
         end ||
-        match(:terms)
+        ((r = match(:wc_decl)) && (set_wc r))
+      end
+      
+      # @private
+      def match_wc_decl #:nodoc:
+        p0 = @scanner.pos
+        begin
+          @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>(?>%word_character)(?>(?![[:alnum:]_])))/) &&
+          match(:unattributed)
+        end || begin
+          @scanner.pos = p0
+          false
+        end
+      end
+      
+      # @private
+      def match_block_close #:nodoc:
+        @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>\})/) &&
+        (end_block )
       end
       
       # @private
@@ -265,6 +231,23 @@ module Rattler
           @scanner.pos = p0
           false
         end
+      end
+      
+      # @private
+      def match_unattributed #:nodoc:
+        begin
+          p0 = @scanner.pos
+          begin
+            (r0_0 = match(:unattributed)) &&
+            @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>\|)/) &&
+            (r0_1 = match(:terms)) &&
+            Choice.parsed(select_captures([r0_0, r0_1]))
+          end || begin
+            @scanner.pos = p0
+            false
+          end
+        end ||
+        match(:terms)
       end
       
       # @private
@@ -428,21 +411,40 @@ module Rattler
       def match_fail_expr #:nodoc:
         p0 = @scanner.pos
         begin
-          (r0_0 = match(:fail_word)) &&
+          (r0_0 = begin
+            begin
+              p1 = @scanner.pos
+              begin
+                @scanner.skip(/(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*/) &&
+                @scanner.scan(/(?>fail)(?>(?![[:alnum:]_]))/)
+              end || begin
+                @scanner.pos = p1
+                false
+              end
+            end ||
+            begin
+              p1 = @scanner.pos
+              begin
+                @scanner.skip(/(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*/) &&
+                @scanner.scan(/(?>fail_rule)(?>(?![[:alnum:]_]))/)
+              end || begin
+                @scanner.pos = p1
+                false
+              end
+            end ||
+            begin
+              p1 = @scanner.pos
+              begin
+                @scanner.skip(/(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*/) &&
+                @scanner.scan(/(?>fail_parse)(?>(?![[:alnum:]_]))/)
+              end || begin
+                @scanner.pos = p1
+                false
+              end
+            end
+          end) &&
           (r0_1 = match(:fail_arg)) &&
           Fail.parsed(select_captures([r0_0, r0_1]))
-        end || begin
-          @scanner.pos = p0
-          false
-        end
-      end
-      
-      # @private
-      def match_fail_word #:nodoc:
-        p0 = @scanner.pos
-        begin
-          @scanner.skip(/(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*/) &&
-          @scanner.scan(/(?>fail)(?>(?>_rule|_parse)?)(?>(?![[:alnum:]]|_))/)
         end || begin
           @scanner.pos = p0
           false
@@ -605,22 +607,18 @@ module Rattler
       
       # @private
       def match_atom #:nodoc:
-        ((r = match(:eof_symbol)) && Eof.parsed([r])) ||
         begin
           p0 = @scanner.pos
           begin
             @scanner.skip(/(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*/) &&
-            (r0_0 = begin
-              tp = @scanner.pos
-              match(:posix_name) &&
-              @scanner.string[tp...(@scanner.pos)]
-            end) &&
-            (posix_class r0_0)
+            (r0_0 = @scanner.scan(/(?>EOF)(?>(?![[:alnum:]_]))/)) &&
+            Eof.parsed([r0_0])
           end || begin
             @scanner.pos = p0
             false
           end
         end ||
+        ((r = match(:posix_class)) && (posix_class r)) ||
         begin
           p0 = @scanner.pos
           begin
@@ -641,6 +639,7 @@ module Rattler
           end
         end ||
         ((r = match(:literal)) && (literal r)) ||
+        ((r = match(:word_literal)) && (word_literal r)) ||
         ((r = match(:class)) && (char_class r)) ||
         ((r = match(:regexp)) && Match.parsed([r])) ||
         begin
@@ -650,11 +649,167 @@ module Rattler
       end
       
       # @private
+      def match_posix_class #:nodoc:
+        begin
+          p0 = @scanner.pos
+          begin
+            @scanner.skip(/(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*/) &&
+            @scanner.scan(/(?>ALNUM)(?>(?![[:alnum:]_]))/)
+          end || begin
+            @scanner.pos = p0
+            false
+          end
+        end ||
+        begin
+          p0 = @scanner.pos
+          begin
+            @scanner.skip(/(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*/) &&
+            @scanner.scan(/(?>ALPHA)(?>(?![[:alnum:]_]))/)
+          end || begin
+            @scanner.pos = p0
+            false
+          end
+        end ||
+        begin
+          p0 = @scanner.pos
+          begin
+            @scanner.skip(/(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*/) &&
+            @scanner.scan(/(?>ASCII)(?>(?![[:alnum:]_]))/)
+          end || begin
+            @scanner.pos = p0
+            false
+          end
+        end ||
+        begin
+          p0 = @scanner.pos
+          begin
+            @scanner.skip(/(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*/) &&
+            @scanner.scan(/(?>BLANK)(?>(?![[:alnum:]_]))/)
+          end || begin
+            @scanner.pos = p0
+            false
+          end
+        end ||
+        begin
+          p0 = @scanner.pos
+          begin
+            @scanner.skip(/(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*/) &&
+            @scanner.scan(/(?>CNTRL)(?>(?![[:alnum:]_]))/)
+          end || begin
+            @scanner.pos = p0
+            false
+          end
+        end ||
+        begin
+          p0 = @scanner.pos
+          begin
+            @scanner.skip(/(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*/) &&
+            @scanner.scan(/(?>DIGIT)(?>(?![[:alnum:]_]))/)
+          end || begin
+            @scanner.pos = p0
+            false
+          end
+        end ||
+        begin
+          p0 = @scanner.pos
+          begin
+            @scanner.skip(/(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*/) &&
+            @scanner.scan(/(?>GRAPH)(?>(?![[:alnum:]_]))/)
+          end || begin
+            @scanner.pos = p0
+            false
+          end
+        end ||
+        begin
+          p0 = @scanner.pos
+          begin
+            @scanner.skip(/(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*/) &&
+            @scanner.scan(/(?>LOWER)(?>(?![[:alnum:]_]))/)
+          end || begin
+            @scanner.pos = p0
+            false
+          end
+        end ||
+        begin
+          p0 = @scanner.pos
+          begin
+            @scanner.skip(/(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*/) &&
+            @scanner.scan(/(?>PRINT)(?>(?![[:alnum:]_]))/)
+          end || begin
+            @scanner.pos = p0
+            false
+          end
+        end ||
+        begin
+          p0 = @scanner.pos
+          begin
+            @scanner.skip(/(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*/) &&
+            @scanner.scan(/(?>PUNCT)(?>(?![[:alnum:]_]))/)
+          end || begin
+            @scanner.pos = p0
+            false
+          end
+        end ||
+        begin
+          p0 = @scanner.pos
+          begin
+            @scanner.skip(/(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*/) &&
+            @scanner.scan(/(?>SPACE)(?>(?![[:alnum:]_]))/)
+          end || begin
+            @scanner.pos = p0
+            false
+          end
+        end ||
+        begin
+          p0 = @scanner.pos
+          begin
+            @scanner.skip(/(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*/) &&
+            @scanner.scan(/(?>UPPER)(?>(?![[:alnum:]_]))/)
+          end || begin
+            @scanner.pos = p0
+            false
+          end
+        end ||
+        begin
+          p0 = @scanner.pos
+          begin
+            @scanner.skip(/(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*/) &&
+            @scanner.scan(/(?>XDIGIT)(?>(?![[:alnum:]_]))/)
+          end || begin
+            @scanner.pos = p0
+            false
+          end
+        end ||
+        begin
+          p0 = @scanner.pos
+          begin
+            @scanner.skip(/(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*/) &&
+            @scanner.scan(/(?>WORD)(?>(?![[:alnum:]_]))/)
+          end || begin
+            @scanner.pos = p0
+            false
+          end
+        end
+      end
+      
+      # @private
       def match_literal #:nodoc:
         p0 = @scanner.pos
         begin
           @scanner.skip(/(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*/) &&
           @scanner.scan(/(["'])(?:\\.|(?:(?!\1).))*\1/)
+        end || begin
+          @scanner.pos = p0
+          false
+        end
+      end
+      
+      # @private
+      def match_word_literal #:nodoc:
+        p0 = @scanner.pos
+        begin
+          @scanner.skip(/(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*/) &&
+          @scanner.scan(/(?>`)(?>(?>(?>\\)(?>.)|[^`])*)(?>`)/)
         end || begin
           @scanner.pos = p0
           false
@@ -723,9 +878,12 @@ module Rattler
         p0 = @scanner.pos
         begin
           begin
-            p0 = @scanner.pos
-            r = !match(:eof_symbol)
-            @scanner.pos = p0
+            p1 = @scanner.pos
+            r = !begin
+              @scanner.skip(/(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*/) &&
+              @scanner.skip(/(?>EOF)(?>(?![[:alnum:]_]))/)
+            end
+            @scanner.pos = p1
             r
           end &&
           begin
@@ -804,18 +962,6 @@ module Rattler
       end
       
       # @private
-      def match_eof_symbol #:nodoc:
-        p0 = @scanner.pos
-        begin
-          @scanner.skip(/(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*/) &&
-          @scanner.scan(/(?>EOF)(?>(?![[:alnum:]]|_))/)
-        end || begin
-          @scanner.pos = p0
-          false
-        end
-      end
-      
-      # @private
       def match_range #:nodoc:
         begin
           p0 = @scanner.pos
@@ -857,7 +1003,20 @@ module Rattler
       
       # @private
       def match_posix_name #:nodoc:
-        @scanner.scan(/(?>ALNUM|ALPHA|ASCII|BLANK|CNTRL|DIGIT|GRAPH|LOWER|PRINT|PUNCT|SPACE|UPPER|XDIGIT|WORD)(?>(?![[:alnum:]]|_))/)
+        @scanner.scan(/(?>alnum)(?>(?![[:alnum:]_]))/) ||
+        @scanner.scan(/(?>alpha)(?>(?![[:alnum:]_]))/) ||
+        @scanner.scan(/(?>ascii)(?>(?![[:alnum:]_]))/) ||
+        @scanner.scan(/(?>blank)(?>(?![[:alnum:]_]))/) ||
+        @scanner.scan(/(?>cntrl)(?>(?![[:alnum:]_]))/) ||
+        @scanner.scan(/(?>digit)(?>(?![[:alnum:]_]))/) ||
+        @scanner.scan(/(?>graph)(?>(?![[:alnum:]_]))/) ||
+        @scanner.scan(/(?>lower)(?>(?![[:alnum:]_]))/) ||
+        @scanner.scan(/(?>print)(?>(?![[:alnum:]_]))/) ||
+        @scanner.scan(/(?>punct)(?>(?![[:alnum:]_]))/) ||
+        @scanner.scan(/(?>space)(?>(?![[:alnum:]_]))/) ||
+        @scanner.scan(/(?>upper)(?>(?![[:alnum:]_]))/) ||
+        @scanner.scan(/(?>xdigit)(?>(?![[:alnum:]_]))/) ||
+        @scanner.scan(/(?>word)(?>(?![[:alnum:]_]))/)
       end
       
       # @private

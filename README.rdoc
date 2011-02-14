@@ -30,7 +30,6 @@ dynamically from strings.
 
 * Indirect left-recursion is not yet supported
 * Optimizations are very limited at this point
-* Matching specific words can be tedius, requiring negative lookahead after each
 * Only strings can be parsed, so files have to be read completely before parsing
 * There are undoubtedly many bugs
 

@@ -6,7 +6,7 @@ describe Rattler::Grammar::GrammarParser do
   include Rattler::Util::ParserSpecHelper
   
   let :posix_names do
-    %w{ALNUM ALPHA BLANK CNTRL DIGIT GRAPH LOWER PRINT PUNCT SPACE UPPER XDIGIT WORD}
+    %w{alnum alpha blank cntrl digit graph lower print punct space upper xdigit word}
   end
   
   it 'skips normal whitespace' do
@@ -42,14 +42,6 @@ describe Rattler::Grammar::GrammarParser do
     end
   end
   
-  describe '#match(:eof_symbol)' do
-    it 'recognizes the EOF symbol' do
-      parsing(' EOF ').as(:eof_symbol).should result_in('EOF').at(4)
-      parsing('EO').as(:eof_symbol).should fail
-      parsing('EOF_').as(:eof_symbol).should fail
-    end
-  end
-  
   describe '#match(:var_name)' do
     it 'recognizes variable names' do
       parsing(' fooBar ').as(:var_name).should result_in('fooBar').at(7)
@@ -78,6 +70,12 @@ describe Rattler::Grammar::GrammarParser do
       parsing(%{ 'a string' }).as(:literal).should result_in(%{'a string'}).at(11)
       parsing(%q{ "a \"string\"" }).as(:literal).
         should result_in(%q{"a \"string\""}).at(15)
+    end
+  end
+  
+  describe '#match(:word_literal)' do
+    it 'recognizes word literals' do
+      parsing(' `then` ').as(:word_literal).should result_in("`then`").at(7)
     end
   end
   
@@ -157,8 +155,8 @@ describe Rattler::Grammar::GrammarParser do
       parsing(' . ').as(:atom).should result_in(Match[/./]).at(2)
     end
     
-    it 'recognizes posix character class names as regexp atoms' do
-      for name in posix_names - ['WORD']
+    it 'recognizes uppercase posix character class names as regexp atoms' do
+      for name in posix_names.map {|_| _.upcase } - ['WORD']
         parsing(" #{name} ").as(:atom).
         should result_in(Match[Regexp.compile("[[:#{name.downcase}:]]")]).
         at(name.length + 1)
@@ -171,6 +169,11 @@ describe Rattler::Grammar::GrammarParser do
     
     it 'recognizes string literals as match atoms' do
       parsing(%{ "a string" }).as(:atom).should result_in(Match[/a\ string/]).at(11)
+    end
+    
+    it 'recognizes word literals as word atoms' do
+      parsing(' `then` ').as(:atom).
+      should result_in(Token[Sequence[Match[/then/], Disallow[Match[/[[:alnum:]_]/]]]]).at(7)
     end
     
     it 'recognizes character classes as match atoms' do

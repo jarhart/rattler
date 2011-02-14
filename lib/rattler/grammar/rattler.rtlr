@@ -16,37 +16,35 @@ include Rattler::Parsers
   
   includes        <-  include_decl*                                             {|i| {:includes => i} }
   
-  require_decl    <-  ~require_word literal ~eol
+  require_decl    <-  ~`require` literal ~eol
   
-  parser_decl     <-  ~parser_word constant (~'<' constant)? ~eol               {|p,b| parser_decl p, b }
+  parser_decl     <-  ~`parser` constant (~'<' constant)? ~eol                  {|p,b| parser_decl p, b }
   
-  grammar_decl    <-  ~grammar_word constant ~eol                               {|g| {:grammar_name => g} }
+  grammar_decl    <-  ~`grammar` constant ~eol                                  {|g| {:grammar_name => g} }
   
-  include_decl    <-  ~include_word constant ~eol
+  include_decl    <-  ~`include` constant ~eol
   
-  require_word    <-  @('require' !(ALNUM | '_'))
+  rules           <-  (directive | rule | block_close)+                         <Rules>
   
-  parser_word     <-  @('parser' !(ALNUM | '_'))
+  directive       <-  ws_directive
+                    | wc_directive
   
-  grammar_word    <-  @('grammar' !(ALNUM | '_'))
-  
-  include_word    <-  @('include' !(ALNUM | '_'))
-  
-  rules           <-  (ws_directive | rule | ws_block_close)+                   <Rules>
-  
-  ws_directive    <-  ws_block_open                                             {|e| start_ws e }
+  ws_directive    <-  ws_decl ~'{'                                              {|e| start_ws e }
                     | ws_decl                                                   {|e| set_ws e }
   
-  ws_block_open   <-  ws_decl ~'{'
+  ws_decl         <-  ~`%whitespace` unattributed
   
-  ws_decl         <-  ~'%whitespace' ws_expr
+  wc_directive    <-  wc_decl ~'{'                                              {|e| start_wc e }
+                    | wc_decl                                                   {|e| set_wc e }
   
-  ws_block_close  <-  ~'}'                                                      { end_ws }
+  wc_decl         <-  ~`%word_character` unattributed
   
-  ws_expr         <-  ws_expr ~'|' terms                                        <Choice>
-                    | terms
+  block_close     <-  ~'}'                                                      { end_block }
   
   rule            <-  identifier ~'<-' expression                               {|n,e| rule n, e }
+  
+  unattributed    <-  unattributed ~'|' terms                                   <Choice>
+                    | terms
   
   expression      <-  expression ~'|' attributed                                <Choice>
                     | attributed
@@ -69,9 +67,7 @@ include Rattler::Parsers
   
   term            <-  fail_expr | labeled | prefixed | suffixed | primary
   
-  fail_expr       <-  fail_word fail_arg                                        <Fail>
-  
-  fail_word       <-  @('fail' ('_rule' | '_parse')? !(ALNUM | '_'))
+  fail_expr       <-  (`fail` | `fail_rule` | `fail_parse`) fail_arg            <Fail>
   
   fail_arg        <-  ~'(' literal ~')'
                     | literal
@@ -94,15 +90,33 @@ include Rattler::Parsers
   primary         <-  ~'(' expression ~')'
                     | atom
   
-  atom            <-  eof_symbol                                                <Eof>
-                    | @posix_name                                               {|n| posix_class n }
+  atom            <-  `EOF`                                                     <Eof>
+                    | posix_class                                               {|n| posix_class n }
                     | identifier !'<-'                                          <Apply>
                     | literal                                                   {|e| literal e }
+                    | word_literal                                              {|e| word_literal e }
                     | class                                                     {|e| char_class e }
                     | regexp                                                    <Match>
                     | ~'.'                                                      { Match[/./] }
   
+  posix_class     <-  `ALNUM`
+                    | `ALPHA`
+                    | `ASCII`
+                    | `BLANK`
+                    | `CNTRL`
+                    | `DIGIT`
+                    | `GRAPH`
+                    | `LOWER`
+                    | `PRINT`
+                    | `PUNCT`
+                    | `SPACE`
+                    | `UPPER`
+                    | `XDIGIT`
+                    | `WORD`
+  
   literal         <-  /(["'])(?:\\.|(?:(?!\1).))*\1/
+  
+  word_literal    <-  @("`" ('\\' . | [^`])* "`")
   
   class           <-  @('[' (!']' range)+  ']')
   
@@ -111,35 +125,32 @@ include Rattler::Parsers
   name            <-  var_name
                     | constant
   
-  identifier      <-  !eof_symbol @(ALNUM | '_')+
+  identifier      <-  !`EOF` @(ALNUM | '_')+
   
   var_name        <-  @(LOWER (ALNUM | '_')*)
   
   constant        <-  @((const_name '::')* const_name)
   
   const_name      <-  @(UPPER (ALNUM | '_')*)
-  
-  eof_symbol      <-  @('EOF' !(ALNUM | '_'))
-  
 }
 
   range           <-  @(  '[:' posix_name ':]'
                         | class_char ('-' class_char)?)
   
-  posix_name      <-  ( 'ALNUM'
-                      | 'ALPHA'
-                      | 'ASCII'
-                      | 'BLANK'
-                      | 'CNTRL'
-                      | 'DIGIT'
-                      | 'GRAPH'
-                      | 'LOWER'
-                      | 'PRINT'
-                      | 'PUNCT'
-                      | 'SPACE'
-                      | 'UPPER'
-                      | 'XDIGIT'
-                      | 'WORD'  ) !(ALNUM | '_')
+  posix_name      <-  `alnum`
+                    | `alpha`
+                    | `ascii`
+                    | `blank`
+                    | `cntrl`
+                    | `digit`
+                    | `graph`
+                    | `lower`
+                    | `print`
+                    | `punct`
+                    | `space`
+                    | `upper`
+                    | `xdigit`
+                    | `word`
   
   class_char      <-  @(  '\\' [0-3] [0-7] [0-7]
                         | '\\x' XDIGIT XDIGIT

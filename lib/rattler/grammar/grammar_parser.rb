@@ -15,14 +15,20 @@ module Rattler::Grammar
     
     def initialize(*args)
       super
+      @ws = nil
+      @wc = Match[/[[:alnum:]_]/]
+      @directive_stack = []
+      
       @ws_stack = []
       @ws = nil
+      @wc_stack = []
+      @wc = Match[/[[:alnum:]_]/]
     end
     
     private
     
     def start_ws(e)
-      @ws_stack.push(@ws)
+      @directive_stack.push(:type => :ws, :value => @ws)
       set_ws(e)
     end
     
@@ -31,9 +37,24 @@ module Rattler::Grammar
       true
     end
     
-    def end_ws
-      @ws = @ws_stack.pop
+    def start_wc(e)
+      @directive_stack.push(:type => :wc, :value => @wc)
+      set_wc(e)
+    end
+    
+    def set_wc(e)
+      @wc = e
       true
+    end
+    
+    def end_block
+      if d = @directive_stack.pop
+        case d[:type]
+        when :wc then @wc = d[:value]
+        when :ws then @ws = d[:value]
+        end
+        true
+      end
     end
     
     def heading(requires, modules, includes)
@@ -50,6 +71,13 @@ module Rattler::Grammar
     
     def literal(e)
       Match[Regexp.compile(Regexp.escape(eval(e, TOPLEVEL_BINDING)))]
+    end
+    
+    def word_literal(e)
+      Token[Sequence[
+        Match[Regexp.compile(Regexp.escape(eval("%q#{e}", TOPLEVEL_BINDING)))],
+        Disallow[@wc]
+      ]]
     end
     
     def char_class(e)
