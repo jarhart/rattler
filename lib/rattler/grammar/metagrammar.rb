@@ -890,7 +890,7 @@ module Rattler
             p1 = @scanner.pos
             begin
               @scanner.skip(/(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*/) &&
-              @scanner.scan(/(?>[[:alnum:]]|_)+/)
+              @scanner.scan(/(?>[[:alnum:]_])+/)
             end || begin
               @scanner.pos = p1
               false
@@ -907,7 +907,7 @@ module Rattler
         p0 = @scanner.pos
         begin
           @scanner.skip(/(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*/) &&
-          @scanner.scan(/(?>[[:lower:]])(?>(?>[[:alnum:]]|_)*)/)
+          @scanner.scan(/(?>[[:lower:]])(?>(?>[[:alnum:]_])*)/)
         end || begin
           @scanner.pos = p0
           false
@@ -954,7 +954,7 @@ module Rattler
         p0 = @scanner.pos
         begin
           @scanner.skip(/(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*/) &&
-          @scanner.scan(/(?>[[:upper:]])(?>(?>[[:alnum:]]|_)*)/)
+          @scanner.scan(/(?>[[:upper:]])(?>(?>[[:alnum:]_])*)/)
         end || begin
           @scanner.pos = p0
           false

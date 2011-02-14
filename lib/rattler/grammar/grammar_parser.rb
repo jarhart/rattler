@@ -85,7 +85,11 @@ module Rattler::Grammar
     end
     
     def posix_class(name)
-      char_class("[[:#{name.downcase}:]]")
+      if name == 'WORD'
+        Match[/[[:alnum:]_]/]
+      else
+        char_class("[[:#{name.downcase}:]]")
+      end
     end
     
   end

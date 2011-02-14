@@ -125,13 +125,13 @@ include Rattler::Parsers
   name            <-  var_name
                     | constant
   
-  identifier      <-  !`EOF` @(ALNUM | '_')+
+  identifier      <-  !`EOF` @WORD+
   
-  var_name        <-  @(LOWER (ALNUM | '_')*)
+  var_name        <-  @(LOWER WORD*)
   
   constant        <-  @((const_name '::')* const_name)
   
-  const_name      <-  @(UPPER (ALNUM | '_')*)
+  const_name      <-  @(UPPER WORD*)
 }
 
   range           <-  @(  '[:' posix_name ':]'

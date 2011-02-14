@@ -163,6 +163,10 @@ describe Rattler::Grammar::GrammarParser do
       end
     end
     
+    it 'recognizes WORD as syntactic sugar for [[:alnum:]_]' do
+      parsing(' WORD ').as(:atom).should result_in(Match[/[[:alnum:]_]/]).at(5)
+    end
+    
     it 'recognizes identifiers as apply atoms' do
       parsing(' expr ').as(:atom).should result_in(Apply[:expr]).at(5)
     end
