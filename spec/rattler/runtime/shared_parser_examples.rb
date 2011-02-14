@@ -19,11 +19,8 @@ shared_examples_for 'a recursive descent parser' do
     it 'supports recursive rules' do
       given_rules do
         rule :a do
-          ( match(:b) & match(:a) \
-          | match(:b)             )
-        end
-        rule :b do
-          match /\d/
+          ( match(/\d/) & match(:a) \
+          | match(/\d/)             )
         end
       end.
       parsing('451a').as(:a).should result_in(['4', ['5', '1']]).at(3)

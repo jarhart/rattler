@@ -10,11 +10,8 @@ describe Rattler::Runtime::WDMParser do
     it 'supports left-recursive rules' do
       given_rules do
         rule :a do
-          ( match(:a) & match(:b) \
-          | match(:b)             )
-        end
-        rule :b do
-          match /\d/
+          ( match(:a) & match(/\d/) \
+          | match(/\d/)             )
         end
       end.
       parsing('451a').as(:a).should result_in([['4', '5'], '1']).at(3)
