@@ -1,5 +1,5 @@
 #
-# = rattler/runtime/recursive_descent_parser.rb
+# = rattler/runtime/packrat_parser.rb
 #
 # Author:: Jason Arhart
 # Documentation:: Author

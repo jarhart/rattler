@@ -1,3 +1,10 @@
+#
+# = rattler/parsers/combining.rb
+#
+# Author:: Jason Arhart
+# Documentation:: Author
+#
+
 module Rattler::Parsers
   # @private
   module Combining #:nodoc:

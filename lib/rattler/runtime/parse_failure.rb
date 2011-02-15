@@ -1,5 +1,5 @@
 #
-# = rattler/runtime/parse_error.rb
+# = rattler/runtime/parse_failure.rb
 #
 # Author:: Jason Arhart
 # Documentation:: Author

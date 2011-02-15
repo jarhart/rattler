@@ -1,5 +1,5 @@
 #
-# = rattler/parsers/choice.rb
+# = rattler/parsers/sequence.rb
 #
 # Author:: Jason Arhart
 # Documentation:: Author

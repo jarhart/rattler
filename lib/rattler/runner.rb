@@ -1,3 +1,9 @@
+#
+# = rattler/runner.rb
+#
+# Author:: Jason Arhart
+# Documentation:: Author
+#
 require 'rattler'
 
 require 'optparse'

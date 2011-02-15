@@ -1,5 +1,5 @@
 #
-# = rattler/runtime/recursive_descent_parser.rb
+# = rattler/runtime/wdm_parser.rb
 #
 # Author:: Jason Arhart
 # Documentation:: Author

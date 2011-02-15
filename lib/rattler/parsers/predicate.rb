@@ -1,3 +1,10 @@
+#
+# = rattler/parsers/predicate.rb
+#
+# Author:: Jason Arhart
+# Documentation:: Author
+#
+
 require 'rattler/parsers'
 
 module Rattler::Parsers

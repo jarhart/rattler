@@ -9,7 +9,7 @@ require 'rattler/parsers'
 
 module Rattler::Parsers
   #
-  # Token decorates a parser to return the entire matched string
+  # +Token+ decorates a parser to return the entire matched string
   #
   # @author Jason Arhart
   #

@@ -1,3 +1,10 @@
+#
+# = rattler/parsers/match_joining.rb
+#
+# Author:: Jason Arhart
+# Documentation:: Author
+#
+
 require 'rattler/parsers'
 
 module Rattler
