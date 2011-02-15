@@ -101,9 +101,10 @@ Gem::Specification.new do |s|
   s.homepage = %q{http://github.com/jarhart/rattler}
   s.licenses = ["MIT"]
   s.require_paths = ["lib"]
-  s.rubygems_version = %q{1.3.7}
+  s.rubygems_version = %q{1.5.2}
   s.summary = %q{Ruby Tool for Language Recognition}
   s.test_files = [
+    "features/command_line/command_line.feature",
     "features/grammar/any_character.feature",
     "features/grammar/character_class.feature",
     "features/grammar/eof.feature",
@@ -127,7 +128,8 @@ Gem::Specification.new do |s|
     "features/grammar/whitespace.feature",
     "features/grammar/word_literal.feature",
     "features/grammar/zero_or_more.feature",
-    "features/step_definitions/rattler_steps.rb",
+    "features/step_definitions/cli_steps.rb",
+    "features/step_definitions/grammar_steps.rb",
     "features/support/env.rb",
     "spec/rattler/back_end/compiler_spec.rb",
     "spec/rattler/back_end/parser_generator/apply_generator_spec.rb",
@@ -184,37 +186,135 @@ Gem::Specification.new do |s|
   ]
 
   if s.respond_to? :specification_version then
-    current_version = Gem::Specification::CURRENT_SPECIFICATION_VERSION
     s.specification_version = 3
 
     if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
+      s.add_runtime_dependency(%q<rattler>, [">= 0"])
+      s.add_development_dependency(%q<bundler>, ["~> 1.0.0"])
+      s.add_development_dependency(%q<bundler>, ["~> 1.0.0"])
+      s.add_development_dependency(%q<bundler>, ["~> 1.0.0"])
+      s.add_development_dependency(%q<bundler>, ["~> 1.0.0"])
+      s.add_development_dependency(%q<bundler>, ["~> 1.0.0"])
+      s.add_development_dependency(%q<bundler>, ["~> 1.0.0"])
       s.add_development_dependency(%q<rspec>, [">= 2.3.0"])
-      s.add_development_dependency(%q<yard>, ["~> 0.6.0"])
-      s.add_development_dependency(%q<cucumber>, [">= 0"])
+      s.add_development_dependency(%q<yard>, [">= 0.6.0"])
+      s.add_development_dependency(%q<cucumber>, [">= 0.8.0"])
+      s.add_development_dependency(%q<aruba>, [">= 0.3.0"])
       s.add_development_dependency(%q<bundler>, ["~> 1.0.0"])
       s.add_development_dependency(%q<jeweler>, ["~> 1.5.2"])
-      s.add_development_dependency(%q<rspec>, [">= 2.0.0"])
-      s.add_development_dependency(%q<yard>, [">= 0.6.2"])
-      s.add_development_dependency(%q<cucumber>, [">= 0"])
+      s.add_development_dependency(%q<rspec>, [">= 2.3.0"])
+      s.add_development_dependency(%q<yard>, [">= 0.6.0"])
+      s.add_development_dependency(%q<cucumber>, [">= 0.8.0"])
+      s.add_development_dependency(%q<aruba>, [">= 0.3.0"])
+      s.add_development_dependency(%q<rspec>, [">= 2.3.0"])
+      s.add_development_dependency(%q<yard>, [">= 0.6.0"])
+      s.add_development_dependency(%q<cucumber>, [">= 0.8.0"])
+      s.add_development_dependency(%q<aruba>, [">= 0.3.0"])
+      s.add_development_dependency(%q<rspec>, [">= 2.3.0"])
+      s.add_development_dependency(%q<yard>, [">= 0.6.0"])
+      s.add_development_dependency(%q<cucumber>, [">= 0.8.0"])
+      s.add_development_dependency(%q<aruba>, [">= 0.3.0"])
+      s.add_development_dependency(%q<rspec>, [">= 2.3.0"])
+      s.add_development_dependency(%q<yard>, [">= 0.6.0"])
+      s.add_development_dependency(%q<cucumber>, [">= 0.8.0"])
+      s.add_development_dependency(%q<aruba>, [">= 0.3.0"])
+      s.add_development_dependency(%q<rspec>, [">= 2.3.0"])
+      s.add_development_dependency(%q<yard>, [">= 0.6.0"])
+      s.add_development_dependency(%q<cucumber>, [">= 0.8.0"])
+      s.add_development_dependency(%q<aruba>, [">= 0.3.0"])
+      s.add_development_dependency(%q<rspec>, [">= 2.3.0"])
+      s.add_development_dependency(%q<yard>, [">= 0.6.0"])
+      s.add_development_dependency(%q<cucumber>, [">= 0.8.0"])
+      s.add_development_dependency(%q<aruba>, [">= 0.3.0"])
+      s.add_development_dependency(%q<rspec>, [">= 2.3.0"])
+      s.add_development_dependency(%q<yard>, [">= 0.6.0"])
+      s.add_development_dependency(%q<cucumber>, [">= 0.8.0"])
+      s.add_development_dependency(%q<aruba>, [">= 0.3.0"])
     else
+      s.add_dependency(%q<rattler>, [">= 0"])
+      s.add_dependency(%q<bundler>, ["~> 1.0.0"])
+      s.add_dependency(%q<bundler>, ["~> 1.0.0"])
+      s.add_dependency(%q<bundler>, ["~> 1.0.0"])
+      s.add_dependency(%q<bundler>, ["~> 1.0.0"])
+      s.add_dependency(%q<bundler>, ["~> 1.0.0"])
+      s.add_dependency(%q<bundler>, ["~> 1.0.0"])
       s.add_dependency(%q<rspec>, [">= 2.3.0"])
-      s.add_dependency(%q<yard>, ["~> 0.6.0"])
-      s.add_dependency(%q<cucumber>, [">= 0"])
+      s.add_dependency(%q<yard>, [">= 0.6.0"])
+      s.add_dependency(%q<cucumber>, [">= 0.8.0"])
+      s.add_dependency(%q<aruba>, [">= 0.3.0"])
       s.add_dependency(%q<bundler>, ["~> 1.0.0"])
       s.add_dependency(%q<jeweler>, ["~> 1.5.2"])
-      s.add_dependency(%q<rspec>, [">= 2.0.0"])
-      s.add_dependency(%q<yard>, [">= 0.6.2"])
-      s.add_dependency(%q<cucumber>, [">= 0"])
+      s.add_dependency(%q<rspec>, [">= 2.3.0"])
+      s.add_dependency(%q<yard>, [">= 0.6.0"])
+      s.add_dependency(%q<cucumber>, [">= 0.8.0"])
+      s.add_dependency(%q<aruba>, [">= 0.3.0"])
+      s.add_dependency(%q<rspec>, [">= 2.3.0"])
+      s.add_dependency(%q<yard>, [">= 0.6.0"])
+      s.add_dependency(%q<cucumber>, [">= 0.8.0"])
+      s.add_dependency(%q<aruba>, [">= 0.3.0"])
+      s.add_dependency(%q<rspec>, [">= 2.3.0"])
+      s.add_dependency(%q<yard>, [">= 0.6.0"])
+      s.add_dependency(%q<cucumber>, [">= 0.8.0"])
+      s.add_dependency(%q<aruba>, [">= 0.3.0"])
+      s.add_dependency(%q<rspec>, [">= 2.3.0"])
+      s.add_dependency(%q<yard>, [">= 0.6.0"])
+      s.add_dependency(%q<cucumber>, [">= 0.8.0"])
+      s.add_dependency(%q<aruba>, [">= 0.3.0"])
+      s.add_dependency(%q<rspec>, [">= 2.3.0"])
+      s.add_dependency(%q<yard>, [">= 0.6.0"])
+      s.add_dependency(%q<cucumber>, [">= 0.8.0"])
+      s.add_dependency(%q<aruba>, [">= 0.3.0"])
+      s.add_dependency(%q<rspec>, [">= 2.3.0"])
+      s.add_dependency(%q<yard>, [">= 0.6.0"])
+      s.add_dependency(%q<cucumber>, [">= 0.8.0"])
+      s.add_dependency(%q<aruba>, [">= 0.3.0"])
+      s.add_dependency(%q<rspec>, [">= 2.3.0"])
+      s.add_dependency(%q<yard>, [">= 0.6.0"])
+      s.add_dependency(%q<cucumber>, [">= 0.8.0"])
+      s.add_dependency(%q<aruba>, [">= 0.3.0"])
     end
   else
+    s.add_dependency(%q<rattler>, [">= 0"])
+    s.add_dependency(%q<bundler>, ["~> 1.0.0"])
+    s.add_dependency(%q<bundler>, ["~> 1.0.0"])
+    s.add_dependency(%q<bundler>, ["~> 1.0.0"])
+    s.add_dependency(%q<bundler>, ["~> 1.0.0"])
+    s.add_dependency(%q<bundler>, ["~> 1.0.0"])
+    s.add_dependency(%q<bundler>, ["~> 1.0.0"])
     s.add_dependency(%q<rspec>, [">= 2.3.0"])
-    s.add_dependency(%q<yard>, ["~> 0.6.0"])
-    s.add_dependency(%q<cucumber>, [">= 0"])
+    s.add_dependency(%q<yard>, [">= 0.6.0"])
+    s.add_dependency(%q<cucumber>, [">= 0.8.0"])
+    s.add_dependency(%q<aruba>, [">= 0.3.0"])
     s.add_dependency(%q<bundler>, ["~> 1.0.0"])
     s.add_dependency(%q<jeweler>, ["~> 1.5.2"])
-    s.add_dependency(%q<rspec>, [">= 2.0.0"])
-    s.add_dependency(%q<yard>, [">= 0.6.2"])
-    s.add_dependency(%q<cucumber>, [">= 0"])
+    s.add_dependency(%q<rspec>, [">= 2.3.0"])
+    s.add_dependency(%q<yard>, [">= 0.6.0"])
+    s.add_dependency(%q<cucumber>, [">= 0.8.0"])
+    s.add_dependency(%q<aruba>, [">= 0.3.0"])
+    s.add_dependency(%q<rspec>, [">= 2.3.0"])
+    s.add_dependency(%q<yard>, [">= 0.6.0"])
+    s.add_dependency(%q<cucumber>, [">= 0.8.0"])
+    s.add_dependency(%q<aruba>, [">= 0.3.0"])
+    s.add_dependency(%q<rspec>, [">= 2.3.0"])
+    s.add_dependency(%q<yard>, [">= 0.6.0"])
+    s.add_dependency(%q<cucumber>, [">= 0.8.0"])
+    s.add_dependency(%q<aruba>, [">= 0.3.0"])
+    s.add_dependency(%q<rspec>, [">= 2.3.0"])
+    s.add_dependency(%q<yard>, [">= 0.6.0"])
+    s.add_dependency(%q<cucumber>, [">= 0.8.0"])
+    s.add_dependency(%q<aruba>, [">= 0.3.0"])
+    s.add_dependency(%q<rspec>, [">= 2.3.0"])
+    s.add_dependency(%q<yard>, [">= 0.6.0"])
+    s.add_dependency(%q<cucumber>, [">= 0.8.0"])
+    s.add_dependency(%q<aruba>, [">= 0.3.0"])
+    s.add_dependency(%q<rspec>, [">= 2.3.0"])
+    s.add_dependency(%q<yard>, [">= 0.6.0"])
+    s.add_dependency(%q<cucumber>, [">= 0.8.0"])
+    s.add_dependency(%q<aruba>, [">= 0.3.0"])
+    s.add_dependency(%q<rspec>, [">= 2.3.0"])
+    s.add_dependency(%q<yard>, [">= 0.6.0"])
+    s.add_dependency(%q<cucumber>, [">= 0.8.0"])
+    s.add_dependency(%q<aruba>, [">= 0.3.0"])
   end
 end
 

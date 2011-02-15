@@ -1,5 +1,8 @@
-#!/usr/bin/env ruby
+#! /usr/bin/env ruby
+
+rattler_dir = File.expand_path(File.join(File.dirname(__FILE__), '..', 'lib'))
+$:.unshift rattler_dir unless $:.include? rattler_dir
 
 require 'rattler/runner'
 
-Rattler::Runner.run(ARGV.clone)
+::Rattler::Runner.run(ARGV.clone)
