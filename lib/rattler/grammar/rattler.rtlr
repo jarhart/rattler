@@ -10,24 +10,16 @@ include Rattler::Parsers
   
   heading         <-  requires module_decl? includes                            {|r,m,i| heading r, m, i }
   
-  requires        <-  require_decl*                                             {|r| {:requires => r} }
+  requires        <-  (~`require` literal ~eol)*                                {|r| {:requires => r} }
   
-  module_decl     <-  parser_decl | grammar_decl
+  module_decl     <-  ~`parser` constant (~'<' constant)? ~eol                  {|p,b| parser_decl p, b }
+                    | ~`grammar` constant ~eol                                  {|g| {:grammar_name => g} }
   
-  includes        <-  include_decl*                                             {|i| {:includes => i} }
-  
-  require_decl    <-  ~`require` literal ~eol
-  
-  parser_decl     <-  ~`parser` constant (~'<' constant)? ~eol                  {|p,b| parser_decl p, b }
-  
-  grammar_decl    <-  ~`grammar` constant ~eol                                  {|g| {:grammar_name => g} }
-  
-  include_decl    <-  ~`include` constant ~eol
+  includes        <-  (~`include` constant ~eol)*                               {|i| {:includes => i} }
   
   rules           <-  (directive | rule | block_close)+                         <Rules>
   
-  directive       <-  ws_directive
-                    | wc_directive
+  directive       <-  ws_directive | wc_directive
   
   ws_directive    <-  ws_decl ~'{'                                              {|e| start_ws e }
                     | ws_decl                                                   {|e| set_ws e }

@@ -53,7 +53,18 @@ module Rattler
       # @private
       def match_requires #:nodoc:
         a0 = []
-        while r = match(:require_decl)
+        while r = begin
+          p0 = @scanner.pos
+          begin
+            @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>(?>require)(?>(?![[:alnum:]_])))/) &&
+            (r0_0 = match(:literal)) &&
+            match(:eol) &&
+            r0_0
+          end || begin
+            @scanner.pos = p0
+            false
+          end
+        end
           a0 << r
         end
         ({:requires => select_captures(a0)})
@@ -61,91 +72,70 @@ module Rattler
       
       # @private
       def match_module_decl #:nodoc:
-        match(:parser_decl) ||
-        match(:grammar_decl)
+        begin
+          p0 = @scanner.pos
+          begin
+            @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>(?>parser)(?>(?![[:alnum:]_])))/) &&
+            (r0_0 = match(:constant)) &&
+            (r0_1 = ((r = begin
+              p1 = @scanner.pos
+              begin
+                @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?><)/) &&
+                match(:constant)
+              end || begin
+                @scanner.pos = p1
+                false
+              end
+            end) ? [r] : [])) &&
+            match(:eol) &&
+            (parser_decl r0_0, r0_1)
+          end || begin
+            @scanner.pos = p0
+            false
+          end
+        end ||
+        begin
+          p0 = @scanner.pos
+          begin
+            @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>(?>grammar)(?>(?![[:alnum:]_])))/) &&
+            (r0_0 = match(:constant)) &&
+            match(:eol) &&
+            ({:grammar_name => r0_0})
+          end || begin
+            @scanner.pos = p0
+            false
+          end
+        end
       end
       
       # @private
       def match_includes #:nodoc:
         a0 = []
-        while r = match(:include_decl)
+        while r = begin
+          p0 = @scanner.pos
+          begin
+            @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>(?>include)(?>(?![[:alnum:]_])))/) &&
+            (r0_0 = match(:constant)) &&
+            match(:eol) &&
+            r0_0
+          end || begin
+            @scanner.pos = p0
+            false
+          end
+        end
           a0 << r
         end
         ({:includes => select_captures(a0)})
       end
       
       # @private
-      def match_require_decl #:nodoc:
-        p0 = @scanner.pos
-        begin
-          @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>(?>require)(?>(?![[:alnum:]_])))/) &&
-          (r0_0 = match(:literal)) &&
-          match(:eol) &&
-          r0_0
-        end || begin
-          @scanner.pos = p0
-          false
-        end
-      end
-      
-      # @private
-      def match_parser_decl #:nodoc:
-        p0 = @scanner.pos
-        begin
-          @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>(?>parser)(?>(?![[:alnum:]_])))/) &&
-          (r0_0 = match(:constant)) &&
-          (r0_1 = ((r = begin
-            p1 = @scanner.pos
-            begin
-              @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?><)/) &&
-              match(:constant)
-            end || begin
-              @scanner.pos = p1
-              false
-            end
-          end) ? [r] : [])) &&
-          match(:eol) &&
-          (parser_decl r0_0, r0_1)
-        end || begin
-          @scanner.pos = p0
-          false
-        end
-      end
-      
-      # @private
-      def match_grammar_decl #:nodoc:
-        p0 = @scanner.pos
-        begin
-          @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>(?>grammar)(?>(?![[:alnum:]_])))/) &&
-          (r0_0 = match(:constant)) &&
-          match(:eol) &&
-          ({:grammar_name => r0_0})
-        end || begin
-          @scanner.pos = p0
-          false
-        end
-      end
-      
-      # @private
-      def match_include_decl #:nodoc:
-        p0 = @scanner.pos
-        begin
-          @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>(?>include)(?>(?![[:alnum:]_])))/) &&
-          (r0_0 = match(:constant)) &&
-          match(:eol) &&
-          r0_0
-        end || begin
-          @scanner.pos = p0
-          false
-        end
-      end
-      
-      # @private
       def match_rules #:nodoc:
         a0 = []
-        while r = match(:directive) ||
-        match(:rule) ||
-        match(:block_close)
+        while r = begin
+          match(:directive) ||
+          match(:rule) ||
+          match(:block_close)
+        end
           a0 << r
         end
         Rules.parsed(select_captures(a0)) unless a0.empty?
