@@ -38,6 +38,7 @@ module Rattler::BackEnd
     autoload :SkipGenerator, 'rattler/back_end/parser_generator/skip_generator'
     autoload :LabelGenerator, 'rattler/back_end/parser_generator/label_generator'
     autoload :FailGenerator, 'rattler/back_end/parser_generator/fail_generator'
+    autoload :RepeatGenerating, 'rattler/back_end/parser_generator/repeat_generating'
     autoload :PredicatePropogating, 'rattler/back_end/parser_generator/predicate_propogating'
     autoload :TokenPropogating, 'rattler/back_end/parser_generator/token_propogating'
     autoload :SkipPropogating, 'rattler/back_end/parser_generator/skip_propogating'

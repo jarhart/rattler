@@ -10,13 +10,20 @@ describe Rattler::BackEnd::ParserGenerator::ZeroOrMoreGenerator do
   
   describe '#gen_basic' do
     
+    let :zero_or_more do
+      ZeroOrMore[Choice[Match[/[[:alpha:]]/], Match[/[[:digit:]]/]]]
+    end
+    
     context 'when nested' do
       it 'generates nested zero-or-more matching code' do
         nested_code {|g| g.gen_basic zero_or_more }.
           should == (<<-CODE).strip
 begin
   a = []
-  while r = @scanner.scan(/w+/)
+  while r = begin
+    @scanner.scan(/[[:alpha:]]/) ||
+    @scanner.scan(/[[:digit:]]/)
+  end
     a << r
   end
   a
@@ -30,7 +37,10 @@ end
         top_level_code {|g| g.gen_basic zero_or_more }.
           should == (<<-CODE).strip
 a = []
-while r = @scanner.scan(/w+/)
+while r = begin
+  @scanner.scan(/[[:alpha:]]/) ||
+  @scanner.scan(/[[:digit:]]/)
+end
   a << r
 end
 a

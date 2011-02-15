@@ -3,28 +3,9 @@ require 'rattler/back_end/parser_generator'
 module Rattler::BackEnd::ParserGenerator
   
   # @private
-  class OneOrMoreGenerator < ZeroOrMoreGenerator #:nodoc:
+  class OneOrMoreGenerator < ExprGenerator #:nodoc:
+    include RepeatGenerating
     include PredicatePropogating
-    
-    def gen_basic_top_level(one_or_more)
-      if one_or_more.capturing?
-        required_match { super }
-      else
-        gen_skip_top_level one_or_more
-      end
-    end
-    
-    def gen_dispatch_action_top_level(one_or_more, target, method_name)
-      required_match { super }
-    end
-    
-    def gen_direct_action_top_level(one_or_more, action)
-      required_match { super }
-    end
-    
-    def gen_token_top_level(one_or_more)
-      required_match { super }
-    end
     
     def gen_skip_top_level(one_or_more)
       (@g << "#{result_name} = false").newline
@@ -34,13 +15,12 @@ module Rattler::BackEnd::ParserGenerator
       @g << result_name
     end
     
-    private
-    
-    def required_match
-      yield
-      @g << " unless #{accumulator_name}.empty?"
+    protected
+
+    def gen_result(captures)
+      @g << captures << " unless #{accumulator_name}.empty?"
     end
-    
+
   end
   
   # @private
@@ -56,7 +36,16 @@ module Rattler::BackEnd::ParserGenerator
   # @private
   class TopLevelOneOrMoreGenerator < OneOrMoreGenerator #:nodoc:
     include TopLevel
-    include TopLevelGenerators
+    include NestedGenerators
+
+    def gen_assert(parser)
+      generate parser.child, :gen_assert_top_level
+    end
+    
+    def gen_disallow(parser)
+      generate parser.child, :gen_disallow_top_level
+    end
+    
   end
   
   def OneOrMoreGenerator.top_level(*args)

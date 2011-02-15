@@ -9,6 +9,10 @@ describe Rattler::BackEnd::ParserGenerator::OneOrMoreGenerator do
   let(:one_or_more) { OneOrMore[Match[/w+/]] }
   
   describe '#gen_basic' do
+
+    let :one_or_more do
+      OneOrMore[Choice[Match[/[[:alpha:]]/], Match[/[[:digit:]]/]]]
+    end
     
     context 'when nested' do
       it 'generates nested one-or-more matching code' do
@@ -16,7 +20,10 @@ describe Rattler::BackEnd::ParserGenerator::OneOrMoreGenerator do
           should == (<<-CODE).strip
 begin
   a = []
-  while r = @scanner.scan(/w+/)
+  while r = begin
+    @scanner.scan(/[[:alpha:]]/) ||
+    @scanner.scan(/[[:digit:]]/)
+  end
     a << r
   end
   a unless a.empty?
@@ -30,7 +37,10 @@ end
         top_level_code {|g| g.gen_basic one_or_more }.
           should == (<<-CODE).strip
 a = []
-while r = @scanner.scan(/w+/)
+while r = begin
+  @scanner.scan(/[[:alpha:]]/) ||
+  @scanner.scan(/[[:digit:]]/)
+end
   a << r
 end
 a unless a.empty?
@@ -49,7 +59,7 @@ a unless a.empty?
     end
     
     context 'when top-level' do
-      it 'generates top level one-or-more positive lookahead code' do
+      it 'generates nested one-or-more positive lookahead code' do
         top_level_code {|g| g.gen_assert one_or_more }.
           should == '@scanner.skip(/(?=w+)/) && true'
       end
@@ -66,7 +76,7 @@ a unless a.empty?
     end
     
     context 'when top-level' do
-      it 'generates top level one-or-more negative lookahead code' do
+      it 'generates nested one-or-more negative lookahead code' do
         top_level_code {|g| g.gen_disallow one_or_more }.
           should == '@scanner.skip(/(?!w+)/) && true'
       end
