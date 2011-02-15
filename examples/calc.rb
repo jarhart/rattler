@@ -1,3 +1,5 @@
+#! /usr/bin/env ruby
+
 require 'rubygems'
 require 'rattler'
 
@@ -18,7 +20,7 @@ class Calculator < Rattler::Runtime::WDMParser
     primary <-  ~'(' expr ~')'
               | @('-'? DIGIT+ ('.' DIGIT+)?)    <.to_f>
     
-    quit    <-  'quit'                          { abort "\n" }
+    quit    <-  'quit'                          { abort "\\n" }
   }
 end
 
