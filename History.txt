@@ -1,0 +1,18 @@
+== 0.2.0
+
+First release to rubygems.org! This release makes changes the grammar syntax.
+
+=== New Features
+* Syntax: Word Literals: use backquotes to match as a whole word only
+* Command line: "-" (dash) can now be used with "-o" to output to STDOUT
+
+=== Changed Features
+* Syntax: POSIX character class shortcuts are now uppercase
+
+=== Bugfixes
+* First rule is now automatically the start rule
+* Syntax: POSIX character class WORD is now compatible with Ruby 1.8.7
+
+== 0.1.0 2011-02-08
+
+Initial Release!
