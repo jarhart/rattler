@@ -80,7 +80,7 @@ module Rattler::BackEnd::ParserGenerator
     def gen_parser_def(parser_name, base_name)
       nest_modules(parser_name.split('::')) do |name|
         (@g << "# @private").newline
-        module_block("class #{name} < #{base_name}") { yield }
+        module_block("class #{name} < #{base_name} #:nodoc:") { yield }
       end
     end
     
