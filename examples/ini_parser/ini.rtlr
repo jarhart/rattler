@@ -1,0 +1,19 @@
+grammar IniGrammar
+
+%whitespace (SPACE+ | ([;#] [^\n]*))* {
+
+  configuration <-  (property | section_name)* EOF      { @properties }
+
+  property      <-  name ~'=' value                     {|n,v| property n, v }
+
+  section_name  <-  ~'[' name ~']' ~eol                 {|_| section _ }
+
+  name          <-  @WORD+                              <.to_sym>
+
+  value         <-  @('"' ('\\' . | [^"])* '"')         {|_| unquote _ }
+                  | @(DIGIT+ ('.' DIGIT+))              <.to_f>
+                  | @DIGIT+                             <.to_i>
+                  | @(!eol .)*                          <.strip>
+}
+
+  eol           <-  ~(BLANK* (EOF | ("\r"? "\n") | (';' [^\n]*)))
