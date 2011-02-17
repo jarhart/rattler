@@ -3,6 +3,19 @@ Feature: Parser Generator
   The "rtlr" command is used to generate a grammar module or parser class from
   a Rattler grammar file.
   
+  Scenario: Getting help
+    When I run "rtlr --help"
+    Then the output should contain:
+      """
+      Usage: rtlr FILENAME [options]
+
+          -d, --dest DIRECTORY             Specify the destination directory
+          -o, --output FILENAME            Specify a different output filename
+          -f, --force                      Force overwrite if the output file exists
+
+          -h, --help                       Show this message
+      """
+
   Scenario: Generate a grammar module
     Given a file named "binary.rtlr" with:
       """
