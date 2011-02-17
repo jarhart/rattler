@@ -131,6 +131,7 @@ MESSAGE
       def initialize(parser)
         @parser = parser
       end
+      attr_reader :parser
       def from(pos)
         @parser.pos = pos
         self

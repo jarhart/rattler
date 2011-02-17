@@ -24,9 +24,12 @@ module Rattler::Runtime
     #
     def initialize(source, options={})
       super
-      @result_memo = {}
-      @pos_memo = {}
+      @memo = {}
     end
+    
+    # @private
+    alias_method :eval_rule, :apply
+    private :eval_rule
     
     protected
     
@@ -40,18 +43,49 @@ module Rattler::Runtime
     # @return (see RecursiveDescentParser#apply)
     #
     def apply(rule_name)
-      key = [rule_name, @scanner.pos]
-      if @result_memo.has_key? key
-        result = @result_memo[key]
-        @scanner.pos = @pos_memo[key]
+      start_pos = @scanner.pos
+      key = [rule_name, start_pos]
+      if @memo.has_key? key
+        recall @memo[key]
       else
-        @result_memo[key] = false
-        @pos_memo[key] = @scanner.pos
-        @result_memo[key] = result = super
-        @pos_memo[key] = @scanner.pos
+        apply! rule_name, key, start_pos
       end
-      result
     end
     
+    private
+
+    # @private
+    def apply!(rule_name, key, start_pos) #:nodoc:
+      m = @memo[key] = MemoEntry.new(false, start_pos, start_pos, 'left-recursion detected')
+      memorize m, eval_rule(rule_name)
+    end
+
+    # @private
+    def memorize(m, result) #:nodoc:
+      m.end_pos = @scanner.pos
+      m.failure_pos = @failure_pos
+      m.failure_msg = @failure_msg
+      m.result = result
+    end
+
+    # @private
+    def recall(m) #:nodoc:
+      @scanner.pos = m.end_pos
+      @failure_pos = m.failure_pos
+      @failure_msg = m.failure_msg
+      m.result
+    end
+
+    # @private
+    class MemoEntry
+      def initialize(result, end_pos, failure_pos, failure_msg)
+        @result = result
+        @end_pos = end_pos
+        @failure_pos = failure_pos
+        @failure_msg = failure_msg
+      end
+      attr_accessor :result, :end_pos, :failure_pos, :failure_msg
+    end
+
   end
 end

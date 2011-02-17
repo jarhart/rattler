@@ -8,7 +8,7 @@ require 'rattler/grammar'
 
 module Rattler::Grammar
   # @private
-  class GrammarParser < Rattler::Runtime::WDMParser #:nodoc:
+  class GrammarParser < Rattler::Runtime::ExtendedPackratParser #:nodoc:
     
     include Metagrammar
     include Rattler::Parsers

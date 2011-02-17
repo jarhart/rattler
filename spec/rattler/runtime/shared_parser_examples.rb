@@ -29,3 +29,32 @@ shared_examples_for 'a recursive descent parser' do
   end
   
 end
+
+shared_examples_for 'a packrat parser' do
+  include RuntimeParserSpecHelper
+
+  it_behaves_like 'a recursive descent parser'
+
+  describe '#match' do
+
+    it 'memoizes parse results' do
+      example = given_rules do
+        rule :a do
+          ( match(:b) & match('a') \
+          | match(:b) & match('b') )
+        end
+        rule :b do
+          match('b')
+        end
+      end.
+      parsing('bb').as(:a)
+      example.parser.should_receive(:match_b).and_return do
+        example.parser.pos = example.parser.pos + 1
+        'b'
+      end
+      example.should result_in(['b', 'b']).at(2)
+    end
+
+  end
+
+end

@@ -23,14 +23,14 @@ module Rattler
     
     # @private
     @@defaults = {
-      :type => :packrat
+      :type => :extended_packrat
     }
     
     # @private
     @@parser_types = {
       :recursive_descent  => :RecursiveDescentParser,
       :packrat            => :PackratParser,
-      :wdm                => :WDMParser
+      :extended_packrat   => :ExtendedPackratParser
     }
     
     # Define parse rules with the given block
