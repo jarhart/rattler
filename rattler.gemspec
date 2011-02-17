@@ -5,14 +5,14 @@
 
 Gem::Specification.new do |s|
   s.name = %q{rattler}
-  s.version = "0.2.0"
+  s.version = "0.2.1"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Jason Arhart"]
-  s.date = %q{2011-02-14}
+  s.date = %q{2011-02-16}
   s.description = %q{Simple language recognition tool for Ruby based on packrat parsing}
   s.email = %q{jarhart@gmail.com}
-  s.executables = ["rtlr.bat", "rtlr"]
+  s.executables = ["rtlr", "rtlr.bat"]
   s.extra_rdoc_files = [
     "LICENSE.txt",
     "README.rdoc"
@@ -42,6 +42,7 @@ Gem::Specification.new do |s|
     "lib/rattler/back_end/parser_generator/one_or_more_generator.rb",
     "lib/rattler/back_end/parser_generator/optional_generator.rb",
     "lib/rattler/back_end/parser_generator/predicate_propogating.rb",
+    "lib/rattler/back_end/parser_generator/repeat_generating.rb",
     "lib/rattler/back_end/parser_generator/rule_generator.rb",
     "lib/rattler/back_end/parser_generator/sequence_generator.rb",
     "lib/rattler/back_end/parser_generator/skip_generator.rb",
@@ -85,6 +86,7 @@ Gem::Specification.new do |s|
     "lib/rattler/parsers/zero_or_more.rb",
     "lib/rattler/runner.rb",
     "lib/rattler/runtime.rb",
+    "lib/rattler/runtime/extended_packrat_parser.rb",
     "lib/rattler/runtime/packrat_parser.rb",
     "lib/rattler/runtime/parse_failure.rb",
     "lib/rattler/runtime/parse_node.rb",
@@ -92,7 +94,6 @@ Gem::Specification.new do |s|
     "lib/rattler/runtime/parser_helper.rb",
     "lib/rattler/runtime/recursive_descent_parser.rb",
     "lib/rattler/runtime/syntax_error.rb",
-    "lib/rattler/runtime/wdm_parser.rb",
     "lib/rattler/util.rb",
     "lib/rattler/util/line_counter.rb",
     "lib/rattler/util/node.rb",
@@ -104,7 +105,9 @@ Gem::Specification.new do |s|
   s.rubygems_version = %q{1.5.2}
   s.summary = %q{Ruby Tool for Language Recognition}
   s.test_files = [
-    "features/command_line/command_line.feature",
+    "features/command_line/dest_option.feature",
+    "features/command_line/output_option.feature",
+    "features/command_line/parser_generator.feature",
     "features/grammar/any_character.feature",
     "features/grammar/character_class.feature",
     "features/grammar/eof.feature",
@@ -168,13 +171,13 @@ Gem::Specification.new do |s|
     "spec/rattler/parsers/skip_spec.rb",
     "spec/rattler/parsers/token_spec.rb",
     "spec/rattler/parsers/zero_or_more_spec.rb",
+    "spec/rattler/runtime/extended_packrat_parser_spec.rb",
     "spec/rattler/runtime/packrat_parser_spec.rb",
     "spec/rattler/runtime/parse_failure_spec.rb",
     "spec/rattler/runtime/parse_node_spec.rb",
     "spec/rattler/runtime/parser_spec.rb",
     "spec/rattler/runtime/recursive_descent_parser_spec.rb",
     "spec/rattler/runtime/shared_parser_examples.rb",
-    "spec/rattler/runtime/wdm_parser_spec.rb",
     "spec/rattler/util/line_counter_spec.rb",
     "spec/rattler/util/node_spec.rb",
     "spec/rattler_spec.rb",
@@ -190,6 +193,7 @@ Gem::Specification.new do |s|
 
     if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
       s.add_runtime_dependency(%q<rattler>, [">= 0"])
+      s.add_development_dependency(%q<bundler>, ["~> 1.0.0"])
       s.add_development_dependency(%q<bundler>, ["~> 1.0.0"])
       s.add_development_dependency(%q<bundler>, ["~> 1.0.0"])
       s.add_development_dependency(%q<bundler>, ["~> 1.0.0"])
@@ -230,8 +234,13 @@ Gem::Specification.new do |s|
       s.add_development_dependency(%q<yard>, [">= 0.6.0"])
       s.add_development_dependency(%q<cucumber>, [">= 0.8.0"])
       s.add_development_dependency(%q<aruba>, [">= 0.3.0"])
+      s.add_development_dependency(%q<rspec>, [">= 2.3.0"])
+      s.add_development_dependency(%q<yard>, [">= 0.6.0"])
+      s.add_development_dependency(%q<cucumber>, [">= 0.8.0"])
+      s.add_development_dependency(%q<aruba>, [">= 0.3.0"])
     else
       s.add_dependency(%q<rattler>, [">= 0"])
+      s.add_dependency(%q<bundler>, ["~> 1.0.0"])
       s.add_dependency(%q<bundler>, ["~> 1.0.0"])
       s.add_dependency(%q<bundler>, ["~> 1.0.0"])
       s.add_dependency(%q<bundler>, ["~> 1.0.0"])
@@ -272,9 +281,14 @@ Gem::Specification.new do |s|
       s.add_dependency(%q<yard>, [">= 0.6.0"])
       s.add_dependency(%q<cucumber>, [">= 0.8.0"])
       s.add_dependency(%q<aruba>, [">= 0.3.0"])
+      s.add_dependency(%q<rspec>, [">= 2.3.0"])
+      s.add_dependency(%q<yard>, [">= 0.6.0"])
+      s.add_dependency(%q<cucumber>, [">= 0.8.0"])
+      s.add_dependency(%q<aruba>, [">= 0.3.0"])
     end
   else
     s.add_dependency(%q<rattler>, [">= 0"])
+    s.add_dependency(%q<bundler>, ["~> 1.0.0"])
     s.add_dependency(%q<bundler>, ["~> 1.0.0"])
     s.add_dependency(%q<bundler>, ["~> 1.0.0"])
     s.add_dependency(%q<bundler>, ["~> 1.0.0"])
@@ -287,6 +301,10 @@ Gem::Specification.new do |s|
     s.add_dependency(%q<aruba>, [">= 0.3.0"])
     s.add_dependency(%q<bundler>, ["~> 1.0.0"])
     s.add_dependency(%q<jeweler>, ["~> 1.5.2"])
+    s.add_dependency(%q<rspec>, [">= 2.3.0"])
+    s.add_dependency(%q<yard>, [">= 0.6.0"])
+    s.add_dependency(%q<cucumber>, [">= 0.8.0"])
+    s.add_dependency(%q<aruba>, [">= 0.3.0"])
     s.add_dependency(%q<rspec>, [">= 2.3.0"])
     s.add_dependency(%q<yard>, [">= 0.6.0"])
     s.add_dependency(%q<cucumber>, [">= 0.8.0"])
