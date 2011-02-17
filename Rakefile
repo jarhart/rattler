@@ -30,7 +30,6 @@ Jeweler::Tasks.new do |gem|
   gem.add_development_dependency "yard", ">= 0.6.0"
   gem.add_development_dependency "cucumber", ">= 0.8.0"
   gem.add_development_dependency "aruba", ">= 0.3.0"
-  #  gem.add_runtime_dependency 'jabber4r', '> 0.1'
 end
 Jeweler::RubygemsDotOrgTasks.new
 
@@ -51,11 +50,9 @@ Cucumber::Rake::Task.new(:features)
 task :default => :spec
 
 require 'yard'
-YARD::Rake::YardocTask.new do |t|
-  t.options = ['--no-private']
-end
+YARD::Rake::YardocTask.new
 
-desc 'Generate the metagrammar module from the Rattler metagrammar'
+desc 'Regenerate Metagrammar module from rattler.rtlr'
 task :metagrammar => [:archive_metagrammar, :lib_path] do
   require 'rattler/runner'
   Rattler::Runner.run([METAGRAMMAR_SOURCE, '-d', 'lib', '-f'])
