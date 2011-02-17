@@ -1,4 +1,18 @@
-== 0.2.0
+== 0.2.1 2011-02-16
+
+Bugfixes, improved parsing performance, more documentation.
+
+=== New documentation
+* Cucumber features for command line
+* New example: INI file parser
+* This file
+* Link to API docs in README.rdoc
+
+=== Bugfixes
+* Parser generator not properly nesting sub-expression of one-or-more
+* Minor issue with calc.rb example
+
+== 0.2.0 2011-02-14
 
 First release to rubygems.org! This release makes changes the grammar syntax.
 
