@@ -20,7 +20,7 @@ dynamically from strings.
 
 * Uses readable PEG-like grammars
 * A packrat parser to cache results for backtracking
-* A parser that supports directly left-recursive grammars
+* An extended packrat parser that supports left-recursive grammars
 * Whitespace can be specified in one place and skipped automatically
 * Automatic and custom parse error reporting
 * Optimizing parser generator
@@ -30,7 +30,6 @@ dynamically from strings.
 
 == PROBLEMS/LIMITATIONS:
 
-* Indirect left-recursion is not yet supported
 * Optimizations are very limited at this point
 * Only strings can be parsed, so files have to be read completely before parsing
 * There are undoubtedly many bugs

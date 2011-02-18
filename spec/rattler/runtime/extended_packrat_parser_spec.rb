@@ -21,7 +21,6 @@ describe Rattler::Runtime::ExtendedPackratParser do
     end
 
     it 'supports indirectly left-recursive rules' do
-      pending 'implement full algorithm'
       given_rules do
         rule(:a) { match(:b) | match(/\d/) }
         rule(:b) { match(:a) & match(/\d/) }

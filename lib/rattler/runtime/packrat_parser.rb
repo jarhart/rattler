@@ -45,19 +45,27 @@ module Rattler::Runtime
     def apply(rule_name)
       start_pos = @scanner.pos
       key = [rule_name, start_pos]
-      if m = @memo[key]
-        recall m
+      if m = memo(key, rule_name, start_pos)
+        recall m, rule_name
       else
         apply! rule_name, key, start_pos
       end
     end
-    
+
     private
 
     # @private
     def apply!(rule_name, key, start_pos) #:nodoc:
-      m = @memo[key] = MemoEntry.new(false, start_pos, start_pos, 'left-recursion detected')
+      m = inject_memo key, false, start_pos, start_pos, 'left-recursion detected'
       memorize m, eval_rule(rule_name)
+    end
+
+    def memo(key, rule_name, start_pos)
+      @memo[key]
+    end
+
+    def inject_memo(key, result, end_pos, failure_pos, failure_msg)
+      @memo[key] =  MemoEntry.new(result, end_pos, failure_pos, failure_msg)
     end
 
     # @private
@@ -69,7 +77,7 @@ module Rattler::Runtime
     end
 
     # @private
-    def recall(m) #:nodoc:
+    def recall(m, rule_name) #:nodoc:
       @scanner.pos = m.end_pos
       @failure_pos = m.failure_pos
       @failure_msg = m.failure_msg
@@ -77,7 +85,7 @@ module Rattler::Runtime
     end
 
     # @private
-    class MemoEntry
+    class MemoEntry #:nodoc:
       def initialize(result, end_pos, failure_pos, failure_msg)
         @result = result
         @end_pos = end_pos
