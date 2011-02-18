@@ -45,8 +45,8 @@ module Rattler::Runtime
     def apply(rule_name)
       start_pos = @scanner.pos
       key = [rule_name, start_pos]
-      if @memo.has_key? key
-        recall @memo[key]
+      if m = @memo[key]
+        recall m
       else
         apply! rule_name, key, start_pos
       end

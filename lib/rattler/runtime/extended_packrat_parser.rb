@@ -24,18 +24,19 @@ module Rattler::Runtime
     def apply!(rule_name, key, start_pos) #:nodoc:
       lr = LR.new
       m = @memo[key] = MemoEntry.new(lr, start_pos, nil, nil)
-      result = eval_rule rule_name
-      memorize m, result
-      result = grow_lr(rule_name, start_pos, m) if result and lr.detected
-      result
+      if result = memorize m, eval_rule(rule_name)
+        result = grow_lr(rule_name, start_pos, m) if lr.detected
+        result
+      end
     end
 
     def recall(m)
-      if (result = m.result).is_a? LR
+      result = super
+      if result.is_a? LR
         result.detected = true
         false
       else
-        super
+        result
       end
     end
 
