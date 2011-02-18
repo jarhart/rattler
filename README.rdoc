@@ -14,7 +14,7 @@ A language syntax is specified in a grammar using the Rattler syntax. Parser
 classes and modules can be generated statically using the "rtlr" command or
 dynamically from strings.
 
-{RDoc}[http://rubydoc.info/gems/rattler/0.2.1/frames]
+{RDoc}[http://rubydoc.info/gems/rattler/0.2.2/frames]
 
 == FEATURES:
 
@@ -41,7 +41,7 @@ dynamically from strings.
 
 ==== In file calculator.rtlr:
   
-  parser Calculator < Rattler::Runtime::WDMParser
+  parser Calculator < Rattler::Runtime::ExtendedPackratParser
   
   %whitespace SPACE*
   
@@ -107,7 +107,7 @@ dynamically from strings.
   require 'rattler'
   require 'calculator_grammar'
  
-  class Calculator < Rattler::Runtime::WDMParser
+  class Calculator < Rattler::Runtime::ExtendedPackratParser
     include CalculatorGrammar
   end
  
@@ -137,7 +137,7 @@ dynamically from strings.
     
     primary <-  ~'(' expr ~')'
               | @(DIGIT+ ('.' DIGIT+)?)   {|_| _.to_f }
-  }, :type => :wdm
+  }, :type => :extended_packrat
  
   begin
     puts Calculator.parse!(expr)

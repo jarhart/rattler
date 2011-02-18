@@ -3,7 +3,7 @@
 require 'rubygems'
 require 'rattler'
 
-class Calculator < Rattler::Runtime::WDMParser
+class Calculator < Rattler::Runtime::ExtendedPackratParser
   grammar %{
     %whitespace SPACE*
     
