@@ -9,10 +9,10 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Jason Arhart"]
-  s.date = %q{2011-02-16}
+  s.date = %q{2011-02-17}
   s.description = %q{Simple language recognition tool for Ruby based on packrat parsing}
   s.email = %q{jarhart@gmail.com}
-  s.executables = ["rtlr.bat", "rtlr"]
+  s.executables = ["rtlr", "rtlr.bat"]
   s.extra_rdoc_files = [
     "LICENSE.txt",
     "README.rdoc"
@@ -198,10 +198,6 @@ Gem::Specification.new do |s|
       s.add_development_dependency(%q<cucumber>, [">= 0.8.0"])
       s.add_development_dependency(%q<aruba>, [">= 0.3.0"])
       s.add_development_dependency(%q<yard>, [">= 0.6.0"])
-      s.add_development_dependency(%q<rspec>, [">= 2.3.0"])
-      s.add_development_dependency(%q<yard>, [">= 0.6.0"])
-      s.add_development_dependency(%q<cucumber>, [">= 0.8.0"])
-      s.add_development_dependency(%q<aruba>, [">= 0.3.0"])
     else
       s.add_dependency(%q<bundler>, ["~> 1.0.0"])
       s.add_dependency(%q<jeweler>, ["~> 1.5.2"])
@@ -209,10 +205,6 @@ Gem::Specification.new do |s|
       s.add_dependency(%q<cucumber>, [">= 0.8.0"])
       s.add_dependency(%q<aruba>, [">= 0.3.0"])
       s.add_dependency(%q<yard>, [">= 0.6.0"])
-      s.add_dependency(%q<rspec>, [">= 2.3.0"])
-      s.add_dependency(%q<yard>, [">= 0.6.0"])
-      s.add_dependency(%q<cucumber>, [">= 0.8.0"])
-      s.add_dependency(%q<aruba>, [">= 0.3.0"])
     end
   else
     s.add_dependency(%q<bundler>, ["~> 1.0.0"])
@@ -221,10 +213,6 @@ Gem::Specification.new do |s|
     s.add_dependency(%q<cucumber>, [">= 0.8.0"])
     s.add_dependency(%q<aruba>, [">= 0.3.0"])
     s.add_dependency(%q<yard>, [">= 0.6.0"])
-    s.add_dependency(%q<rspec>, [">= 2.3.0"])
-    s.add_dependency(%q<yard>, [">= 0.6.0"])
-    s.add_dependency(%q<cucumber>, [">= 0.8.0"])
-    s.add_dependency(%q<aruba>, [">= 0.3.0"])
   end
 end
 

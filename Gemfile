@@ -13,3 +13,5 @@ group :development do
   gem "aruba", ">= 0.3.0"
   gem "yard", ">= 0.6.0"
 end
+
+gemspec
