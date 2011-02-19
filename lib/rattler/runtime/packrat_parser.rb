@@ -65,7 +65,7 @@ module Rattler::Runtime
     end
 
     def inject_memo(key, result, end_pos, failure_pos, failure_msg)
-      @memo[key] =  MemoEntry.new(result, end_pos, failure_pos, failure_msg)
+      @memo[key] = MemoEntry.new(result, end_pos, failure_pos, failure_msg)
     end
 
     # @private

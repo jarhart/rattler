@@ -25,23 +25,24 @@ module Rattler::Runtime
     def initialize(source, options={})
       super
       @heads = {}
+      @lr_stack = []
     end
 
     private
-    
+
     # @private
     def apply!(rule_name, key, start_pos) #:nodoc:
-      @lr_stack = lr = LR.new(false, rule_name, nil, @lr_stack)
+      lr = LR.new(false, rule_name, nil)
+      @lr_stack.push lr
       m = inject_memo key, lr, start_pos, nil, nil
       result = eval_rule rule_name
-      @lr_stack = @lr_stack.tail
-      m.end_pos = @scanner.pos
+      @lr_stack.pop
       if lr.head
+        m.end_pos = @scanner.pos
         lr.seed = result
-        lr_answer(rule_name, start_pos, m)
+        lr_answer rule_name, start_pos, m
       else
-        m.result = result
-        result
+        memorize m, result
       end
     end
 
@@ -49,11 +50,10 @@ module Rattler::Runtime
     def memo(key, rule_name, start_pos) #:nodoc:
       m = super
       head = @heads[start_pos] or return m
-      if !(m || (rule_name == head.head) || (head.involved_set.has_key? rule_name))
+      if !m && !head.involves?(rule_name)
         return inject_memo key, false, start_pos, nil, nil
       end
-      if head.eval_set.has_key? rule_name
-        head.eval_set.delete(rule_name)
+      if head.eval_set.delete(rule_name)
         memorize m, eval_rule(rule_name)
       end
       return m
@@ -72,21 +72,19 @@ module Rattler::Runtime
     # @private
     def setup_lr(rule_name, lr) #:nodoc:
       lr.head ||= Head.new(rule_name)
-      s = @lr_stack
-      while s.head != lr.head
-        s.head = lr.head
-        lr.head.involved_set[s.rule_name] = s.rule_name
-        s = s.tail
+      @lr_stack.reverse_each do |_|
+        return if _.head == lr.head
+        lr.head.involved_set[_.rule_name] = _.rule_name
       end
     end
 
     # @private
     def lr_answer(rule_name, start_pos, m) #:nodoc:
       head = m.result.head
-      if head.rule_name != rule_name
-        m.result.seed
-      else
+      if head.rule_name == rule_name
         grow_lr(rule_name, start_pos, m, head) if m.result = m.result.seed
+      else
+        memorize m, m.result.seed
       end
     end
 
@@ -107,13 +105,12 @@ module Rattler::Runtime
 
     # @private
     class LR #:nodoc:
-      def initialize(seed, rule_name, head, tail)
+      def initialize(seed, rule_name, head)
         @seed = seed
         @rule_name = rule_name
         @head = head
-        @tail = tail
       end
-      attr_accessor :seed, :rule_name, :head, :tail
+      attr_accessor :seed, :rule_name, :head
     end
 
     # @private
@@ -124,6 +121,9 @@ module Rattler::Runtime
         @eval_set = {}
       end
       attr_accessor :rule_name, :involved_set, :eval_set
+      def involves?(rule_name)
+        rule_name == self.rule_name or involved_set.has_key? rule_name
+      end
     end
 
   end
