@@ -11,8 +11,7 @@ module Rattler::Runtime
   #
   # +ExtendedPackratParser+ implements the algorithm described by Alessandro
   # Warth, James R. Douglass, and Todd Millstein for extending packrat parsing
-  # to support left-recursive grammars. It currently only implements the first
-  # part to support direct left recursion.
+  # to support left-recursive grammars.
   #
   # @author Jason Arhart
   #
