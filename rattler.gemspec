@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Jason Arhart"]
-  s.date = %q{2011-02-17}
+  s.date = %q{2011-02-19}
   s.description = %q{Simple language recognition tool for Ruby based on packrat parsing}
   s.email = %q{jarhart@gmail.com}
   s.executables = ["rtlr", "rtlr.bat"]
@@ -162,6 +162,7 @@ Gem::Specification.new do |s|
     "spec/rattler/parsers/disallow_spec.rb",
     "spec/rattler/parsers/dispatch_action_spec.rb",
     "spec/rattler/parsers/eof_spec.rb",
+    "spec/rattler/parsers/fail_spec.rb",
     "spec/rattler/parsers/label_spec.rb",
     "spec/rattler/parsers/match_spec.rb",
     "spec/rattler/parsers/one_or_more_spec.rb",
@@ -198,6 +199,7 @@ Gem::Specification.new do |s|
       s.add_development_dependency(%q<cucumber>, [">= 0.8.0"])
       s.add_development_dependency(%q<aruba>, [">= 0.3.0"])
       s.add_development_dependency(%q<yard>, [">= 0.6.0"])
+      s.add_development_dependency(%q<watchr>, [">= 0.5.5"])
     else
       s.add_dependency(%q<bundler>, ["~> 1.0.0"])
       s.add_dependency(%q<jeweler>, ["~> 1.5.2"])
@@ -205,6 +207,7 @@ Gem::Specification.new do |s|
       s.add_dependency(%q<cucumber>, [">= 0.8.0"])
       s.add_dependency(%q<aruba>, [">= 0.3.0"])
       s.add_dependency(%q<yard>, [">= 0.6.0"])
+      s.add_dependency(%q<watchr>, [">= 0.5.5"])
     end
   else
     s.add_dependency(%q<bundler>, ["~> 1.0.0"])
@@ -213,6 +216,7 @@ Gem::Specification.new do |s|
     s.add_dependency(%q<cucumber>, [">= 0.8.0"])
     s.add_dependency(%q<aruba>, [">= 0.3.0"])
     s.add_dependency(%q<yard>, [">= 0.6.0"])
+    s.add_dependency(%q<watchr>, [">= 0.5.5"])
   end
 end
 
