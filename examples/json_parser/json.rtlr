@@ -1,0 +1,30 @@
+# JSON parser based on the grammar at http://www.json.org
+
+parser JsonParser < Rattler::Runtime::PackratParser
+
+include JsonHelper
+
+%whitespace (SPACE+ | '/*' (! '*/' .)* '*/' | '//' [^\n]*)*
+
+object    <-  ~'{' members ~'}'                                                 {|_| object _ }
+
+members   <-  (pair ~',')* pair?                                                {|x,y| x + y }
+
+pair      <-  string ~':' value
+
+array     <-  ~'[' elements ~']'
+
+elements  <-  (value ~',')* value?                                              {|x,y| x + y }
+
+value     <-  string
+            | number !DIGIT
+            | object
+            | array
+            | `true`                                                            { :true }
+            | `false`                                                           { :false }
+            | `null`                                                            { :null }
+            | fail "value expected"
+
+string    <-  @('"' ('\\' . | [^"])* '"')                                       {|_| string _ }
+
+number    <-  @('-'? ('0' | [1-9] DIGIT*) ('.' DIGIT+)? ([eE] [+-]? DIGIT+)?)   {|_| _.to_f }
