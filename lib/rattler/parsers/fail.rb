@@ -14,7 +14,7 @@ module Rattler::Parsers
   #
   # @author Jason Arhart
   #
-  class Fail < Predicate
+  class Fail < Parser
     
     # @private
     def self.parsed(results, *_) #:nodoc:
@@ -48,6 +48,12 @@ module Rattler::Parsers
     #
     # @return false
     def parse(scanner, rules, labeled = {})
+      false
+    end
+    
+    # Always +false+
+    # @return false
+    def capturing?
       false
     end
     
