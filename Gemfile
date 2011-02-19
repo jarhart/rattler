@@ -12,6 +12,7 @@ group :development do
   gem "cucumber", ">= 0.8.0"
   gem "aruba", ">= 0.3.0"
   gem "yard", ">= 0.6.0"
+  gem "watchr", ">= 0.5.5"
 end
 
 gemspec
