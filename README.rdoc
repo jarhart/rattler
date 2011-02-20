@@ -38,82 +38,105 @@ dynamically from strings.
 
 === Example 1: Statically generated parser class
 
-==== In file calculator.rtlr:
+==== json.rtlr:
   
-  parser Calculator < Rattler::Runtime::ExtendedPackratParser
-  
-  %whitespace SPACE*
-  
-  start   <-  expr EOF
-  
-  expr    <-  expr ~'+' term            {|a, b| a + b }
-            | expr ~'-' term            {|a, b| a - b }
-            | term
-  
-  term    <-  term ~'*' primary         {|a, b| a * b }
-            | term ~'/' primary         {|a, b| a / b }
-            | primary
-  
-  primary <-  ~'(' expr ~')'
-            | @(DIGIT+ ('.' DIGIT+)?)   {|_| _.to_f }
-  
-==== In a shell:
+  # JSON parser based on the grammar at http://www.json.org
 
-  $ rtlr calculator.rtlr
-  calculator.rtlr -> calculator.rb
+  require 'json_helper'
 
-==== In file calculator.rb:
+  parser JsonParser < Rattler::Runtime::PackratParser
+
+  include JsonHelper
+
+  %whitespace (SPACE+ | '/*' (! '*/' .)* '*/' | '//' [^\n]*)*
+
+  object    <-  ~'{' members ~'}'                                               {|_| object _ }
+
+  members   <-  (pair ~',')* pair?                                              {|x,y| x + y }
+
+  pair      <-  string ~':' value
+
+  array     <-  ~'[' elements ~']'
+
+  elements  <-  (value ~',')* value?                                            {|x,y| x + y }
+
+  value     <-  string
+              | number !DIGIT
+              | object
+              | array
+              | `true`                                                          { :true }
+              | `false`                                                         { :false }
+              | `null`                                                          { :null }
+              | fail "value expected"
+
+  string    <-  @('"' ('\\' . | [^"])* '"')                                     {|_| string _ }
+
+  number    <-  @('-'? ('0' | [1-9] DIGIT*) ('.' DIGIT+)? ([eE] [+-]? DIGIT+)?) {|_| _.to_f }
+
+==== json_helper.rb:
+
+  module JsonHelper
+
+    def object(members)
+      Hash[*members.flatten(1)]
+    end
+
+    def string(expr)
+      eval expr, TOPLEVEL_BINDING
+    end
+
+  end
+
+==== $ rtlr json.rtlr
+
+  json.rtlr -> json_parser.rb
+
+==== parse_json.rb:
 
   require 'rubygems'
   require 'rattler'
-  require 'calculator'
+  require 'json_parser'
   
   begin
-    puts Calculator.parse!(expr)
+    p JsonParser.parse!(open(ARGV[0]) {|io| io.read })
   rescue Rattler::Runtime::SyntaxError => e
     puts e
   end
 
 === Example 2: Statically generated grammar module
 
-==== calculator.rtlr:
+==== json.rtlr:
+  
+  # JSON parser based on the grammar at http://www.json.org
 
-  grammar CalculatorGrammar
-  
-  %whitespace SPACE*
-  
-  start   <-  expr EOF
-  
-  expr    <-  expr ~'+' term            {|a, b| a + b }
-            | expr ~'-' term            {|a, b| a - b }
-            | term
-  
-  term    <-  term ~'*' primary         {|a, b| a * b }
-            | term ~'/' primary         {|a, b| a / b }
-            | primary
-  
-  primary <-  ~'(' expr ~')'
-            | @(DIGIT+ ('.' DIGIT+)?)   {|_| _.to_f }
+  grammar JsonGrammar
 
-==== In a shell:
+  %whitespace (SPACE+ | '/*' (! '*/' .)* '*/' | '//' [^\n]*)*
 
-  $ rtlr calculator.rtlr
-  calculator.rtlr -> calculator_grammar.rb
+  ...
 
-==== calculator.rb:
+==== $ rtlr json.rtlr
+
+  json.rtlr -> json_grammar.rb
+
+==== json_parser.rb:
 
   require 'rubygems'
   require 'rattler'
-  require 'calculator_grammar'
+  require 'json_grammar'
  
-  class Calculator < Rattler::Runtime::ExtendedPackratParser
-    include CalculatorGrammar
-  end
- 
-  begin
-    puts Calculator.parse!(expr)
-  rescue Rattler::Runtime::SyntaxError => e
-    puts e
+  class JsonParser < Rattler::Runtime::PackratParser
+
+    include JsonGrammar
+
+    def object(members)
+      Hash[*members.flatten(1)]
+    end
+
+    def string(expr)
+      eval expr, TOPLEVEL_BINDING
+    end
+
   end
 
 === Example 3: Dynamically generated parser class
