@@ -57,16 +57,21 @@ include Rattler::Parsers
   terms           <-  terms term                                                <Sequence>
                     | term
   
-  term            <-  fail_expr | labeled | prefixed | suffixed | primary
+  term            <-  fail_expr | labeled | labelable
   
   fail_expr       <-  (`fail` | `fail_rule` | `fail_parse`) fail_arg            <Fail>
   
   fail_arg        <-  ~'(' literal ~')'
                     | literal
   
-  labeled         <-  label (prefixed | prefixable)                             <Label>
+  labeled         <-  var_name ~':' labelable                                   <Label>
   
-  label           <-  var_name ~':'
+  labelable       <-  list | list_term
+  
+  list            <-  list_term ~'*^' list_term                                 <List>
+                    | list_term ~'+^' list_term                                 <List1>
+  
+  list_term       <-  prefixed | prefixable
   
   prefixed        <-  ~'&' prefixable                                           <Assert>
                     | ~'!' prefixable                                           <Disallow>
@@ -76,8 +81,8 @@ include Rattler::Parsers
   prefixable      <-  suffixed | primary
   
   suffixed        <-  primary ~'?'                                              <Optional>
-                    | primary ~'*'                                              <ZeroOrMore>
-                    | primary ~'+'                                              <OneOrMore>
+                    | primary ~'*' !'^'                                         <ZeroOrMore>
+                    | primary ~'+' !'^'                                         <OneOrMore>
   
   primary         <-  ~'(' expression ~')'
                     | atom

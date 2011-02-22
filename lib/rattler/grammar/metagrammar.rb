@@ -392,9 +392,7 @@ module Rattler
       def match_term #:nodoc:
         match(:fail_expr) ||
         match(:labeled) ||
-        match(:prefixed) ||
-        match(:suffixed) ||
-        match(:primary)
+        match(:labelable)
       end
       
       # @private
@@ -462,11 +460,9 @@ module Rattler
       def match_labeled #:nodoc:
         p0 = @scanner.pos
         begin
-          (r0_0 = match(:label)) &&
-          (r0_1 = begin
-            match(:prefixed) ||
-            match(:prefixable)
-          end) &&
+          (r0_0 = match(:var_name)) &&
+          @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>:)/) &&
+          (r0_1 = match(:labelable)) &&
           Label.parsed(select_captures([r0_0, r0_1]))
         end || begin
           @scanner.pos = p0
@@ -475,16 +471,43 @@ module Rattler
       end
       
       # @private
-      def match_label #:nodoc:
-        p0 = @scanner.pos
+      def match_labelable #:nodoc:
+        match(:list) ||
+        match(:list_term)
+      end
+      
+      # @private
+      def match_list #:nodoc:
         begin
-          (r0_0 = match(:var_name)) &&
-          @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>:)/) &&
-          r0_0
-        end || begin
-          @scanner.pos = p0
-          false
+          p0 = @scanner.pos
+          begin
+            (r0_0 = match(:list_term)) &&
+            @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>\*\^)/) &&
+            (r0_1 = match(:list_term)) &&
+            List.parsed(select_captures([r0_0, r0_1]))
+          end || begin
+            @scanner.pos = p0
+            false
+          end
+        end ||
+        begin
+          p0 = @scanner.pos
+          begin
+            (r0_0 = match(:list_term)) &&
+            @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>\+\^)/) &&
+            (r0_1 = match(:list_term)) &&
+            List1.parsed(select_captures([r0_0, r0_1]))
+          end || begin
+            @scanner.pos = p0
+            false
+          end
         end
+      end
+      
+      # @private
+      def match_list_term #:nodoc:
+        match(:prefixed) ||
+        match(:prefixable)
       end
       
       # @private
@@ -559,6 +582,15 @@ module Rattler
           begin
             (r0_0 = match(:primary)) &&
             @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>\*)/) &&
+            begin
+              p1 = @scanner.pos
+              r = !begin
+                @scanner.skip(/(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*/) &&
+                @scanner.skip(/\^/)
+              end
+              @scanner.pos = p1
+              r
+            end &&
             ZeroOrMore.parsed(select_captures([r0_0]))
           end || begin
             @scanner.pos = p0
@@ -570,6 +602,15 @@ module Rattler
           begin
             (r0_0 = match(:primary)) &&
             @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>\+)/) &&
+            begin
+              p1 = @scanner.pos
+              r = !begin
+                @scanner.skip(/(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*/) &&
+                @scanner.skip(/\^/)
+              end
+              @scanner.pos = p1
+              r
+            end &&
             OneOrMore.parsed(select_captures([r0_0]))
           end || begin
             @scanner.pos = p0

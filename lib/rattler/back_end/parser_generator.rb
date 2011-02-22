@@ -13,7 +13,7 @@ module Rattler::BackEnd
   # @author Jason Arhart
   #
   module ParserGenerator
-    
+
     autoload :RuleGenerator, 'rattler/back_end/parser_generator/rule_generator'
     autoload :ExprGenerator, 'rattler/back_end/parser_generator/expr_generator'
     autoload :GeneratorHelper, 'rattler/back_end/parser_generator/generator_helper'
@@ -29,6 +29,8 @@ module Rattler::BackEnd
     autoload :OptionalGenerator, 'rattler/back_end/parser_generator/optional_generator'
     autoload :ZeroOrMoreGenerator, 'rattler/back_end/parser_generator/zero_or_more_generator'
     autoload :OneOrMoreGenerator, 'rattler/back_end/parser_generator/one_or_more_generator'
+    autoload :ListGenerator, 'rattler/back_end/parser_generator/list_generator'
+    autoload :List1Generator, 'rattler/back_end/parser_generator/list1_generator'
     autoload :ApplyGenerator, 'rattler/back_end/parser_generator/apply_generator'
     autoload :AssertGenerator, 'rattler/back_end/parser_generator/assert_generator'
     autoload :DisallowGenerator, 'rattler/back_end/parser_generator/disallow_generator'
@@ -39,11 +41,12 @@ module Rattler::BackEnd
     autoload :LabelGenerator, 'rattler/back_end/parser_generator/label_generator'
     autoload :FailGenerator, 'rattler/back_end/parser_generator/fail_generator'
     autoload :RepeatGenerating, 'rattler/back_end/parser_generator/repeat_generating'
+    autoload :ListGenerating, 'rattler/back_end/parser_generator/list_generating'
     autoload :PredicatePropogating, 'rattler/back_end/parser_generator/predicate_propogating'
     autoload :TokenPropogating, 'rattler/back_end/parser_generator/token_propogating'
     autoload :SkipPropogating, 'rattler/back_end/parser_generator/skip_propogating'
     autoload :GEN_METHOD_NAMES, 'rattler/back_end/parser_generator/gen_method_names'
-    
+
     # Generate parsing code for a parser model using a ruby generator +g+.
     #
     # @overload generate(g, grammar)
@@ -70,7 +73,7 @@ module Rattler::BackEnd
       RuleGenerator.new(g).generate(parser)
       nil
     end
-    
+
     # Generate parsing code for +parser+ using a new {RubyGenerator} with the
     # given options and return the generated code.
     #
@@ -93,6 +96,6 @@ module Rattler::BackEnd
     def self.code_for(parser, options={})
       ::Rattler::BackEnd::RubyGenerator.code(options) {|g| generate(g, parser) }
     end
-    
+
   end
 end

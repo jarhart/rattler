@@ -2,28 +2,28 @@ require File.expand_path(File.dirname(__FILE__) + '/../../spec_helper')
 
 describe Rattler::BackEnd::Compiler do
   include CompilerSpecHelper
-  
+
   subject { described_class }
-  
+
   describe '.compile_parser' do
-    
+
     context 'given parse rules' do
-      
+
       let(:rules) { define_parser do
         rule(:word) { match /\w+/ }
         rule(:space) { match /\s*/ }
       end }
-      
+
       let(:parser_base) { Rattler::Runtime::RecursiveDescentParser }
-      
+
       let(:result) { described_class.compile_parser(parser_base, rules) }
-      
+
       it 'compiles a match_xxx method for each rule' do
         result.should have_method(:match_word)
         result.should have_method(:match_space)
       end
     end
-    
+
     ########## match ##########
     context 'given a match rule' do
       let(:rules) { define_parser do
@@ -33,7 +33,7 @@ describe Rattler::BackEnd::Compiler do
       it { should compile(rules).test_parsing ' 4' }
       it { should compile(rules).test_parsing 'foo' }
     end
-    
+
     ########## choice ##########
     context 'given a choice rule' do
       let(:rules) { define_parser do
@@ -41,10 +41,10 @@ describe Rattler::BackEnd::Compiler do
           match(/[[:alpha:]]+/) & match(/[[:digit:]]+/)
         end
       end }
-      
+
       it { should compile(rules).test_parsing('abc123').twice }
       it { should compile(rules).test_parsing '==' }
-      
+
       context 'with nested choices' do
         let(:rules) { define_parser do
           rule(:foo) do
@@ -55,7 +55,7 @@ describe Rattler::BackEnd::Compiler do
         it { should compile(rules).test_parsing('abcd').repeating(4).times }
         it { should compile(rules).test_parsing '123' }
       end
-      
+
       context 'with nested sequences' do
         let(:rules) { define_parser do
           rule(:foo) do
@@ -66,7 +66,7 @@ describe Rattler::BackEnd::Compiler do
         it { should compile(rules).test_parsing('abcd').twice }
         it { should compile(rules).test_parsing '123' }
       end
-      
+
       context 'with nested optional parsers' do
         let(:rules) { define_parser do
           rule(:foo) do
@@ -77,7 +77,7 @@ describe Rattler::BackEnd::Compiler do
         it { should compile(rules).test_parsing '123' }
       end
     end
-    
+
     ########## sequence ##########
     context 'given a sequence rule' do
       let(:rules) { define_parser do
@@ -85,31 +85,31 @@ describe Rattler::BackEnd::Compiler do
           match(/[[:alpha:]]+/) & match('=') & match(/[[:digit:]]+/)
         end
       end }
-      
+
       it { should compile(rules).test_parsing 'val=42  ' }
       it { should compile(rules).test_parsing 'val=x' }
-      
+
       context 'with non-capturing parsers' do
         it { should compile { rule :foo do
                 match(/[[:alpha:]]+/) & skip(/\s+/) & match(/[[:digit:]]+/)
               end }.
             test_parsing 'foo 42' }
       end
-      
+
       context 'with only one capturing parser' do
         it { should compile { rule :foo do
                 skip(/\s+/) & match(/\w+/)
               end }.
             test_parsing '  abc123' }
       end
-      
+
       context 'with no capturing parsers' do
         it { should compile { rule :foo do
                 skip(/\s*/) & skip(/#[^\n]+/)
               end }.
             test_parsing ' # foo' }
       end
-      
+
       context 'with an apply referencing a non-capturing rule' do
         it { should compile {
               rule :ws do
@@ -121,7 +121,7 @@ describe Rattler::BackEnd::Compiler do
             test_parsing('foo 42').as :foo }
       end
     end
-    
+
     ########## optional ##########
     context 'given an optional rule' do
       let(:rules) { define_parser do
@@ -131,7 +131,7 @@ describe Rattler::BackEnd::Compiler do
       end }
       it { should compile(rules).test_parsing 'foo ' }
       it { should compile(rules).test_parsing '    ' }
-      
+
       context 'with a non-capturing parser' do
         let(:rules) { define_parser do
           rule :foo do
@@ -142,7 +142,7 @@ describe Rattler::BackEnd::Compiler do
         it { should compile(rules).test_parsing '    ' }
       end
     end
-    
+
     ########## zero-or-more ##########
     context 'given a zero-or-more rule' do
       let(:rules) { define_parser do
@@ -152,7 +152,7 @@ describe Rattler::BackEnd::Compiler do
       end }
       it { should compile(rules).test_parsing 'foo ' }
       it { should compile(rules).test_parsing '    ' }
-      
+
       context 'with a non-capturing parser' do
         let(:rules) { define_parser do
           rule :foo do
@@ -163,7 +163,7 @@ describe Rattler::BackEnd::Compiler do
         it { should compile(rules).test_parsing '    ' }
       end
     end
-    
+
     ########## one-or-more ##########
     context 'given a one-or-more rule' do
       let(:rules) { define_parser do
@@ -173,7 +173,7 @@ describe Rattler::BackEnd::Compiler do
       end }
       it { should compile(rules).test_parsing 'foo ' }
       it { should compile(rules).test_parsing '    ' }
-      
+
       context 'with a non-capturing parser' do
         let(:rules) { define_parser do
           rule :foo do
@@ -184,7 +184,57 @@ describe Rattler::BackEnd::Compiler do
         it { should compile(rules).test_parsing '    ' }
       end
     end
-    
+
+    ########## list ##########
+    context 'given a list rule' do
+      let(:rules) { define_parser do
+        rule :foo do
+          list(/\w+/, /[,;]/)
+        end
+      end }
+      it { should compile(rules).test_parsing '  ' }
+      it { should compile(rules).test_parsing 'foo  ' }
+      it { should compile(rules).test_parsing 'foo,bar;baz  ' }
+      it { should compile(rules).test_parsing 'foo,bar,  ' }
+
+      context 'with a non-capturing parser' do
+        let(:rules) { define_parser do
+          rule :foo do
+            list(skip(/\w+/), /[,;]/)
+          end
+        end }
+        it { should compile(rules).test_parsing '  ' }
+        it { should compile(rules).test_parsing 'foo  ' }
+        it { should compile(rules).test_parsing 'foo,bar;baz  ' }
+        it { should compile(rules).test_parsing 'foo,bar,  ' }
+      end
+    end
+
+    ########## list1 ##########
+    context 'given a list1 rule' do
+      let(:rules) { define_parser do
+        rule :foo do
+          list1(/\w+/, /[,;]/)
+        end
+      end }
+      it { should compile(rules).test_parsing '  ' }
+      it { should compile(rules).test_parsing 'foo  ' }
+      it { should compile(rules).test_parsing 'foo,bar;baz  ' }
+      it { should compile(rules).test_parsing 'foo,bar,  ' }
+
+      context 'with a non-capturing parser' do
+        let(:rules) { define_parser do
+          rule :foo do
+            list(skip(/\w+/), /[,;]/)
+          end
+        end }
+        it { should compile(rules).test_parsing '  ' }
+        it { should compile(rules).test_parsing 'foo  ' }
+        it { should compile(rules).test_parsing 'foo,bar;baz  ' }
+        it { should compile(rules).test_parsing 'foo,bar,  ' }
+      end
+    end
+
     ########## apply ##########
     context 'given an apply rule' do
       let(:rules) { define_parser do
@@ -194,10 +244,10 @@ describe Rattler::BackEnd::Compiler do
       it { should compile(rules).test_parsing('451 ').twice.as :foo }
       it { should compile(rules).test_parsing 'hi' }
     end
-    
+
     ########## assert ##########
     context 'given an assert rule' do
-      
+
       context 'with a nested match rule' do
         let(:rules) { define_parser do
           rule(:word) { assert /\w+/ }
@@ -205,7 +255,7 @@ describe Rattler::BackEnd::Compiler do
         it { should compile(rules).test_parsing 'abc123  ' }
         it { should compile(rules).test_parsing '   ' }
       end
-      
+
       context 'with a nested choice rule' do
         let(:rules) { define_parser do
           rule(:word) { assert(match(/[[:alpha:]]+/) | match(/[[:digit:]]+/)) }
@@ -213,7 +263,7 @@ describe Rattler::BackEnd::Compiler do
         it { should compile(rules).test_parsing('abc123  ').twice }
         it { should compile(rules).test_parsing '   ' }
       end
-      
+
       context 'with a nested sequence rule' do
         let(:rules) { define_parser do
           rule(:word) { assert(match(/[[:alpha:]]+/) & match(/[[:digit:]]+/)) }
@@ -221,7 +271,7 @@ describe Rattler::BackEnd::Compiler do
         it { should compile(rules).test_parsing 'abc123  ' }
         it { should compile(rules).test_parsing '   ' }
       end
-      
+
       context 'with a nested optional rule' do
         let(:rules) { define_parser do
           rule(:word) { assert(optional(/\w+/)) }
@@ -229,7 +279,7 @@ describe Rattler::BackEnd::Compiler do
         it { should compile(rules).test_parsing 'abc123  ' }
         it { should compile(rules).test_parsing '   ' }
       end
-      
+
       context 'with a nested zero_or_more rule' do
         let(:rules) { define_parser do
           rule(:word) { assert(zero_or_more(/\w/)) }
@@ -237,7 +287,7 @@ describe Rattler::BackEnd::Compiler do
         it { should compile(rules).test_parsing 'abc123  ' }
         it { should compile(rules).test_parsing '   ' }
       end
-      
+
       context 'with a nested one_or_more rule' do
         let(:rules) { define_parser do
           rule(:word) { assert(one_or_more(/\w/)) }
@@ -245,7 +295,23 @@ describe Rattler::BackEnd::Compiler do
         it { should compile(rules).test_parsing 'abc123  ' }
         it { should compile(rules).test_parsing '   ' }
       end
-      
+
+      context 'with a nested list rule' do
+        let(:rules) { define_parser do
+          rule(:word) { assert(list(/\w+/, /,/)) }
+        end }
+        it { should compile(rules).test_parsing 'abc,123  ' }
+        it { should compile(rules).test_parsing '   ' }
+      end
+
+      context 'with a nested list1 rule' do
+        let(:rules) { define_parser do
+          rule(:word) { assert(list(/\w+/, /,/)) }
+        end }
+        it { should compile(rules).test_parsing 'abc,123  ' }
+        it { should compile(rules).test_parsing '   ' }
+      end
+
       context 'with a nested apply rule' do
         let(:rules) { define_parser do
           rule(:word) { assert /\w+/ }
@@ -254,7 +320,7 @@ describe Rattler::BackEnd::Compiler do
         it { should compile(rules).test_parsing('abc123  ').as :foo }
         it { should compile(rules).test_parsing '   ' }
       end
-      
+
       context 'with a nested dispatch-action rule' do
         let(:rules) { define_parser do
           rule(:word) { assert(dispatch_action(/\w+/)) }
@@ -262,7 +328,7 @@ describe Rattler::BackEnd::Compiler do
         it { should compile(rules).test_parsing 'abc123  ' }
         it { should compile(rules).test_parsing '   ' }
       end
-      
+
       context 'with a nested token rule' do
         let(:rules) { define_parser do
           rule(:word) { assert(token(match(/\w+/))) }
@@ -270,7 +336,7 @@ describe Rattler::BackEnd::Compiler do
         it { should compile(rules).test_parsing 'abc123  ' }
         it { should compile(rules).test_parsing '   ' }
       end
-      
+
       context 'with a nested skip rule' do
         let(:rules) { define_parser do
           rule(:word) { assert(skip(/\w+/)) }
@@ -279,10 +345,10 @@ describe Rattler::BackEnd::Compiler do
         it { should compile(rules).test_parsing '   ' }
       end
     end
-    
+
     ########## disallow ##########
     context 'given a disallow rule' do
-      
+
       context 'with a nested match rule' do
         let(:rules) { define_parser do
           rule(:word) { disallow /\w+/ }
@@ -290,7 +356,7 @@ describe Rattler::BackEnd::Compiler do
         it { should compile(rules).test_parsing '   ' }
         it { should compile(rules).test_parsing 'abc123  ' }
       end
-      
+
       context 'with a nested choice rule' do
         let(:rules) { define_parser do
           rule(:word) { disallow(match(/[[:alpha:]]/) | match(/[[:digit:]]/)) }
@@ -298,7 +364,7 @@ describe Rattler::BackEnd::Compiler do
         it { should compile(rules).test_parsing('abc123  ').twice }
         it { should compile(rules).test_parsing '   ' }
       end
-      
+
       context 'with a nested sequence rule' do
         let(:rules) { define_parser do
           rule(:word) { disallow(match(/[[:alpha:]]/) & match(/[[:digit:]]/)) }
@@ -306,7 +372,7 @@ describe Rattler::BackEnd::Compiler do
         it { should compile(rules).test_parsing 'abc123  ' }
         it { should compile(rules).test_parsing '   ' }
       end
-      
+
       context 'with a nested optional rule' do
         let(:rules) { define_parser do
           rule(:word) { disallow(optional(/\w+/)) }
@@ -314,7 +380,7 @@ describe Rattler::BackEnd::Compiler do
         it { should compile(rules).test_parsing 'abc123  ' }
         it { should compile(rules).test_parsing '   ' }
       end
-      
+
       context 'with a nested zero_or_more rule' do
         let(:rules) { define_parser do
           rule(:word) { disallow(zero_or_more(/\w/)) }
@@ -322,7 +388,7 @@ describe Rattler::BackEnd::Compiler do
         it { should compile(rules).test_parsing 'abc123  ' }
         it { should compile(rules).test_parsing '   ' }
       end
-      
+
       context 'with a nested one_or_more rule' do
         let(:rules) { define_parser do
           rule(:word) { disallow(one_or_more(/\w/)) }
@@ -330,7 +396,7 @@ describe Rattler::BackEnd::Compiler do
         it { should compile(rules).test_parsing 'abc123  ' }
         it { should compile(rules).test_parsing '   ' }
       end
-      
+
       context 'with a nested apply rule' do
         let(:rules) { define_parser do
           rule(:word) { disallow /\w+/ }
@@ -339,7 +405,7 @@ describe Rattler::BackEnd::Compiler do
         it { should compile(rules).test_parsing '   ' }
         it { should compile(rules).test_parsing('abc123  ').as :foo }
       end
-      
+
       context 'with a nested token rule' do
         let(:rules) { define_parser do
           rule(:word) { disallow(token(match(/\w+/))) }
@@ -347,7 +413,7 @@ describe Rattler::BackEnd::Compiler do
         it { should compile(rules).test_parsing 'abc123  ' }
         it { should compile(rules).test_parsing '   ' }
       end
-      
+
       context 'with a nested skip rule' do
         let(:rules) { define_parser do
           rule(:word) { disallow(skip(/\w+/)) }
@@ -356,10 +422,10 @@ describe Rattler::BackEnd::Compiler do
         it { should compile(rules).test_parsing '   ' }
       end
     end
-    
+
     ########## dispatch_action ##########
     context 'given a dispatch-action rule' do
-      
+
       context 'with a nested match rule' do
         let(:rules) { define_parser do
           rule(:digits) { dispatch_action(/\d+/) }
@@ -367,17 +433,17 @@ describe Rattler::BackEnd::Compiler do
         it { should compile(rules).test_parsing '451a' }
         it { should compile(rules).test_parsing '    ' }
       end
-      
+
       context 'with a nested choice rule' do
         let(:rules) { define_parser do
           rule :atom do
             dispatch_action(match(/[[:alpha:]]+/) | match(/[[:digit:]]+/))
           end
         end }
-        
+
         it { should compile(rules).test_parsing '451a' }
         it { should compile(rules).test_parsing '    ' }
-        
+
         context 'with labels' do
           let(:rules) { define_parser do
             rule :assignment do
@@ -391,7 +457,7 @@ describe Rattler::BackEnd::Compiler do
           it { should compile(rules).test_parsing '42 ' }
         end
       end
-      
+
       context 'with a nested sequence rule' do
         let(:rules) { define_parser do
           rule :assignment do
@@ -402,10 +468,10 @@ describe Rattler::BackEnd::Compiler do
             )
           end
         end }
-        
+
         it { should compile(rules).test_parsing 'val=42 ' }
         it { should compile(rules).test_parsing 'val=x' }
-        
+
         context 'with labels' do
           let(:rules) { define_parser do
             rule :assignment do
@@ -419,7 +485,7 @@ describe Rattler::BackEnd::Compiler do
           it { should compile(rules).test_parsing 'val=42 ' }
         end
       end
-      
+
       context 'with a nested optional rule' do
         let(:rules) { define_parser do
           rule :foo do
@@ -429,7 +495,7 @@ describe Rattler::BackEnd::Compiler do
         it { should compile(rules).test_parsing 'foo ' }
         it { should compile(rules).test_parsing '    ' }
       end
-      
+
       context 'with a nested zero-or-more rule' do
         let(:rules) { define_parser do
           rule :foo do
@@ -439,7 +505,7 @@ describe Rattler::BackEnd::Compiler do
         it { should compile(rules).test_parsing 'foo ' }
         it { should compile(rules).test_parsing '    ' }
       end
-      
+
       context 'with a nested one-or-more rule' do
         let(:rules) { define_parser do
           rule :foo do
@@ -449,7 +515,7 @@ describe Rattler::BackEnd::Compiler do
         it { should compile(rules).test_parsing 'foo ' }
         it { should compile(rules).test_parsing '    ' }
       end
-      
+
       context 'with a nested apply rule' do
         let(:rules) { define_parser do
           rule(:digit) { match /\d/ }
@@ -458,7 +524,7 @@ describe Rattler::BackEnd::Compiler do
         it { should compile(rules).test_parsing('451a').twice.as :foo }
         it { should compile(rules).test_parsing('    ').as :foo }
       end
-      
+
       context 'with a nested token rule' do
         let(:rules) { define_parser do
           rule :foo do
@@ -468,7 +534,7 @@ describe Rattler::BackEnd::Compiler do
         it { should compile(rules).test_parsing 'abc123' }
         it { should compile(rules).test_parsing '    ' }
       end
-      
+
       context 'with a nested skip rule' do
         let(:rules) { define_parser do
           rule :foo do
@@ -479,10 +545,10 @@ describe Rattler::BackEnd::Compiler do
         it { should compile(rules).test_parsing '    ' }
       end
     end
-    
+
     ########## direct_action ##########
     context 'given a direct-action rule' do
-      
+
       context 'with a nested match rule' do
         let(:rules) { define_parser do
           rule(:num) { direct_action(/\d+/, '|_| _.to_i') }
@@ -490,7 +556,7 @@ describe Rattler::BackEnd::Compiler do
         it { should compile(rules).test_parsing '451a' }
         it { should compile(rules).test_parsing '    ' }
       end
-      
+
       context 'with a nested choice rule' do
         let(:rules) { define_parser do
           rule :foo do
@@ -500,12 +566,12 @@ describe Rattler::BackEnd::Compiler do
             )
           end
         end }
-        
+
         it { should compile(rules).test_parsing 'abc123' }
         it { should compile(rules).test_parsing '451a' }
         it { should compile(rules).test_parsing '    ' }
       end
-      
+
       context 'with a nested sequence rule' do
         let(:rules) { define_parser do
           rule :assignment do
@@ -515,10 +581,10 @@ describe Rattler::BackEnd::Compiler do
             )
           end
         end }
-        
+
         it { should compile(rules).test_parsing 'val=42 ' }
         it { should compile(rules).test_parsing 'val=x' }
-        
+
         context 'with labels' do
           let(:rules) { define_parser do
             rule :assignment do
@@ -531,7 +597,7 @@ describe Rattler::BackEnd::Compiler do
           it { should compile(rules).test_parsing 'val=42 ' }
         end
       end
-      
+
       context 'with a nested optional rule' do
         let(:rules) { define_parser do
           rule :foo do
@@ -541,7 +607,7 @@ describe Rattler::BackEnd::Compiler do
         it { should compile(rules).test_parsing 'foo ' }
         it { should compile(rules).test_parsing '    ' }
       end
-      
+
       context 'with a nested zero-or-more rule' do
         let(:rules) { define_parser do
           rule :foo do
@@ -551,7 +617,7 @@ describe Rattler::BackEnd::Compiler do
         it { should compile(rules).test_parsing 'foo ' }
         it { should compile(rules).test_parsing '    ' }
       end
-      
+
       context 'with a nested one-or-more rule' do
         let(:rules) { define_parser do
           rule :foo do
@@ -561,7 +627,7 @@ describe Rattler::BackEnd::Compiler do
         it { should compile(rules).test_parsing 'foo ' }
         it { should compile(rules).test_parsing '    ' }
       end
-      
+
       context 'with a nested apply rule' do
         let(:rules) { define_parser do
           rule(:digit) { match /\d/ }
@@ -570,7 +636,7 @@ describe Rattler::BackEnd::Compiler do
         it { should compile(rules).test_parsing('451a').twice.as :foo }
         it { should compile(rules).test_parsing('    ').as :foo }
       end
-      
+
       context 'with a nested token rule' do
         let(:rules) { define_parser do
           rule :foo do
@@ -580,7 +646,7 @@ describe Rattler::BackEnd::Compiler do
         it { should compile(rules).test_parsing 'abc123' }
         it { should compile(rules).test_parsing '    ' }
       end
-      
+
       context 'with a nested skip rule' do
         let(:rules) { define_parser do
           rule :foo do
@@ -591,10 +657,10 @@ describe Rattler::BackEnd::Compiler do
         it { should compile(rules).test_parsing '    ' }
       end
     end
-    
+
     ########## token ##########
     context 'given a token rule' do
-      
+
       context 'with a nested match rule' do
         let(:rules) { define_parser do
           rule(:digits) { token(match(/\d+/)) }
@@ -602,17 +668,17 @@ describe Rattler::BackEnd::Compiler do
         it { should compile(rules).test_parsing '451a' }
         it { should compile(rules).test_parsing 'hi' }
       end
-      
+
       context 'with a nested choice rule' do
         let(:rules) { define_parser do
           rule(:atom) do
             token(match(/[[:alpha:]]+/) | match(/[[:digit:]]+/))
           end
         end }
-        
+
         it { should compile(rules).test_parsing 'abc123 ' }
         it { should compile(rules).test_parsing '==' }
-        
+
         context 'with non-capturing choices' do
           let(:rules) { define_parser do
             rule(:atom) do
@@ -623,17 +689,17 @@ describe Rattler::BackEnd::Compiler do
           it { should compile(rules).test_parsing '==' }
         end
       end
-      
+
       context 'with a nested sequence rule' do
         let(:rules) { define_parser do
           rule(:atom) do
             token(match(/[[:alpha:]]+/) & match(/[[:digit:]]+/))
           end
         end }
-        
+
         it { should compile(rules).test_parsing 'foo42!' }
         it { should compile(rules).test_parsing 'val=x' }
-        
+
         context 'with non-capturing parsers' do
           let(:rules) { define_parser do
             rule :foo do
@@ -644,17 +710,17 @@ describe Rattler::BackEnd::Compiler do
           it { should compile(rules).test_parsing 'foo bar' }
         end
       end
-      
+
       context 'with a nested optional rule' do
         let(:rules) { define_parser do
           rule :foo do
             token(optional(/\w+/))
           end
         end }
-        
+
         it { should compile(rules).test_parsing 'foo ' }
         it { should compile(rules).test_parsing '    ' }
-        
+
         context 'with a non-capturing rule' do
           let(:rules) { define_parser do
             rule :foo do
@@ -665,17 +731,17 @@ describe Rattler::BackEnd::Compiler do
           it { should compile(rules).test_parsing '    ' }
         end
       end
-      
+
       context 'with a nested zero-or-more rule' do
         let(:rules) { define_parser do
           rule :foo do
             token(zero_or_more(/\w/))
           end
         end }
-        
+
         it { should compile(rules).test_parsing 'foo ' }
         it { should compile(rules).test_parsing '    ' }
-        
+
         context 'with a non-capturing rule' do
           let(:rules) { define_parser do
             rule :foo do
@@ -686,17 +752,17 @@ describe Rattler::BackEnd::Compiler do
           it { should compile(rules).test_parsing '    ' }
         end
       end
-      
+
       context 'with a nested one-or-more rule' do
         let(:rules) { define_parser do
           rule :foo do
             token(one_or_more(/\w/))
           end
         end }
-        
+
         it { should compile(rules).test_parsing 'foo ' }
         it { should compile(rules).test_parsing '    ' }
-        
+
         context 'with a non-capturing rule' do
           let(:rules) { define_parser do
             rule :foo do
@@ -707,16 +773,16 @@ describe Rattler::BackEnd::Compiler do
           it { should compile(rules).test_parsing '    ' }
         end
       end
-      
+
       context 'with a nested apply rule' do
         let(:rules) { define_parser do
           rule(:digits) { match(/\d+/) }
           rule(:foo) { token(match(:digits)) }
         end }
-        
+
         it { should compile(rules).test_parsing('451a').as :foo }
         it { should compile(rules).test_parsing 'hi' }
-        
+
         context 'applying a non-capturing rule' do
           let(:rules) { define_parser do
             rule(:digits) { skip(/\d+/) }
@@ -726,7 +792,7 @@ describe Rattler::BackEnd::Compiler do
           it { should compile(rules).test_parsing 'hi' }
         end
       end
-      
+
       context 'with a nested dispatch-action rule' do
         let(:rules) { define_parser do
           rule(:foo) { token(dispatch_action(/\w+/)) }
@@ -734,7 +800,7 @@ describe Rattler::BackEnd::Compiler do
         it { should compile(rules).test_parsing 'abc123' }
         it { should compile(rules).test_parsing '  ' }
       end
-      
+
       context 'with a nested skip rule' do
         let(:rules) { define_parser do
           rule(:foo) { token(skip(/\w+/)) }
@@ -743,10 +809,10 @@ describe Rattler::BackEnd::Compiler do
         it { should compile(rules).test_parsing '  ' }
       end
     end
-    
+
     ########## skip ##########
     context 'given a skip rule' do
-      
+
       context 'with a nested match rule' do
         let(:rules) { define_parser do
           rule(:ws) { skip(/\s+/) }
@@ -754,7 +820,7 @@ describe Rattler::BackEnd::Compiler do
         it { should compile(rules).test_parsing '   foo' }
         it { should compile(rules).test_parsing 'hi' }
       end
-      
+
       context 'with a nested choice rule' do
         let(:rules) { define_parser do
           rule(:ws) do
@@ -764,7 +830,7 @@ describe Rattler::BackEnd::Compiler do
         it { should compile(rules).test_parsing('   # hi there ').twice }
         it { should compile(rules).test_parsing 'hi' }
       end
-      
+
       context 'with a nested sequence rule' do
         let(:rules) { define_parser do
           rule :foo do
@@ -774,7 +840,7 @@ describe Rattler::BackEnd::Compiler do
         it { should compile(rules).test_parsing 'foo42!' }
         it { should compile(rules).test_parsing 'val=x' }
       end
-      
+
       context 'with a nested optional rule' do
         let(:rules) { define_parser do
           rule :foo do
@@ -784,7 +850,7 @@ describe Rattler::BackEnd::Compiler do
         it { should compile(rules).test_parsing 'foo ' }
         it { should compile(rules).test_parsing '    ' }
       end
-      
+
       context 'with a nested zero-or-more rule' do
         let(:rules) { define_parser do
           rule :foo do
@@ -794,7 +860,7 @@ describe Rattler::BackEnd::Compiler do
         it { should compile(rules).test_parsing 'foo ' }
         it { should compile(rules).test_parsing '    ' }
       end
-      
+
       context 'with a nested one-or-more rule' do
         let(:rules) { define_parser do
           rule :foo do
@@ -804,7 +870,7 @@ describe Rattler::BackEnd::Compiler do
         it { should compile(rules).test_parsing 'foo ' }
         it { should compile(rules).test_parsing '    ' }
       end
-      
+
       context 'with a nested apply rule' do
         let(:rules) { define_parser do
           rule(:digits) { match(/\d+/) }
@@ -814,11 +880,11 @@ describe Rattler::BackEnd::Compiler do
         it { should compile(rules).test_parsing('hi').as :foo }
       end
     end
-    
+
   end
-  
+
   def have_method(rule_name)
     be_method_defined(rule_name)
   end
-  
+
 end

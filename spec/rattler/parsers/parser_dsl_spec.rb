@@ -3,9 +3,9 @@ require File.expand_path(File.dirname(__FILE__) + '/../../spec_helper')
 include Rattler::Parsers
 
 describe ParserDSL do
-  
+
   subject { ParserDSL.new }
-  
+
   describe '#match' do
     context 'given a regexp' do
       it 'creates a regexp match parser' do
@@ -34,7 +34,7 @@ describe ParserDSL do
       end
     end
   end
-  
+
   describe '#optional' do
     context 'given a parser' do
       it 'creates an optional parser' do
@@ -47,7 +47,7 @@ describe ParserDSL do
       end
     end
   end
-  
+
   describe '#zero_or_more' do
     context 'given a parser' do
       it 'creates a zero-or-more parser' do
@@ -60,7 +60,7 @@ describe ParserDSL do
       end
     end
   end
-  
+
   describe '#one_or_more' do
     context 'given a parser' do
       it 'creates a one-or-more parser' do
@@ -73,7 +73,36 @@ describe ParserDSL do
       end
     end
   end
-  
+
+  describe '#list' do
+    context 'given parsers' do
+      it 'creates a list parser' do
+        subject.list(subject.match(/\w+/), subject.match(/,/)).
+        should == List[Match[/\w+/], Match[/,/]]
+      end
+    end
+    context 'given match arguments' do
+      it 'creates a list parser' do
+        subject.list(/\w+/, ',').should == List[Match[/\w+/], Match[/,/]]
+      end
+    end
+  end
+
+  describe '#list1' do
+    context 'given parsers' do
+      it 'creates a list parser' do
+        subject.list1(subject.match(/\w+/), subject.match(/,/)).
+        should == List1[Match[/\w+/], Match[/,/]]
+      end
+    end
+    context 'given match arguments' do
+      it 'creates a list parser' do
+        subject.list1(/\w+/, ',').
+        should == List1[Match[/\w+/], Match[/,/]]
+      end
+    end
+  end
+
   describe '#assert' do
     context 'given a parser' do
       it 'create an assert parser' do
@@ -86,7 +115,7 @@ describe ParserDSL do
       end
     end
   end
-  
+
   describe '#disallow' do
     context 'given a parser' do
       it 'creates a disallow parser' do
@@ -99,13 +128,13 @@ describe ParserDSL do
       end
     end
   end
-  
+
   describe '#eof' do
     it 'creates the eof parser' do
       subject.eof.should == Eof[]
     end
   end
-  
+
   describe '#dispatch_action' do
     context 'given a parser' do
       context 'given options' do
@@ -134,7 +163,7 @@ describe ParserDSL do
       end
     end
   end
-  
+
   describe '#direct_action' do
     context 'given a parser' do
       it 'creates a direct-action parser' do
@@ -149,7 +178,7 @@ describe ParserDSL do
       end
     end
   end
-  
+
   describe '#token' do
     context 'given a parser' do
       it 'creates a token parser' do
@@ -168,7 +197,7 @@ describe ParserDSL do
       end
     end
   end
-  
+
   describe '#skip' do
     context 'given a parser' do
       it 'creates a skip parser' do
@@ -181,7 +210,7 @@ describe ParserDSL do
       end
     end
   end
-  
+
   describe '#label' do
     context 'given a parser' do
       it 'creates a label parser' do
@@ -194,25 +223,25 @@ describe ParserDSL do
       end
     end
   end
-  
+
   describe '#fail' do
     it 'creates a fail-expr parser' do
       subject.fail('var expected').should == Fail[:expr, 'var expected']
     end
   end
-  
+
   describe '#fail_rule' do
     it 'creates a fail-rule parser' do
       subject.fail_rule('var expected').should == Fail[:rule, 'var expected']
     end
   end
-  
+
   describe '#fail_parse' do
     it 'creates a fail-parse parser' do
       subject.fail_parse('var expected').should == Fail[:parse, 'var expected']
     end
   end
-  
+
   describe '#rule' do
     context 'given a block' do
       it 'creates a rule' do
@@ -227,7 +256,7 @@ describe ParserDSL do
       end
     end
   end
-  
+
   describe '#rules' do
     context 'given a block' do
       it 'creates multiple rules' do
@@ -242,5 +271,5 @@ describe ParserDSL do
       end
     end
   end
-  
+
 end

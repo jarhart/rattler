@@ -14,7 +14,7 @@ module Rattler
   # @author Jason Arhart
   #
   module Parsers
-    
+
     autoload :Parser, 'rattler/parsers/parser'
     autoload :Rules, 'rattler/parsers/rules'
     autoload :Rule, 'rattler/parsers/rule'
@@ -24,6 +24,8 @@ module Rattler
     autoload :Optional, 'rattler/parsers/optional'
     autoload :ZeroOrMore, 'rattler/parsers/zero_or_more'
     autoload :OneOrMore, 'rattler/parsers/one_or_more'
+    autoload :List, 'rattler/parsers/list'
+    autoload :List1, 'rattler/parsers/list1'
     autoload :Apply, 'rattler/parsers/apply'
     autoload :Assert, 'rattler/parsers/assert'
     autoload :Disallow, 'rattler/parsers/disallow'
@@ -39,7 +41,7 @@ module Rattler
     autoload :Combining, 'rattler/parsers/combining'
     autoload :MatchJoining, 'rattler/parsers/match_joining'
     autoload :ActionCode, 'rattler/parsers/action_code'
-    
+
     class <<self
       # Define parse rules with the given block
       #
@@ -49,6 +51,6 @@ module Rattler
         ParserDSL.rules(&block)
       end
     end
-    
+
   end
 end
