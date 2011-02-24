@@ -8,32 +8,32 @@ include Rattler::Parsers
   
   grammar         <-  heading rules EOF                                         <Grammar>
   
-  heading         <-  requires module_decl? includes                            {|r,m,i| heading r, m, i }
+  heading         <-  requires module_decl? includes                            { heading *_ }
   
-  requires        <-  (~`require` literal ~eol)*                                {|r| {:requires => r} }
+  requires        <-  (~`require` literal ~eol)*                                { { :requires => _ } }
   
-  module_decl     <-  ~`parser` constant (~'<' constant)? ~eol                  {|p,b| parser_decl p, b }
-                    | ~`grammar` constant ~eol                                  {|g| {:grammar_name => g} }
+  module_decl     <-  ~`parser` constant (~'<' constant)? ~eol                  { parser_decl *_ }
+                    | ~`grammar` constant ~eol                                  { { :grammar_name => _ } }
   
-  includes        <-  (~`include` constant ~eol)*                               {|i| {:includes => i} }
+  includes        <-  (~`include` constant ~eol)*                               { { :includes => _ } }
   
   rules           <-  (directive | rule | block_close)+                         <Rules>
   
   directive       <-  ws_directive | wc_directive
   
-  ws_directive    <-  ws_decl ~'{'                                              {|e| start_ws e }
-                    | ws_decl                                                   {|e| set_ws e }
+  ws_directive    <-  ws_decl ~'{'                                              { start_ws _ }
+                    | ws_decl                                                   { set_ws _ }
   
   ws_decl         <-  ~`%whitespace` unattributed
   
-  wc_directive    <-  wc_decl ~'{'                                              {|e| start_wc e }
-                    | wc_decl                                                   {|e| set_wc e }
+  wc_directive    <-  wc_decl ~'{'                                              { start_wc _ }
+                    | wc_decl                                                   { set_wc _ }
   
   wc_decl         <-  ~`%word_character` unattributed
   
   block_close     <-  ~'}'                                                      { end_block }
   
-  rule            <-  identifier ~'<-' expression                               {|n,e| rule n, e }
+  rule            <-  identifier ~'<-' expression                               { rule *_ }
   
   unattributed    <-  unattributed ~'|' terms                                   <Choice>
                     | terms
@@ -41,18 +41,13 @@ include Rattler::Parsers
   expression      <-  expression ~'|' attributed                                <Choice>
                     | attributed
   
-  attributed      <-  attributed attribute                                      <DispatchAction>
-                    | attributed action                                         <DirectAction>
+  attributed      <-  attributed ~'<' dispatch? ~'>'                            <DispatchAction>
+                    | attributed ~'{' action ~'}'                               <DirectAction>
                     | terms
   
-  attribute       <-  ~'<' option? ~'>'
+  dispatch        <-  @(name (~'.' var_name)?)
   
-  option          <-  @(name method?)
-  
-  method          <-  ~'.' var_name
-  
-  action          <-  ~'{' @(('{' [^}]* '}' | [^{}])*) ~'}'
-                    | ~'<' method ~'>'                                          {|m| "|_| _.#{m}" }
+  action          <-  @(('{' [^}]* '}' | [^{}])*)
   
   terms           <-  terms term                                                <Sequence>
                     | term
@@ -88,11 +83,11 @@ include Rattler::Parsers
                     | atom
   
   atom            <-  `EOF`                                                     <Eof>
-                    | posix_class                                               {|n| posix_class n }
+                    | posix_class                                               { posix_class _ }
                     | identifier !'<-'                                          <Apply>
-                    | literal                                                   {|e| literal e }
-                    | word_literal                                              {|e| word_literal e }
-                    | class                                                     {|e| char_class e }
+                    | literal                                                   { literal _ }
+                    | word_literal                                              { word_literal _ }
+                    | class                                                     { char_class _ }
                     | regexp                                                    <Match>
                     | ~'.'                                                      { Match[/./] }
   

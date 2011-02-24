@@ -43,7 +43,7 @@ module Rattler
           (r0_0 = match(:requires)) &&
           (r0_1 = ((r = match(:module_decl)) ? [r] : [])) &&
           (r0_2 = match(:includes)) &&
-          (heading r0_0, r0_1, r0_2)
+          (heading *[r0_0, r0_1, r0_2])
         end || begin
           @scanner.pos = p0
           false
@@ -67,7 +67,7 @@ module Rattler
         end
           a0 << r
         end
-        ({:requires => select_captures(a0)})
+        ({ :requires => select_captures(a0) })
       end
       
       # @private
@@ -88,7 +88,7 @@ module Rattler
               end
             end) ? [r] : [])) &&
             match(:eol) &&
-            (parser_decl r0_0, r0_1)
+            (parser_decl *[r0_0, r0_1])
           end || begin
             @scanner.pos = p0
             false
@@ -100,7 +100,7 @@ module Rattler
             @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>(?>grammar)(?>(?![[:alnum:]_])))/) &&
             (r0_0 = match(:constant)) &&
             match(:eol) &&
-            ({:grammar_name => r0_0})
+            ({ :grammar_name => r0_0 })
           end || begin
             @scanner.pos = p0
             false
@@ -125,7 +125,7 @@ module Rattler
         end
           a0 << r
         end
-        ({:includes => select_captures(a0)})
+        ({ :includes => select_captures(a0) })
       end
       
       # @private
@@ -206,7 +206,7 @@ module Rattler
       # @private
       def match_block_close #:nodoc:
         @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>\})/) &&
-        (end_block )
+        (end_block)
       end
       
       # @private
@@ -216,7 +216,7 @@ module Rattler
           (r0_0 = match(:identifier)) &&
           @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?><\-)/) &&
           (r0_1 = match(:expression)) &&
-          (rule r0_0, r0_1)
+          (rule *[r0_0, r0_1])
         end || begin
           @scanner.pos = p0
           false
@@ -263,7 +263,9 @@ module Rattler
           p0 = @scanner.pos
           begin
             (r0_0 = match(:attributed)) &&
-            (r0_1 = match(:attribute)) &&
+            @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?><)/) &&
+            (r0_1 = ((r = match(:dispatch)) ? [r] : [])) &&
+            @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>>)/) &&
             DispatchAction.parsed(select_captures([r0_0, r0_1]))
           end || begin
             @scanner.pos = p0
@@ -274,7 +276,9 @@ module Rattler
           p0 = @scanner.pos
           begin
             (r0_0 = match(:attributed)) &&
+            @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>\{)/) &&
             (r0_1 = match(:action)) &&
+            @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>\})/) &&
             DirectAction.parsed(select_captures([r0_0, r0_1]))
           end || begin
             @scanner.pos = p0
@@ -285,21 +289,7 @@ module Rattler
       end
       
       # @private
-      def match_attribute #:nodoc:
-        p0 = @scanner.pos
-        begin
-          @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?><)/) &&
-          (r0_0 = ((r = match(:option)) ? [r] : [])) &&
-          @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>>)/) &&
-          r0_0
-        end || begin
-          @scanner.pos = p0
-          false
-        end
-      end
-      
-      # @private
-      def match_option #:nodoc:
+      def match_dispatch #:nodoc:
         p0 = @scanner.pos
         begin
           @scanner.skip(/(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*/) &&
@@ -308,7 +298,17 @@ module Rattler
             begin
               match(:name) &&
               begin
-                match(:method)
+                begin
+                  p2 = @scanner.pos
+                  begin
+                    @scanner.skip(/\./) &&
+                    match(:var_name) &&
+                    true
+                  end || begin
+                    @scanner.pos = p2
+                    false
+                  end
+                end
                 true
               end &&
               @scanner.string[p1...(@scanner.pos)]
@@ -324,51 +324,14 @@ module Rattler
       end
       
       # @private
-      def match_method #:nodoc:
+      def match_action #:nodoc:
         p0 = @scanner.pos
         begin
-          @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>\.)/) &&
-          match(:var_name)
+          @scanner.skip(/(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*/) &&
+          @scanner.scan(/(?>(?>\{)(?>(?>[^}])*)(?>\})|[^{}])*/)
         end || begin
           @scanner.pos = p0
           false
-        end
-      end
-      
-      # @private
-      def match_action #:nodoc:
-        begin
-          p0 = @scanner.pos
-          begin
-            @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>\{)/) &&
-            (r0_0 = begin
-              p1 = @scanner.pos
-              begin
-                @scanner.skip(/(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*/) &&
-                @scanner.scan(/(?>(?>\{)(?>(?>[^}])*)(?>\})|[^{}])*/)
-              end || begin
-                @scanner.pos = p1
-                false
-              end
-            end) &&
-            @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>\})/) &&
-            r0_0
-          end || begin
-            @scanner.pos = p0
-            false
-          end
-        end ||
-        begin
-          p0 = @scanner.pos
-          begin
-            @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?><)/) &&
-            (r0_0 = match(:method)) &&
-            @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>>)/) &&
-            ("|_| _.#{r0_0}")
-          end || begin
-            @scanner.pos = p0
-            false
-          end
         end
       end
       
@@ -675,7 +638,7 @@ module Rattler
         ((r = match(:regexp)) && Match.parsed([r])) ||
         begin
           @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>\.)/) &&
-          (Match[/./] )
+          (Match[/./])
         end
       end
       
