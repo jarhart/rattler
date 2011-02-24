@@ -6,21 +6,22 @@ require 'rattler'
 class Calculator < Rattler::Runtime::ExtendedPackratParser
   grammar %{
     %whitespace SPACE*
-    
+
     start   <-  (expr | quit) EOF
-    
-    expr    <-  expr ~'+' term                  {|a,b| a + b }
-              | expr ~'-' term                  {|a,b| a - b }
+
+    expr    <-  expr ~'+' term              {|a,b| a + b }
+              | expr ~'-' term              {|a,b| a - b }
               | term
-    
-    term    <-  term ~'*' primary               {|a,b| a * b }
-              | term ~'/' primary               {|a,b| a / b }
+
+    term    <-  term ~'*' primary           {|a,b| a * b }
+              | term ~'/' primary           {|a,b| a / b }
               | primary
-    
+
     primary <-  ~'(' expr ~')'
-              | @('-'? DIGIT+ ('.' DIGIT+)?)    <.to_f>
-    
-    quit    <-  'quit'                          { abort "\\n" }
+              | @('-'? DIGIT+ '.' DIGIT+)   { _.to_f }
+              | @('-'? DIGIT+)              { _.to_i }
+
+    quit    <-  'quit'                      { abort "\\n" }
   }
 end
 

@@ -25,31 +25,15 @@ class JsonParser < Rattler::Runtime::PackratParser #:nodoc:
   
   # @private
   def match_members #:nodoc:
-    p0 = @scanner.pos
-    begin
-      (r0_0 = begin
-        a0 = []
-        while r = begin
-          p1 = @scanner.pos
-          begin
-            (r1_0 = match(:pair)) &&
-            @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\/\*)(?>(?>(?>(?!\*\/))(?>.))*)(?>\*\/)|(?>\/\/)(?>(?>[^\n])*))*)(?>,)/) &&
-            r1_0
-          end || begin
-            @scanner.pos = p1
-            false
-          end
-        end
-          a0 << r
-        end
-        a0
-      end) &&
-      (r0_1 = ((r = match(:pair)) ? [r] : [])) &&
-      (r0_0 + r0_1)
-    end || begin
-      @scanner.pos = p0
-      false
+    a0 = []
+    lp0 = nil
+    while r = match(:pair)
+      lp0 = @scanner.pos
+      a0 << r
+      break unless @scanner.skip(/,/)
     end
+    @scanner.pos = lp0 unless lp0.nil?
+    a0
   end
   
   # @private
@@ -82,36 +66,20 @@ class JsonParser < Rattler::Runtime::PackratParser #:nodoc:
   
   # @private
   def match_elements #:nodoc:
-    p0 = @scanner.pos
-    begin
-      (r0_0 = begin
-        a0 = []
-        while r = begin
-          p1 = @scanner.pos
-          begin
-            (r1_0 = match(:value)) &&
-            @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\/\*)(?>(?>(?>(?!\*\/))(?>.))*)(?>\*\/)|(?>\/\/)(?>(?>[^\n])*))*)(?>,)/) &&
-            r1_0
-          end || begin
-            @scanner.pos = p1
-            false
-          end
-        end
-          a0 << r
-        end
-        a0
-      end) &&
-      (r0_1 = ((r = match(:value)) ? [r] : [])) &&
-      (r0_0 + r0_1)
-    end || begin
-      @scanner.pos = p0
-      false
+    a0 = []
+    lp0 = nil
+    while r = match(:value)
+      lp0 = @scanner.pos
+      a0 << r
+      break unless @scanner.skip(/,/)
     end
+    @scanner.pos = lp0 unless lp0.nil?
+    a0
   end
   
   # @private
   def match_value #:nodoc:
-    match(:string) ||
+    ((r = match(:string)) && (string r)) ||
     begin
       p0 = @scanner.pos
       begin
@@ -125,7 +93,7 @@ class JsonParser < Rattler::Runtime::PackratParser #:nodoc:
           @scanner.pos = p1
           r
         end &&
-        r0_0
+        (r0_0.to_f)
       end || begin
         @scanner.pos = p0
         false
@@ -138,7 +106,7 @@ class JsonParser < Rattler::Runtime::PackratParser #:nodoc:
       begin
         @scanner.skip(/(?>(?>[[:space:]])+|(?>\/\*)(?>(?>(?>(?!\*\/))(?>.))*)(?>\*\/)|(?>\/\/)(?>(?>[^\n])*))*/) &&
         (r0_0 = @scanner.scan(/(?>true)(?>(?![[:alnum:]_]))/)) &&
-        (:true )
+        (:true)
       end || begin
         @scanner.pos = p0
         false
@@ -149,7 +117,7 @@ class JsonParser < Rattler::Runtime::PackratParser #:nodoc:
       begin
         @scanner.skip(/(?>(?>[[:space:]])+|(?>\/\*)(?>(?>(?>(?!\*\/))(?>.))*)(?>\*\/)|(?>\/\/)(?>(?>[^\n])*))*/) &&
         (r0_0 = @scanner.scan(/(?>false)(?>(?![[:alnum:]_]))/)) &&
-        (:false )
+        (:false)
       end || begin
         @scanner.pos = p0
         false
@@ -160,7 +128,7 @@ class JsonParser < Rattler::Runtime::PackratParser #:nodoc:
       begin
         @scanner.skip(/(?>(?>[[:space:]])+|(?>\/\*)(?>(?>(?>(?!\*\/))(?>.))*)(?>\*\/)|(?>\/\/)(?>(?>[^\n])*))*/) &&
         (r0_0 = @scanner.scan(/(?>null)(?>(?![[:alnum:]_]))/)) &&
-        (:null )
+        (:null)
       end || begin
         @scanner.pos = p0
         false
@@ -174,8 +142,7 @@ class JsonParser < Rattler::Runtime::PackratParser #:nodoc:
     p0 = @scanner.pos
     begin
       @scanner.skip(/(?>(?>[[:space:]])+|(?>\/\*)(?>(?>(?>(?!\*\/))(?>.))*)(?>\*\/)|(?>\/\/)(?>(?>[^\n])*))*/) &&
-      (r0_0 = @scanner.scan(/(?>")(?>(?>(?>\\)(?>.)|[^"])*)(?>")/)) &&
-      (string r0_0)
+      @scanner.scan(/(?>")(?>(?>(?>\\)(?>.)|[^"])*)(?>")/)
     end || begin
       @scanner.pos = p0
       false
@@ -187,8 +154,7 @@ class JsonParser < Rattler::Runtime::PackratParser #:nodoc:
     p0 = @scanner.pos
     begin
       @scanner.skip(/(?>(?>[[:space:]])+|(?>\/\*)(?>(?>(?>(?!\*\/))(?>.))*)(?>\*\/)|(?>\/\/)(?>(?>[^\n])*))*/) &&
-      (r0_0 = @scanner.scan(/(?>(?>\-)?)(?>0|(?>[1-9])(?>(?>[[:digit:]])*))(?>(?>(?>\.)(?>(?>[[:digit:]])+))?)(?>(?>(?>[eE])(?>(?>[+-])?)(?>(?>[[:digit:]])+))?)/)) &&
-      (r0_0.to_f)
+      @scanner.scan(/(?>(?>\-)?)(?>0|(?>[1-9])(?>(?>[[:digit:]])*))(?>(?>(?>\.)(?>(?>[[:digit:]])+))?)(?>(?>(?>[eE])(?>(?>[+-])?)(?>(?>[[:digit:]])+))?)/)
     end || begin
       @scanner.pos = p0
       false

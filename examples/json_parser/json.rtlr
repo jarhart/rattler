@@ -6,25 +6,25 @@ include JsonHelper
 
 %whitespace (SPACE+ | '/*' (! '*/' .)* '*/' | '//' [^\n]*)*
 
-object    <-  ~'{' members ~'}'                                                 {|_| object _ }
+object    <-  ~'{' members ~'}'                                 { object _ }
 
-members   <-  (pair ~',')* pair?                                                {|x,y| x + y }
+members   <-  pair *^ ','
 
 pair      <-  string ~':' value
 
 array     <-  ~'[' elements ~']'
 
-elements  <-  (value ~',')* value?                                              {|x,y| x + y }
+elements  <-  value *^ ','
 
-value     <-  string
-            | number !DIGIT
+value     <-  string                                            { string _ }
+            | number !DIGIT                                     { _.to_f }
             | object
             | array
-            | `true`                                                            { :true }
-            | `false`                                                           { :false }
-            | `null`                                                            { :null }
+            | `true`                                            { :true }
+            | `false`                                           { :false }
+            | `null`                                            { :null }
             | fail "value expected"
 
-string    <-  @('"' ('\\' . | [^"])* '"')                                       {|_| string _ }
+string    <-  @('"' ('\\' . | [^"])* '"')
 
-number    <-  @('-'? ('0' | [1-9] DIGIT*) ('.' DIGIT+)? ([eE] [+-]? DIGIT+)?)   {|_| _.to_f }
+number    <-  @('-'? ('0' | [1-9] DIGIT*) ('.' DIGIT+)? ([eE] [+-]? DIGIT+)?)
