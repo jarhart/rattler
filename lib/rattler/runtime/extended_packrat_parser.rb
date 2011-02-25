@@ -31,10 +31,10 @@ module Rattler::Runtime
     private
 
     # @private
-    def apply!(rule_name, key, start_pos) #:nodoc:
+    def apply!(rule_name, start_pos) #:nodoc:
       lr = LR.new(false, rule_name, nil)
       @lr_stack.push lr
-      m = inject_memo key, lr, start_pos, nil, nil
+      m = inject_memo rule_name, start_pos, lr, start_pos, nil, nil
       result = eval_rule rule_name
       @lr_stack.pop
       if lr.head
@@ -47,11 +47,11 @@ module Rattler::Runtime
     end
 
     # @private
-    def memo(key, rule_name, start_pos) #:nodoc:
+    def memo(rule_name, start_pos) #:nodoc:
       m = super
       head = @heads[start_pos] or return m
       if !m && !head.involves?(rule_name)
-        return inject_memo key, false, start_pos, nil, nil
+        return inject_memo rule_name, start_pos, false, start_pos, nil, nil
       end
       if head.eval_set.delete(rule_name)
         memorize m, eval_rule(rule_name)

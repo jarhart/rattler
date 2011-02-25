@@ -16,7 +16,7 @@ module Rattler::Runtime
   # @author Jason Arhart
   #
   class PackratParser < RecursiveDescentParser
-    
+
     # Create a new packrat parser to parse +source+.
     #
     # @param (see RecursiveDescentParser#initialize)
@@ -24,15 +24,15 @@ module Rattler::Runtime
     #
     def initialize(source, options={})
       super
-      @memo = {}
+      @memo = Hash.new {|h, rule_name| h[rule_name] = {} }
     end
-    
+
     # @private
     alias_method :eval_rule, :apply
     private :eval_rule
-    
+
     protected
-    
+
     # Apply a rule by dispatching to the method associated with the given rule
     # name, which is named by <tt>"match_#{rule_name}"<tt>, and if the match
     # fails set a parse error. The result of applying the rule is memoized
@@ -44,28 +44,27 @@ module Rattler::Runtime
     #
     def apply(rule_name)
       start_pos = @scanner.pos
-      key = [rule_name, start_pos]
-      if m = memo(key, rule_name, start_pos)
+      if m = memo(rule_name, start_pos)
         recall m, rule_name
       else
-        apply! rule_name, key, start_pos
+        apply! rule_name, start_pos
       end
     end
 
     private
 
     # @private
-    def apply!(rule_name, key, start_pos) #:nodoc:
-      m = inject_memo key, false, start_pos, start_pos, 'left-recursion detected'
+    def apply!(rule_name, start_pos) #:nodoc:
+      m = inject_memo rule_name, start_pos, false, start_pos, start_pos, 'left-recursion detected'
       memorize m, eval_rule(rule_name)
     end
 
-    def memo(key, rule_name, start_pos)
-      @memo[key]
+    def memo(rule_name, start_pos)
+      @memo[rule_name][start_pos]
     end
 
-    def inject_memo(key, result, end_pos, failure_pos, failure_msg)
-      @memo[key] = MemoEntry.new(result, end_pos, failure_pos, failure_msg)
+    def inject_memo(rule_name, start_pos, result, end_pos, failure_pos, failure_msg)
+      @memo[rule_name][start_pos] = MemoEntry.new(result, end_pos, failure_pos, failure_msg)
     end
 
     # @private
