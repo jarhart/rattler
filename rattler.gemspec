@@ -5,21 +5,21 @@
 
 Gem::Specification.new do |s|
   s.name = %q{rattler}
-  s.version = "0.2.2"
+  s.version = "0.3.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Jason Arhart"]
-  s.date = %q{2011-02-19}
+  s.date = %q{2011-02-24}
+  s.default_executable = %q{rtlr}
   s.description = %q{Simple language recognition tool for Ruby based on packrat parsing}
   s.email = %q{jarhart@gmail.com}
-  s.executables = ["rtlr", "rtlr.bat"]
+  s.executables = ["rtlr"]
   s.extra_rdoc_files = [
     "LICENSE.txt",
     "README.rdoc"
   ]
   s.files = [
     "bin/rtlr",
-    "bin/rtlr.bat",
     "lib/rattler.rb",
     "lib/rattler/back_end.rb",
     "lib/rattler/back_end/compiler.rb",
@@ -33,12 +33,12 @@ Gem::Specification.new do |s|
     "lib/rattler/back_end/parser_generator/expr_generator.rb",
     "lib/rattler/back_end/parser_generator/fail_generator.rb",
     "lib/rattler/back_end/parser_generator/gen_method_names.rb",
-    "lib/rattler/back_end/parser_generator/generator_helper.rb",
-    "lib/rattler/back_end/parser_generator/generators.rb",
     "lib/rattler/back_end/parser_generator/label_generator.rb",
+    "lib/rattler/back_end/parser_generator/list1_generator.rb",
+    "lib/rattler/back_end/parser_generator/list_generating.rb",
+    "lib/rattler/back_end/parser_generator/list_generator.rb",
     "lib/rattler/back_end/parser_generator/match_generator.rb",
     "lib/rattler/back_end/parser_generator/nested.rb",
-    "lib/rattler/back_end/parser_generator/nested_generators.rb",
     "lib/rattler/back_end/parser_generator/one_or_more_generator.rb",
     "lib/rattler/back_end/parser_generator/optional_generator.rb",
     "lib/rattler/back_end/parser_generator/predicate_propogating.rb",
@@ -47,10 +47,10 @@ Gem::Specification.new do |s|
     "lib/rattler/back_end/parser_generator/sequence_generator.rb",
     "lib/rattler/back_end/parser_generator/skip_generator.rb",
     "lib/rattler/back_end/parser_generator/skip_propogating.rb",
+    "lib/rattler/back_end/parser_generator/sub_generating.rb",
     "lib/rattler/back_end/parser_generator/token_generator.rb",
     "lib/rattler/back_end/parser_generator/token_propogating.rb",
     "lib/rattler/back_end/parser_generator/top_level.rb",
-    "lib/rattler/back_end/parser_generator/top_level_generators.rb",
     "lib/rattler/back_end/parser_generator/zero_or_more_generator.rb",
     "lib/rattler/back_end/ruby_generator.rb",
     "lib/rattler/grammar.rb",
@@ -71,6 +71,8 @@ Gem::Specification.new do |s|
     "lib/rattler/parsers/eof.rb",
     "lib/rattler/parsers/fail.rb",
     "lib/rattler/parsers/label.rb",
+    "lib/rattler/parsers/list.rb",
+    "lib/rattler/parsers/list1.rb",
     "lib/rattler/parsers/match.rb",
     "lib/rattler/parsers/match_joining.rb",
     "lib/rattler/parsers/one_or_more.rb",
@@ -110,9 +112,11 @@ Gem::Specification.new do |s|
     "features/command_line/parser_generator.feature",
     "features/grammar/any_character.feature",
     "features/grammar/character_class.feature",
+    "features/grammar/comments.feature",
     "features/grammar/eof.feature",
     "features/grammar/fail.feature",
     "features/grammar/labels.feature",
+    "features/grammar/list_matching.feature",
     "features/grammar/literal.feature",
     "features/grammar/negative_lookahead.feature",
     "features/grammar/node_action.feature",
@@ -143,6 +147,8 @@ Gem::Specification.new do |s|
     "spec/rattler/back_end/parser_generator/dispatch_action_generator_spec.rb",
     "spec/rattler/back_end/parser_generator/fail_generator_spec.rb",
     "spec/rattler/back_end/parser_generator/label_generator_spec.rb",
+    "spec/rattler/back_end/parser_generator/list1_generator_spec.rb",
+    "spec/rattler/back_end/parser_generator/list_generator_spec.rb",
     "spec/rattler/back_end/parser_generator/match_generator_spec.rb",
     "spec/rattler/back_end/parser_generator/one_or_more_generator_spec.rb",
     "spec/rattler/back_end/parser_generator/optional_generator_spec.rb",
@@ -164,6 +170,8 @@ Gem::Specification.new do |s|
     "spec/rattler/parsers/eof_spec.rb",
     "spec/rattler/parsers/fail_spec.rb",
     "spec/rattler/parsers/label_spec.rb",
+    "spec/rattler/parsers/list1_spec.rb",
+    "spec/rattler/parsers/list_spec.rb",
     "spec/rattler/parsers/match_spec.rb",
     "spec/rattler/parsers/one_or_more_spec.rb",
     "spec/rattler/parsers/optional_spec.rb",
