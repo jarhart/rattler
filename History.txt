@@ -1,3 +1,19 @@
+== 0.3.0 2011-02-24
+
+Improved parsing performance, new grammar features, indirect left-recursion.
+
+=== New Features
+* ExtendedPackratParser supports indirect left-recursion
+* Grammar syntax for matching lists of things with interspered separators
+* "_" in symantic actions refers to all of the parse results
+
+=== Removed Features
+* <.method> shorcut syntax for symantic actions
+
+== 0.2.2 2011-02-16
+
+Fix broken gem (had dependency on version "> 0" of itself)
+
 == 0.2.1 2011-02-16
 
 Bugfixes, improved parsing performance, more documentation.
