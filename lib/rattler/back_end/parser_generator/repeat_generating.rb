@@ -17,15 +17,15 @@ module Rattler::BackEnd::ParserGenerator
       end
     end
 
-    def gen_dispatch_action_nested(repeat, target, method_name)
+    def gen_dispatch_action_nested(repeat, code)
       atomic_block do
-        gen_dispatch_action_top_level repeat, target, method_name
+        gen_dispatch_action_top_level repeat, code
       end
     end
 
-    def gen_dispatch_action_top_level(repeat, target, method_name)
+    def gen_dispatch_action_top_level(repeat, code)
       gen_loop repeat
-      gen_result dispatch_action_result(target, method_name,
+      gen_result dispatch_action_result(code,
           :array_expr => "select_captures(#{accumulator_name})")
     end
 

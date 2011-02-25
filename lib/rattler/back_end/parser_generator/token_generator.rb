@@ -12,13 +12,13 @@ module Rattler::BackEnd::ParserGenerator
       generate token.child, :token
     end
 
-    def gen_dispatch_action_nested(token, target, method_name)
-      atomic_block { gen_dispatch_action_top_level token, target, method_name }
+    def gen_dispatch_action_nested(token, code)
+      atomic_block { gen_dispatch_action_top_level token, code }
     end
 
-    def gen_dispatch_action_top_level(token, target, method_name)
+    def gen_dispatch_action_top_level(token, code)
       @g.surround("(#{result_name} = ", ')') { gen_basic token }
-      (@g << ' &&').newline << dispatch_action_result(target, method_name)
+      (@g << ' &&').newline << dispatch_action_result(code)
     end
 
     def gen_direct_action_nested(token, action)

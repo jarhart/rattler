@@ -12,8 +12,8 @@ module Rattler::BackEnd::ParserGenerator
       generate label.child, :basic
     end
 
-    def gen_dispatch_action(label, target, method_name)
-      generate label.child, :dispatch_action, target, method_name
+    def gen_dispatch_action(label, code)
+      generate label.child, :dispatch_action, code
     end
 
     def gen_direct_action(label, code)

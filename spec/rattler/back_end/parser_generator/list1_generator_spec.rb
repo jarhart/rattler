@@ -1,8 +1,9 @@
 require File.expand_path(File.dirname(__FILE__) + '/../../../spec_helper')
 
+include Rattler::BackEnd::ParserGenerator
 include Rattler::Parsers
 
-describe Rattler::BackEnd::ParserGenerator::List1Generator do
+describe List1Generator do
 
   include ParserGeneratorSpecHelper
 
@@ -134,9 +135,11 @@ r
 
   describe '#gen_dispatch_action' do
 
+    let(:code) { DispatchActionCode.new('Word', 'parsed') }
+
     context 'when nested' do
       it 'generates nested list matching code with a dispatch action' do
-        nested_code {|g| g.gen_dispatch_action list, 'Word', 'parsed' }.
+        nested_code {|g| g.gen_dispatch_action list, code }.
           should == (<<-CODE).strip
 begin
   a = []
@@ -155,7 +158,7 @@ end
 
     context 'when top-level' do
       it 'generates top level list matching code with a dispatch action' do
-        top_level_code {|g| g.gen_dispatch_action list, 'Word', 'parsed' }.
+        top_level_code {|g| g.gen_dispatch_action list, code }.
           should == (<<-CODE).strip
 a = []
 lp = nil
@@ -173,9 +176,11 @@ Word.parsed(select_captures(a)) unless a.empty?
 
   describe '#gen_direct_action' do
 
+    let(:code) { ActionCode.new('|_| _.size') }
+
     context 'when nested' do
       it 'generates nested list matching code with a dispatch action' do
-        nested_code {|g| g.gen_direct_action list, ActionCode.new('|_| _.size') }.
+        nested_code {|g| g.gen_direct_action list, code }.
           should == (<<-CODE).strip
 begin
   a = []
@@ -194,7 +199,7 @@ end
 
     context 'when top-level' do
       it 'generates top level list matching code with a dispatch action' do
-        top_level_code {|g| g.gen_direct_action list, ActionCode.new('|_| _.size') }.
+        top_level_code {|g| g.gen_direct_action list, code }.
           should == (<<-CODE).strip
 a = []
 lp = nil

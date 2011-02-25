@@ -1,15 +1,16 @@
 require File.expand_path(File.dirname(__FILE__) + '/../../../spec_helper')
 
+include Rattler::BackEnd::ParserGenerator
 include Rattler::Parsers
 
-describe Rattler::BackEnd::ParserGenerator::ChoiceGenerator do
-  
+describe ChoiceGenerator do
+
   include ParserGeneratorSpecHelper
-  
+
   let(:choice) { Choice[Match[/[[:alpha:]]+/], Match[/[[:digit:]]+/]] }
-  
+
   describe '#gen_basic' do
-    
+
     context 'when nested' do
       it 'generates nested choice matching code' do
         nested_code(:choice_level => 2) {|g| g.gen_basic choice }.
@@ -21,7 +22,7 @@ end
         CODE
       end
     end
-    
+
     context 'when top-level' do
       it 'generates top-level choice matching code' do
         top_level_code(:choice_level => 0) {|g| g.gen_basic choice }.
@@ -32,9 +33,9 @@ end
       end
     end
   end
-  
+
   describe '#gen_assert' do
-    
+
     context 'when nested' do
       it 'generates nested choice positive lookahead code' do
         nested_code(:choice_level => 2) {|g| g.gen_assert choice }.
@@ -46,7 +47,7 @@ end && true)
         CODE
       end
     end
-    
+
     context 'when top-level' do
       it 'generates top-level choice positive lookahead code' do
         top_level_code(:choice_level => 0) {|g| g.gen_assert choice }.
@@ -59,9 +60,9 @@ end && true
       end
     end
   end
-  
+
   describe '#gen_disallow' do
-    
+
     context 'when nested' do
       it 'generates nested choice negative lookahead code' do
         nested_code(:choice_level => 2) {|g| g.gen_disallow choice }.
@@ -73,7 +74,7 @@ end
         CODE
       end
     end
-    
+
     context 'when top-level' do
       it 'generates top-level choice negative lookahead code' do
         top_level_code(:choice_level => 0) {|g| g.gen_disallow choice }.
@@ -86,12 +87,14 @@ end
       end
     end
   end
-  
+
   describe '#gen_dispatch_action' do
-    
+
+    let(:code) { DispatchActionCode.new('Atom', 'parsed') }
+
     context 'when nested' do
       it 'generates nested choice matching code with a dispatch action' do
-        nested_code(:choice_level => 2) {|g| g.gen_dispatch_action choice, 'Atom', 'parsed' }.
+        nested_code(:choice_level => 2) {|g| g.gen_dispatch_action choice, code }.
           should == (<<-CODE).strip
 begin
   (r = begin
@@ -102,10 +105,10 @@ end
           CODE
       end
     end
-    
+
     context 'when top-level' do
       it 'generates top-level choice matching code with a dispatch action' do
-        top_level_code(:choice_level => 0) {|g| g.gen_dispatch_action choice, 'Atom', 'parsed' }.
+        top_level_code(:choice_level => 0) {|g| g.gen_dispatch_action choice, code }.
           should == (<<-CODE).strip
 (r = begin
   @scanner.scan(/[[:alpha:]]+/) ||
@@ -115,12 +118,14 @@ end) && Atom.parsed([r])
       end
     end
   end
-  
+
   describe '#gen_direct_action' do
-    
+
+    let(:code) { ActionCode.new('|_| _.size') }
+
     context 'when nested' do
       it 'generates nested choice matching code with a direct action' do
-        nested_code(:choice_level => 2) {|g| g.gen_direct_action choice, ActionCode.new('|_| _.size') }.
+        nested_code(:choice_level => 2) {|g| g.gen_direct_action choice, code }.
           should == (<<-CODE).strip
 begin
   (r = begin
@@ -131,10 +136,10 @@ end
           CODE
       end
     end
-    
+
     context 'when top-level' do
       it 'generates nested choice matching code with a direct action' do
-        top_level_code(:choice_level => 0) {|g| g.gen_direct_action choice, ActionCode.new('|_| _.size') }.
+        top_level_code(:choice_level => 0) {|g| g.gen_direct_action choice, code }.
           should == (<<-CODE).strip
 (r = begin
   @scanner.scan(/[[:alpha:]]+/) ||
@@ -144,9 +149,9 @@ end) && (r.size)
       end
     end
   end
-  
+
   describe '#gen_token' do
-    
+
     context 'when nested' do
       it 'generates nested token choice matching code' do
         nested_code(:choice_level => 2) {|g| g.gen_token choice }.
@@ -158,7 +163,7 @@ end
         CODE
       end
     end
-    
+
     context 'when top-level' do
       it 'generates top-level token choice matching code' do
         top_level_code(:choice_level => 0) {|g| g.gen_token choice }.
@@ -169,9 +174,9 @@ end
       end
     end
   end
-  
+
   describe '#gen_skip' do
-    
+
     context 'when nested' do
       it 'generates nested choice skipping code' do
         nested_code(:choice_level => 2) {|g| g.gen_skip choice }.
@@ -183,7 +188,7 @@ end && true)
         CODE
       end
     end
-    
+
     context 'when top-level' do
       it 'generates top-level choice skipping code' do
         top_level_code(:choice_level => 0) {|g| g.gen_skip choice }.
@@ -196,7 +201,7 @@ end && true
       end
     end
   end
-  
+
   describe '#gen_intermediate' do
     it 'generates nested choice matching code' do
       nested_code(:choice_level => 2) {|g| g.gen_intermediate choice }.
@@ -208,7 +213,7 @@ end
       CODE
     end
   end
-  
+
   describe '#gen_intermediate_assert' do
     it 'generates intermediate choice positive lookahead code' do
       nested_code(:choice_level => 2) {|g| g.gen_intermediate_assert choice }.
@@ -220,7 +225,7 @@ end
       CODE
     end
   end
-  
+
   describe '#gen_intermediate_disallow' do
     it 'generates intermediate choice negative lookahead code' do
       nested_code(:choice_level => 2) {|g| g.gen_intermediate_disallow choice }.
@@ -232,7 +237,7 @@ end
       CODE
     end
   end
-  
+
   describe '#gen_intermediate_skip' do
     it 'generates intermediate choice skipping code' do
       nested_code(:choice_level => 2) {|g| g.gen_intermediate_skip choice }.
@@ -244,5 +249,5 @@ end
       CODE
     end
   end
-  
+
 end

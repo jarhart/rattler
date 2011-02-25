@@ -12,14 +12,14 @@ module Rattler::BackEnd::ParserGenerator
       generate skip.child, :skip
     end
 
-    def gen_dispatch_action_nested(skip, target, method_name)
-      atomic_block { gen_dispatch_action_top_level skip, target, method_name }
+    def gen_dispatch_action_nested(skip, code)
+      atomic_block { gen_dispatch_action_top_level skip, code }
     end
 
-    def gen_dispatch_action_top_level(skip, target, method_name)
+    def gen_dispatch_action_top_level(skip, code)
       gen_intermediate_skip skip
       (@g << ' &&').newline
-      @g << dispatch_action_result(target, method_name, :array_expr => '[]')
+      @g << dispatch_action_result(code, :array_expr => '[]')
     end
 
     def gen_direct_action_nested(skip, action)

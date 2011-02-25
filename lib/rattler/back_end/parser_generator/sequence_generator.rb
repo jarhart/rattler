@@ -63,15 +63,15 @@ module Rattler::BackEnd::ParserGenerator
       @g << result_name
     end
 
-    def gen_dispatch_action_nested(sequence, target, method_name)
+    def gen_dispatch_action_nested(sequence, code)
       atomic_block do
-        gen_dispatch_action_top_level sequence, target, method_name
+        gen_dispatch_action_top_level sequence, code
       end
     end
 
-    def gen_dispatch_action_top_level(sequence, target, method_name)
+    def gen_dispatch_action_top_level(sequence, code)
       gen_action_code(sequence) do |labeled|
-        dispatch_action_result(target, method_name,
+        dispatch_action_result(code,
           :array_expr => result_array_expr(sequence), :labeled => labeled)
       end
     end

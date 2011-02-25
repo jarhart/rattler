@@ -27,14 +27,14 @@ module Rattler::BackEnd::ParserGenerator
       @g << 'false'
     end
 
-    def gen_dispatch_action_nested(optional, target, method_name)
-      atomic_block { gen_dispatch_action_top_level optional, target, method_name }
+    def gen_dispatch_action_nested(optional, code)
+      atomic_block { gen_dispatch_action_top_level optional, code }
     end
 
-    def gen_dispatch_action_top_level(optional, target, method_name)
+    def gen_dispatch_action_top_level(optional, code)
       @g << "#{result_name} = "
       generate optional.child
-      @g.newline << dispatch_action_result(target, method_name,
+      @g.newline << dispatch_action_result(code,
           :array_expr => "#{result_name} ? [#{result_name}] : []")
     end
 

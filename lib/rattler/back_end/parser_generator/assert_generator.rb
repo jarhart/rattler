@@ -25,13 +25,13 @@ module Rattler::BackEnd::ParserGenerator
       gen_basic_top_level assert
     end
 
-    def gen_dispatch_action_nested(assert, target, method_name)
-      atomic_block { gen_dispatch_action_top_level assert, target, method_name }
+    def gen_dispatch_action_nested(assert, code)
+      atomic_block { gen_dispatch_action_top_level assert, code }
     end
 
-    def gen_dispatch_action_top_level(assert, target, method_name)
+    def gen_dispatch_action_top_level(assert, code)
       gen_action assert,
-        dispatch_action_result(target, method_name, :array_expr => '[]')
+        dispatch_action_result(code, :array_expr => '[]')
     end
 
     def gen_direct_action_nested(assert, code)

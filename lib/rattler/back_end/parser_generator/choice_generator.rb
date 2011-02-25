@@ -28,13 +28,13 @@ module Rattler::BackEnd::ParserGenerator
       gen_intermediate_assert choice
     end
 
-    def gen_dispatch_action_nested(choice, target, method_name)
-      atomic_block { gen_dispatch_action_top_level choice, target, method_name }
+    def gen_dispatch_action_nested(choice, code)
+      atomic_block { gen_dispatch_action_top_level choice, code }
     end
 
-    def gen_dispatch_action_top_level(choice, target, method_name)
+    def gen_dispatch_action_top_level(choice, code)
       gen_action_code choice do |labeled|
-        dispatch_action_result(target, method_name, :labeled => labeled)
+        dispatch_action_result(code, :labeled => labeled)
       end
     end
 

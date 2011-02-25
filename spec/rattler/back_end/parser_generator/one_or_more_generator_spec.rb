@@ -1,19 +1,20 @@
 require File.expand_path(File.dirname(__FILE__) + '/../../../spec_helper')
 
+include Rattler::BackEnd::ParserGenerator
 include Rattler::Parsers
 
-describe Rattler::BackEnd::ParserGenerator::OneOrMoreGenerator do
-  
+describe OneOrMoreGenerator do
+
   include ParserGeneratorSpecHelper
-  
+
   let(:one_or_more) { OneOrMore[Match[/w+/]] }
-  
+
   describe '#gen_basic' do
 
     let :one_or_more do
       OneOrMore[Choice[Match[/[[:alpha:]]/], Match[/[[:digit:]]/]]]
     end
-    
+
     context 'when nested' do
       it 'generates nested one-or-more matching code' do
         nested_code {|g| g.gen_basic one_or_more }.
@@ -31,7 +32,7 @@ end
           CODE
       end
     end
-    
+
     context 'when top-level' do
       it 'generates top level one-or-more matching code' do
         top_level_code {|g| g.gen_basic one_or_more }.
@@ -48,16 +49,16 @@ a unless a.empty?
       end
     end
   end
-  
+
   describe '#gen_assert' do
-    
+
     context 'when nested' do
       it 'generates nested one-or-more positive lookahead code' do
         nested_code {|g| g.gen_assert one_or_more }.
           should == '(@scanner.skip(/(?=w+)/) && true)'
       end
     end
-    
+
     context 'when top-level' do
       it 'generates nested one-or-more positive lookahead code' do
         top_level_code {|g| g.gen_assert one_or_more }.
@@ -65,16 +66,16 @@ a unless a.empty?
       end
     end
   end
-  
+
   describe '#gen_disallow' do
-    
+
     context 'when nested' do
       it 'generates nested one-or-more negative lookahead code' do
         nested_code {|g| g.gen_disallow one_or_more }.
           should == '(@scanner.skip(/(?!w+)/) && true)'
       end
     end
-    
+
     context 'when top-level' do
       it 'generates nested one-or-more negative lookahead code' do
         top_level_code {|g| g.gen_disallow one_or_more }.
@@ -82,12 +83,14 @@ a unless a.empty?
       end
     end
   end
-  
+
   describe '#gen_dispatch_action' do
-    
+
+    let(:code) { DispatchActionCode.new('Word', 'parsed') }
+
     context 'when nested' do
       it 'generates nested one-or-more matching code with a dispatch action' do
-        nested_code {|g| g.gen_dispatch_action one_or_more, 'Word', 'parsed' }.
+        nested_code {|g| g.gen_dispatch_action one_or_more, code }.
           should == (<<-CODE).strip
 begin
   a = []
@@ -99,10 +102,10 @@ end
           CODE
       end
     end
-    
+
     context 'when top-level' do
       it 'generates top level one-or-more matching code with a dispatch action' do
-        top_level_code {|g| g.gen_dispatch_action one_or_more, 'Word', 'parsed' }.
+        top_level_code {|g| g.gen_dispatch_action one_or_more, code }.
           should == (<<-CODE).strip
 a = []
 while r = @scanner.scan(/w+/)
@@ -113,12 +116,14 @@ Word.parsed(select_captures(a)) unless a.empty?
       end
     end
   end
-  
+
   describe '#gen_direct_action' do
-    
+
+    let(:code) { ActionCode.new('|_| _.size') }
+
     context 'when nested' do
       it 'generates nested one-or-more matching code with a direct action' do
-        nested_code {|g| g.gen_direct_action one_or_more, ActionCode.new('|_| _.size') }.
+        nested_code {|g| g.gen_direct_action one_or_more, code }.
           should == (<<-CODE).strip
 begin
   a = []
@@ -130,10 +135,10 @@ end
           CODE
       end
     end
-    
+
     context 'when top-level' do
       it 'generates top level one-or-more matching code with a direct action' do
-        top_level_code {|g| g.gen_direct_action one_or_more, ActionCode.new('|_| _.size') }.
+        top_level_code {|g| g.gen_direct_action one_or_more, code }.
           should == (<<-CODE).strip
 a = []
 while r = @scanner.scan(/w+/)
@@ -144,9 +149,9 @@ end
       end
     end
   end
-  
+
   describe '#gen_token' do
-    
+
     context 'when nested' do
       it 'generates nested one-or-more matching code' do
         nested_code {|g| g.gen_token one_or_more }.
@@ -161,7 +166,7 @@ end
           CODE
       end
     end
-    
+
     context 'when top-level' do
       it 'generates top level one-or-more matching code' do
         top_level_code {|g| g.gen_token one_or_more }.
@@ -175,9 +180,9 @@ a.join unless a.empty?
       end
     end
   end
-  
+
   describe '#gen_skip' do
-    
+
     context 'when nested' do
       it 'generates nested one-or-more skipping code' do
         nested_code {|g| g.gen_skip one_or_more }.
@@ -192,7 +197,7 @@ end
           CODE
       end
     end
-    
+
     context 'when top-level' do
       it 'generates top level one-or-more skipping code' do
         top_level_code {|g| g.gen_skip one_or_more }.
@@ -206,7 +211,7 @@ r
       end
     end
   end
-  
+
   describe '#gen_intermediate' do
     it 'generates nested one-or-more matching code' do
       nested_code {|g| g.gen_intermediate one_or_more }.
@@ -221,21 +226,21 @@ end
         CODE
     end
   end
-  
+
   describe '#gen_intermediate_assert' do
     it 'generates nested one-or-more positive lookahead code' do
       nested_code {|g| g.gen_assert one_or_more }.
       should == '(@scanner.skip(/(?=w+)/) && true)'
     end
   end
-  
+
   describe '#gen_intermediate_disallow' do
     it 'generates nested one-or-more negative lookahead code' do
       nested_code {|g| g.gen_disallow one_or_more }.
       should == '(@scanner.skip(/(?!w+)/) && true)'
     end
   end
-  
+
   describe '#gen_intermediate_skip' do
     it 'generates nested one-or-more skipping code' do
       nested_code {|g| g.gen_intermediate_skip one_or_more }.
@@ -250,5 +255,5 @@ end
         CODE
     end
   end
-  
+
 end

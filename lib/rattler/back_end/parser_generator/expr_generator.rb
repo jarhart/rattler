@@ -110,23 +110,16 @@ module Rattler::BackEnd::ParserGenerator
       "p#{sequence_level}"
     end
 
-    def dispatch_action_result(target, method_name, options = {})
-      args = [options[:array_expr] || "[#{result_name}]"]
-      labeled = options[:labeled]
-      if labeled and not labeled.empty?
-        if labeled.respond_to?(:to_hash)
-          labeled = '{' + labeled.map {|k, v| ":#{k} => #{v}"}.join(', ') + '}'
-        end
-        args << ":labeled => #{labeled}"
-      end
-      t = target == 'self' ? '' : "#{target}."
-      "#{t}#{method_name}(#{args.join ', '})"
+    def dispatch_action_result(code, opts = {})
+      array_expr = opts[:array_expr] || "[#{result_name}]"
+      labeled = opts[:labeled]
+      code.bind array_expr, labeled
     end
 
-    def direct_action_result(code, options = {})
-      args = options[:bind_args] || [result_name]
-      labeled = options[:labeled] || {}
-      "(#{code.bind args, labeled})"
+    def direct_action_result(code, opts = {})
+      bind_args = opts[:bind_args] || [result_name]
+      labeled = opts[:labeled] || {}
+      "(#{code.bind bind_args, labeled})"
     end
 
     def lookahead

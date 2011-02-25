@@ -12,28 +12,28 @@ module Rattler::BackEnd::ParserGenerator
       list.capturing? ? gen_capturing(list) : gen_skip_top_level(list)
     end
 
-    def gen_dispatch_action_nested(list, target, method_name)
+    def gen_dispatch_action_nested(list, code)
       atomic_block do
-        gen_dispatch_action_top_level list, target, method_name
+        gen_dispatch_action_top_level list, code
       end
     end
 
-    def gen_dispatch_action_top_level(list, target, method_name)
+    def gen_dispatch_action_top_level(list, code)
       gen_capturing list do |a|
-        dispatch_action_result target, method_name,
+        dispatch_action_result code,
             :array_expr => "select_captures(#{a})"
       end
     end
 
-    def gen_direct_action_nested(list, action)
+    def gen_direct_action_nested(list, code)
       atomic_block do
-        gen_direct_action_top_level list, action
+        gen_direct_action_top_level list, code
       end
     end
 
-    def gen_direct_action_top_level(list, action)
+    def gen_direct_action_top_level(list, code)
       gen_capturing list do |a|
-        direct_action_result action, :bind_args => ["select_captures(#{a})"]
+        direct_action_result code, :bind_args => ["select_captures(#{a})"]
       end
     end
 

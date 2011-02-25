@@ -1,15 +1,16 @@
 require File.expand_path(File.dirname(__FILE__) + '/../../../spec_helper')
 
+include Rattler::BackEnd::ParserGenerator
 include Rattler::Parsers
 
-describe Rattler::BackEnd::ParserGenerator::SequenceGenerator do
-  
+describe SequenceGenerator do
+
   include ParserGeneratorSpecHelper
-  
+
   let(:sequence) { Sequence[Match[/[[:alpha:]]+/], Match[/[[:digit:]]+/]] }
-  
+
   describe '#gen_basic' do
-    
+
     context 'when nested' do
       it 'generates nested sequence matching code' do
         nested_code(:sequence_level => 2) {|g| g.gen_basic sequence }.
@@ -28,7 +29,7 @@ end
         CODE
       end
     end
-    
+
     context 'when top-level' do
       it 'generates top-level sequence matching code' do
         top_level_code(:sequence_level => 0) {|g| g.gen_basic sequence }.
@@ -46,9 +47,9 @@ end
       end
     end
   end
-  
+
   describe '#gen_assert' do
-    
+
     context 'when nested' do
       it 'generates nested sequence positive lookahead code' do
         nested_code(:sequence_level => 2) {|g| g.gen_assert sequence }.
@@ -66,7 +67,7 @@ end
         CODE
       end
     end
-    
+
     context 'when top-level' do
       it 'generates top-level sequence positive lookahead code' do
         top_level_code(:sequence_level => 0) {|g| g.gen_assert sequence }.
@@ -83,9 +84,9 @@ r
       end
     end
   end
-  
+
   describe '#gen_disallow' do
-    
+
     context 'when nested' do
       it 'generates nested sequence negative lookahead code' do
         nested_code(:sequence_level => 2) {|g| g.gen_disallow sequence }.
@@ -102,7 +103,7 @@ end
         CODE
       end
     end
-    
+
     context 'when top-level' do
       it 'generates top-level sequence negative lookahead code' do
         top_level_code(:sequence_level => 0) {|g| g.gen_disallow sequence }.
@@ -118,12 +119,14 @@ r
       end
     end
   end
-  
+
   describe '#gen_dispatch_action' do
-    
+
+    let(:code) { DispatchActionCode.new('Atom', 'parsed') }
+
     context 'when nested' do
       it 'generates nested sequence matching code with a dispatch action' do
-        nested_code(:sequence_level => 2) {|g| g.gen_dispatch_action sequence, 'Atom', 'parsed' }.
+        nested_code(:sequence_level => 2) {|g| g.gen_dispatch_action sequence, code }.
           should == (<<-CODE).strip
 begin
   p2 = @scanner.pos
@@ -139,10 +142,10 @@ end
           CODE
       end
     end
-    
+
     context 'when top-level' do
       it 'generates top-level sequence matching code with a dispatch action' do
-        top_level_code(:sequence_level => 0) {|g| g.gen_dispatch_action sequence, 'Atom', 'parsed' }.
+        top_level_code(:sequence_level => 0) {|g| g.gen_dispatch_action sequence, code }.
           should == (<<-CODE).strip
 p0 = @scanner.pos
 begin
@@ -157,12 +160,14 @@ end
       end
     end
   end
-  
+
   describe '#gen_direct_action' do
-    
+
+    let(:code) { ActionCode.new('|a,b| a + b') }
+
     context 'when nested' do
       it 'generates nested sequence matching code with a direct action' do
-        nested_code(:sequence_level => 2) {|g| g.gen_direct_action sequence, ActionCode.new('|a,b| a + b') }.
+        nested_code(:sequence_level => 2) {|g| g.gen_direct_action sequence, code }.
           should == (<<-CODE).strip
 begin
   p2 = @scanner.pos
@@ -178,10 +183,10 @@ end
           CODE
       end
     end
-    
+
     context 'when top-level' do
       it 'generates nested sequence matching code with a direct action' do
-        top_level_code(:sequence_level => 0) {|g| g.gen_direct_action sequence, ActionCode.new('|a,b| a + b') }.
+        top_level_code(:sequence_level => 0) {|g| g.gen_direct_action sequence, code }.
           should == (<<-CODE).strip
 p0 = @scanner.pos
 begin
@@ -196,9 +201,9 @@ end
       end
     end
   end
-  
+
   describe '#gen_skip' do
-    
+
     context 'when nested' do
       it 'generates nested token sequence matching code' do
         nested_code(:sequence_level => 2) {|g| g.gen_skip sequence }.
@@ -217,7 +222,7 @@ end
         CODE
       end
     end
-    
+
     context 'when top-level' do
       it 'generates top-level token sequence matching code' do
         top_level_code(:sequence_level => 0) {|g| g.gen_skip sequence }.
@@ -235,9 +240,9 @@ end
       end
     end
   end
-  
+
   describe '#gen_token' do
-    
+
     context 'when nested' do
       it 'generates nested token sequence matching code' do
         nested_code(:sequence_level => 2) {|g| g.gen_token sequence }.
@@ -256,7 +261,7 @@ end
         CODE
       end
     end
-    
+
     context 'when top-level' do
       it 'generates top-level token sequence matching code' do
         top_level_code(:sequence_level => 0) {|g| g.gen_token sequence }.
@@ -274,7 +279,7 @@ end
       end
     end
   end
-  
+
   describe '#gen_intermediate' do
     it 'generates nested sequence matching code' do
       nested_code(:sequence_level => 2) {|g| g.gen_intermediate sequence }.
@@ -293,7 +298,7 @@ end
       CODE
     end
   end
-  
+
   describe '#gen_intermediate_assert' do
     it 'generates nested sequence positive lookahead code' do
       nested_code(:sequence_level => 2) {|g| g.gen_intermediate_assert sequence }.
@@ -311,7 +316,7 @@ end
       CODE
     end
   end
-  
+
   describe '#gen_intermediate_disallow' do
     it 'generates nested sequence negative lookahead code' do
       nested_code(:sequence_level => 2) {|g| g.gen_intermediate_disallow sequence }.
@@ -328,7 +333,7 @@ end
       CODE
     end
   end
-  
+
   describe '#gen_intermediate_skip' do
     it 'generates nested sequence skipping code' do
       nested_code(:sequence_level => 2) {|g| g.gen_intermediate_skip sequence }.
@@ -347,5 +352,5 @@ end
       CODE
     end
   end
-  
+
 end

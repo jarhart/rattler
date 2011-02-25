@@ -16,13 +16,13 @@ module Rattler::BackEnd::ParserGenerator
       generate action.child, :direct_action_top_level, action.bindable_code
     end
 
-    def gen_dispatch_action_nested(inner, target, method_name)
-      atomic_block { gen_dispatch_action_top_level inner, target, method_name }
+    def gen_dispatch_action_nested(inner, code)
+      atomic_block { gen_dispatch_action_top_level inner, code }
     end
 
-    def gen_dispatch_action_top_level(inner, target, method_name)
+    def gen_dispatch_action_top_level(inner, code)
       @g.surround("(#{result_name} = ", ')') { gen_basic_nested inner }
-      (@g << ' &&').newline << dispatch_action_result(target, method_name)
+      (@g << ' &&').newline << dispatch_action_result(code)
     end
 
     def gen_direct_action_nested(inner, code)
