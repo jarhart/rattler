@@ -24,6 +24,7 @@ Jeweler::Tasks.new do |gem|
   gem.authors = ["Jason Arhart"]
   gem.files = FileList["{bin,lib}/**/*"]
   gem.test_files = FileList["{features,spec}/**/*"]
+  gem.executables = ["rtlr"]
 end
 Jeweler::RubygemsDotOrgTasks.new
 
