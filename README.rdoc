@@ -32,7 +32,7 @@ dynamically from strings.
 
 * Optimizations are very limited at this point
 * Only strings can be parsed, so files have to be read completely before parsing
-* There are undoubtedly many bugs
+* There are many holes in the tests so there are undoubtedly many bugs
 
 == EXAMPLES:
 
@@ -42,36 +42,32 @@ dynamically from strings.
   
   # JSON parser based on the grammar at http://www.json.org
 
-  require 'json_helper'
-
   parser JsonParser < Rattler::Runtime::PackratParser
-
-  include JsonHelper
 
   %whitespace (SPACE+ | '/*' (! '*/' .)* '*/' | '//' [^\n]*)*
 
-  object    <-  ~'{' members ~'}'                                               {|_| object _ }
+  object    <-  ~'{' members ~'}'                                   { object _ }
 
-  members   <-  (pair ~',')* pair?                                              {|x,y| x + y }
+  members   <-  pair *^ ','
 
   pair      <-  string ~':' value
 
   array     <-  ~'[' elements ~']'
 
-  elements  <-  (value ~',')* value?                                            {|x,y| x + y }
+  elements  <-  value *^ ','
 
-  value     <-  string
-              | number !DIGIT
+  value     <-  string                                              { string _ }
+              | number !DIGIT                                       { _.to_f }
               | object
               | array
-              | `true`                                                          { :true }
-              | `false`                                                         { :false }
-              | `null`                                                          { :null }
+              | `true`                                              { :true }
+              | `false`                                             { :false }
+              | `null`                                              { :null }
               | fail "value expected"
 
-  string    <-  @('"' ('\\' . | [^"])* '"')                                     {|_| string _ }
+  string    <-  @('"' ('\\' . | [^"])* '"')
 
-  number    <-  @('-'? ('0' | [1-9] DIGIT*) ('.' DIGIT+)? ([eE] [+-]? DIGIT+)?) {|_| _.to_f }
+  number    <-  @('-'? ('0' | [1-9] DIGIT*) ('.' DIGIT+)? ([eE] [+-]? DIGIT+)?)
 
 ==== json_helper.rb:
 
@@ -149,16 +145,17 @@ dynamically from strings.
     
     start   <-  expr EOF
     
-    expr    <-  expr ~'+' term            {|a, b| a + b }
-              | expr ~'-' term            {|a, b| a - b }
+    expr    <-  expr ~'+' term              {|a, b| a + b }
+              | expr ~'-' term              {|a, b| a - b }
               | term
     
-    term    <-  term ~'*' primary         {|a, b| a * b }
-              | term ~'/' primary         {|a, b| a / b }
+    term    <-  term ~'*' primary           {|a, b| a * b }
+              | term ~'/' primary           {|a, b| a / b }
               | primary
     
     primary <-  ~'(' expr ~')'
-              | @(DIGIT+ ('.' DIGIT+)?)   {|_| _.to_f }
+              | @('-'? DIGIT+ '.' DIGIT+)   { _.to_f }
+              | @('-'? DIGIT+)              { _.to_i }
   }, :type => :extended_packrat
  
   begin
