@@ -4,7 +4,7 @@ module Rattler::BackEnd::ParserGenerator
 
   # @private
   class ExprGenerator #:nodoc:
-    include GeneratorHelper
+    # include GeneratorHelper
 
     include Rattler::Parsers
 
@@ -15,48 +15,135 @@ module Rattler::BackEnd::ParserGenerator
       @repeat_level = repeat_level
     end
 
-    def generate(parser, gen_method=:gen_basic, *args)
-      case parser
-      when Eof then gen_eof
-      else generator(parser).send(gen_method, parser, *args)
-      end
+    def gen_basic_nested(parser)
+      gen_basic parser
     end
 
-    def gen_eof
-      @g << '@scanner.eos?'
+    def gen_basic_top_level(parser)
+      gen_basic parser
     end
 
-    private
-
-    def generator(parser)
-      case parser
-      when Match          then match_generator
-      when Choice         then choice_generator
-      when Sequence       then sequence_generator
-      when Optional       then optional_generator
-      when ZeroOrMore     then zero_or_more_generator
-      when OneOrMore      then one_or_more_generator
-      when List           then list_generator
-      when List1          then list1_generator
-      when Apply          then apply_generator
-      when Assert         then assert_generator
-      when Disallow       then disallow_generator
-      when DispatchAction then dispatch_action_generator
-      when DirectAction   then direct_action_generator
-      when Token          then token_generator
-      when Skip           then skip_generator
-      when Label          then label_generator
-      when Fail           then fail_generator
-      end
+    def gen_assert_nested(parser)
+      gen_assert parser
     end
+
+    def gen_assert_top_level(parser)
+      gen_assert parser
+    end
+
+    def gen_disallow_nested(parser)
+      gen_disallow parser
+    end
+
+    def gen_disallow_top_level(parser)
+      gen_disallow parser
+    end
+
+    def gen_dispatch_action_nested(parser, target, method_name)
+      gen_dispatch_action parser, target, method_name
+    end
+
+    def gen_dispatch_action_top_level(parser, target, method_name)
+      gen_dispatch_action parser, target, method_name
+    end
+
+    def gen_direct_action_nested(parser, action)
+      gen_direct_action parser, action
+    end
+
+    def gen_direct_action_top_level(parser, action)
+      gen_direct_action parser, action
+    end
+
+    def gen_token_nested(parser)
+      atomic_block { gen_token_top_level parser }
+    end
+
+    def gen_token_top_level(parser)
+      (@g << "tp = @scanner.pos").newline
+      gen_intermediate_skip parser
+      (@g << ' &&').newline
+      @g << "@scanner.string[tp...(@scanner.pos)]"
+    end
+
+    def gen_skip_nested(parser)
+      gen_skip parser
+    end
+
+    def gen_skip_top_level(parser)
+      gen_skip parser
+    end
+
+    def gen_intermediate(parser)
+      gen_basic_nested parser
+    end
+
+    def gen_intermediate_assert(parser)
+      gen_assert_nested parser
+    end
+
+    def gen_intermediate_disallow(parser)
+      gen_disallow_nested parser
+    end
+
+    def gen_intermediate_skip(parser)
+      gen_skip_nested parser
+    end
+
+    protected
 
     attr_reader :choice_level, :sequence_level, :repeat_level
+
+    def atomic_expr
+      @g.surround('(', ')') { yield }
+    end
+
+    def atomic_block
+      @g.block('begin') { yield }
+    end
+
+    def result_name
+      'r'
+    end
+
+    def saved_pos_name
+      "p#{sequence_level}"
+    end
+
+    def dispatch_action_result(target, method_name, options = {})
+      args = [options[:array_expr] || "[#{result_name}]"]
+      labeled = options[:labeled]
+      if labeled and not labeled.empty?
+        if labeled.respond_to?(:to_hash)
+          labeled = '{' + labeled.map {|k, v| ":#{k} => #{v}"}.join(', ') + '}'
+        end
+        args << ":labeled => #{labeled}"
+      end
+      t = target == 'self' ? '' : "#{target}."
+      "#{t}#{method_name}(#{args.join ', '})"
+    end
+
+    def direct_action_result(code, options = {})
+      args = options[:bind_args] || [result_name]
+      labeled = options[:labeled] || {}
+      "(#{code.bind args, labeled})"
+    end
+
+    def lookahead
+      (@g << "#{saved_pos_name} = @scanner.pos").newline
+      yield
+      (@g << "@scanner.pos = #{saved_pos_name}").newline
+    end
 
   end
 
   # @private
   class TopLevelGenerator < ExprGenerator #:nodoc:
-    include TopLevelGenerators
+    include TopLevelSubGenerating
+
+    def generate(parser)
+      super
+    end
   end
 
 end

@@ -47,12 +47,12 @@ module Rattler::BackEnd::ParserGenerator
       (@g << "#{accumulator_name} = []").newline
       (@g << "#{saved_pos_name} = nil").newline
       @g << "while #{result_name} = "
-      generate list.child, :gen_basic
+      generate list.child, :basic
       @g.block '' do
         (@g << "#{saved_pos_name} = @scanner.pos").newline
         (@g << "#{accumulator_name} << #{result_name}").newline
         @g << 'break unless '
-        generate list.sep_parser, :gen_intermediate_skip
+        generate list.sep_parser, :intermediate_skip
       end.newline
       @g << "@scanner.pos = #{saved_pos_name} unless #{saved_pos_name}.nil?"
       @g.newline

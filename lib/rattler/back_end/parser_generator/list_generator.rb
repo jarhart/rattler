@@ -5,6 +5,7 @@ module Rattler::BackEnd::ParserGenerator
   # @private
   class ListGenerator < ExprGenerator #:nodoc:
     include ListGenerating
+    include NestedSubGenerating
 
     def gen_assert(optional)
       @g << 'true'
@@ -17,11 +18,11 @@ module Rattler::BackEnd::ParserGenerator
     def gen_skip_top_level(list)
       (@g << "#{saved_pos_name} = nil").newline
       @g << 'while '
-      generate list.child, :gen_intermediate_skip
+      generate list.child, :intermediate_skip
       @g.block '' do
         (@g << "#{saved_pos_name} = @scanner.pos").newline
         @g << 'break unless '
-        generate list.sep_parser, :gen_intermediate_skip
+        generate list.sep_parser, :intermediate_skip
       end.newline
       @g << "@scanner.pos = #{saved_pos_name} unless #{saved_pos_name}.nil?"
       @g.newline << true
@@ -38,7 +39,6 @@ module Rattler::BackEnd::ParserGenerator
   # @private
   class NestedListGenerator < ListGenerator #:nodoc:
     include Nested
-    include NestedGenerators
   end
 
   def ListGenerator.nested(*args)
@@ -48,7 +48,6 @@ module Rattler::BackEnd::ParserGenerator
   # @private
   class TopLevelListGenerator < ListGenerator #:nodoc:
     include TopLevel
-    include NestedGenerators
   end
 
   def ListGenerator.top_level(*args)
