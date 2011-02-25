@@ -15,4 +15,4 @@ group :development do
   gem "watchr", ">= 0.5.5"
 end
 
-gemspec
+# gemspec
