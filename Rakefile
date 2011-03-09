@@ -52,7 +52,7 @@ YARD::Rake::YardocTask.new
 desc 'Regenerate Metagrammar module from rattler.rtlr'
 task :metagrammar => [:archive_metagrammar, :lib_path] do
   require 'rattler/runner'
-  Rattler::Runner.run([METAGRAMMAR_SOURCE, '-d', 'lib', '-f'])
+  Rattler::Runner.run([METAGRAMMAR_SOURCE, '-l', 'lib', '-f', '-s'])
 end
 
 task :lib_path do

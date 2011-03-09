@@ -9,9 +9,12 @@ Feature: Parser Generator
       """
       Usage: rtlr FILENAME [options]
 
-          -d, --dest DIRECTORY             Specify the destination directory
-          -o, --output FILENAME            Specify a different output filename
+          -l, --lib DIRECTORY              Specify the destination lib directory
+          -d, --dest DIRECTORY             Specify an explicit destination directory
+          -o, --output FILENAME            Specify a different output filename ("-" = STDOUT)
           -f, --force                      Force overwrite if the output file exists
+          -s, --standalone                 Optimize for use as a standalone parser
+          -n, --no-optimize                Disable optimization
 
           -h, --help                       Show this message
       """
@@ -22,7 +25,7 @@ Feature: Parser Generator
       grammar BinaryGrammar
       expr <- [01]*
       """
-    When I run "rtlr binary.rtlr"
+    When I run "rtlr binary.rtlr --standalone"
     Then the output should contain "binary.rtlr -> binary_grammar.rb"
       And the file "binary_grammar.rb" should contain:
         """
@@ -53,7 +56,7 @@ Feature: Parser Generator
       parser BinaryParser < Rattler::Runtime::PackratParser
       expr <- [01]*
       """
-    When I run "rtlr binary.rtlr"
+    When I run "rtlr binary.rtlr --standalone"
     Then the output should contain "binary.rtlr -> binary_parser.rb"
       And the file "binary_parser.rb" should contain:
         """

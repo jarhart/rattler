@@ -1,8 +1,8 @@
-Given /grammar with:/ do |source|
+Given /grammar with\:/ do |source|
   @parser_class = Rattler.compile_parser(source)
 end
 
-Given /class definition:/ do |source|
+Given /class definition\:/ do |source|
   eval(source, TOPLEVEL_BINDING)
 end
 
