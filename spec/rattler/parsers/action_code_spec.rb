@@ -53,15 +53,20 @@ describe Rattler::Parsers::ActionCode do
     end
 
     context 'given one argument' do
-      it 'binds "_" to the argument' do
-        subject.blank_binding(['r0']).should == { '_' => 'r0' }
+      it 'binds "_" and "*_" to the argument' do
+        subject.blank_binding(['r0']).should == {
+          /\*_\b/ => 'r0',
+          /\b_\b/ => 'r0'
+        }
       end
     end
 
     context 'given more than one argument' do
-      it 'binds "_" to the array of arguments' do
-        subject.blank_binding(['r0_0', 'r0_1']).
-          should == { '_' => '[r0_0, r0_1]' }
+      it 'binds "*_" to the arguments and "_" to the array of arguments' do
+        subject.blank_binding(['r0_0', 'r0_1']).should == {
+          /\*_\b/ => 'r0_0, r0_1',
+          /\b_\b/ => '[r0_0, r0_1]'
+        }
       end
     end
   end
@@ -73,12 +78,12 @@ describe Rattler::Parsers::ActionCode do
 
       it 'associates the parameter names with arguments' do
         subject.arg_bindings(['r0_0', 'r0_1']).
-          should == {'a' => 'r0_0', 'b' => 'r0_1'}
+          should == {/\ba\b/ => 'r0_0', /\bb\b/ => 'r0_1'}
       end
 
       it 'allows more args than param names' do
         subject.arg_bindings(['r0_0', 'r0_1', 'r0_2']).
-          should == {'a' => 'r0_0', 'b' => 'r0_1'}
+          should == {/\ba\b/ => 'r0_0', /\bb\b/ => 'r0_1'}
       end
     end
 
@@ -144,6 +149,23 @@ describe Rattler::Parsers::ActionCode do
 
       it 'shadows the default "_" binding' do
         subject.bind(['r0_0', 'r0_1']).should == 'r0_0.to_f'
+      end
+    end
+
+    context 'when the code uses "*_"' do
+
+      subject { ActionCode.new('do_stuff *_') }
+
+      context 'given one argument' do
+        it 'replaces "*_" with the argument' do
+          subject.bind(['r0']).should == 'do_stuff r0'
+        end
+      end
+
+      context 'given multiple arguments' do
+        it 'replaces "*_" with the arguments' do
+          subject.bind(['r0_0', 'r0_1']).should == 'do_stuff r0_0, r0_1'
+        end
       end
     end
   end

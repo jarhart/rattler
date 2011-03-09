@@ -29,15 +29,25 @@ module Rattler::Parsers
         a = args.shift
         bindings.merge!(blank_binding(a)).merge!(arg_bindings(a))
       end
-      bindings.merge!(args.shift) unless args.empty?
+      bindings.merge!(to_bindings args.shift) unless args.empty?
       bind_in body, bindings
     end
 
     def blank_binding(args)
       case args.size
-      when 0 then {}
-      when 1 then { '_' => args.first }
-      else        { '_' => '[' + args.join(', ') + ']' }
+
+      when 0
+        {}
+
+      when 1
+        { /\*_\b/ => args.first,
+          /\b_\b/ => args.first }
+
+      else
+        list = args.join(', ')
+        { /\*_\b/ => list,
+          /\b_\b/ => '[' + list + ']' }
+
       end
     end
 
@@ -45,18 +55,34 @@ module Rattler::Parsers
       if param_names.count > args.count
         raise ArgumentError, 'more parameter names than arguments'
       end
-      bindings = {}
-      param_names.zip(args).each {|name, arg| bindings[name] = arg if name }
-      bindings
+      to_bindings param_names.zip(args)
     end
 
     private
+
+    def to_bindings(map)
+      bindings = {}
+      map.each {|name, arg| bindings[/\b#{name}\b/] = arg if name }
+      bindings
+    end
 
     def bind_in(code, bindings)
       new_code = code
       bindings.each do |k, v|
         next unless k and v
-        new_code = new_code.gsub(/\b#{k}\b/, v.to_s)
+        if bindings.has_key? '*_'
+          puts('-' * 70)
+          p new_code
+          puts "substituting #{k.inspect} -> #{v.to_s.inspect}"
+          p new_code
+          puts('-' * 70)
+        end
+        unless k.is_a? Regexp
+          puts('!' * 70)
+          p bindings
+          puts('!' * 70)
+        end
+        new_code = new_code.gsub(k, v.to_s)
       end
       new_code
     end
