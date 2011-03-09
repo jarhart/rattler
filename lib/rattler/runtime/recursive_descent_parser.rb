@@ -38,7 +38,7 @@ module Rattler::Runtime
     # @return (see #apply)
     #
     def match(rule_name)
-      apply(rule_name) or fail { rule_name }
+      send @rule_method_names[rule_name] or fail { rule_name }
     end
 
     def method_missing(symbol, *args)
@@ -59,16 +59,8 @@ module Rattler::Runtime
       match start_rule
     end
 
-    # Apply a rule by dispatching to the method associated with the given rule
-    # name, which is named by <tt>"match_#{rule_name}"<tt>. This method is
-    # called by +match+ and should not be called directly.
-    #
-    # @param [Symbol] rule_name the name of the rule to apply
-    #
-    # @return the result of applying the rule
-    #
-    def apply(rule_name)
-      send @rule_method_names[rule_name]
+    def apply(rule_method_name)
+      send rule_method_name
     end
 
   end

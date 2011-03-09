@@ -16,7 +16,7 @@ module Rattler::Util
   #
   class Node
     include Enumerable
-    
+
     # Create a +Node+ object.
     #
     # @return [Node]
@@ -32,7 +32,7 @@ module Rattler::Util
     def self.[](*args)
       self.new(*args)
     end
-    
+
     # Create a +Node+ object.
     #
     # @overload initialize()
@@ -47,7 +47,7 @@ module Rattler::Util
       @attrs = args.last.respond_to?(:to_hash) ? args.pop : {}
       @__children__ = args
     end
-    
+
     # Return an array of the node's children
     #
     # @return [Array] the node's children
@@ -62,7 +62,7 @@ module Rattler::Util
         []
       end
     end
-    
+
     # Return the node's child at +index+, or the first/only child if no index
     # is given.
     #
@@ -72,14 +72,14 @@ module Rattler::Util
     def child(index = 0)
       children[index]
     end
-    
+
     # Return a the node's attributes.
     #
     # @return [Hash] the node's attributes
     def attrs
       @attrs ||= {}
     end
-    
+
     # Return the node's name, which is the node's +name+ attribute if it has
     # one, otherwise the name of the node's class.
     #
@@ -87,21 +87,35 @@ module Rattler::Util
     def name
       attrs.fetch(:name, self.class.name)
     end
-    
+
     # Call _block_ once for each child, passing that child as an argument.
     #
     # @yield [child]
     def each # :yield: child
-      children.each { |_| yield _ }
+      block_given? ? children.each { |_| yield _ } : children.each
     end
-    
+
+    def with_children(new_children)
+      self.class.new(new_children, attrs)
+    end
+
+    alias_method :with_child, :with_children
+
+    def with_attrs(new_attrs)
+      self.with_attrs!(attrs.merge new_attrs)
+    end
+
+    def with_attrs!(new_attrs)
+      self.class.new(children, new_attrs)
+    end
+
     # Return +true+ if the node has no children.
     #
     # @return [Boolean] +true+ if the node has no children
     def empty?
       children.empty?
     end
-    
+
     # Access the node's children as if the node were an array of its children.
     #
     # @overload [](index)
@@ -122,7 +136,7 @@ module Rattler::Util
     def [](*args)
       children[*args]
     end
-    
+
     # Return +true+ if the node is equal to +other+. Normally this means
     # +other+ is an instance of the same class or a subclass and has equal
     # children and attributes.
@@ -133,7 +147,7 @@ module Rattler::Util
       other.can_equal?(self) and
       self.same_contents?(other)
     end
-    
+
     # Return +true+ if the node has the same value as +other+, i.e. +other+
     # is an instance of the same class and has equal children and attributes.
     #
@@ -142,28 +156,28 @@ module Rattler::Util
       self.class == other.class and
       self.same_contents?(other)
     end
-    
+
     # Allow attributes to be accessed as methods.
     def method_missing(symbol, *args)
       (args.empty? and @attrs.has_key?(symbol)) ? @attrs[symbol] : super
     end
-    
+
     # @private
     def respond_to?(symbol) #:nodoc:
       super || @attrs.has_key?(symbol)
     end
-    
+
     # @private
     def can_equal?(other) #:nodoc:
       self.class == other.class
     end
-    
+
     # @private
     def same_contents?(other) #:nodoc:
       self.children == other.children and
       self.attrs == other.attrs
     end
-    
+
     # @private
     def inspect #:nodoc:
       "#{self.class}[" +
@@ -171,6 +185,6 @@ module Rattler::Util
         attrs.map {|k, v| k.inspect + '=>' + v.inspect}).join(',') +
       ']'
     end
-    
+
   end
 end

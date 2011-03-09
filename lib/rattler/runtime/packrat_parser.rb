@@ -27,10 +27,6 @@ module Rattler::Runtime
       @memo = Hash.new {|h, rule_name| h[rule_name] = {} }
     end
 
-    # @private
-    alias_method :eval_rule, :apply
-    private :eval_rule
-
     protected
 
     # Apply a rule by dispatching to the method associated with the given rule
@@ -47,51 +43,51 @@ module Rattler::Runtime
       if m = memo(rule_name, start_pos)
         recall m, rule_name
       else
-        apply! rule_name, start_pos
+        m = inject_fail rule_name, start_pos
+        save m, eval_rule(rule_name)
       end
     end
+
+    alias_method :memoize, :apply
+
+    alias_method :eval_rule, :send
 
     private
 
     # @private
-    def apply!(rule_name, start_pos) #:nodoc:
-      m = inject_memo rule_name, start_pos, false, start_pos, start_pos, 'left-recursion detected'
-      memorize m, eval_rule(rule_name)
-    end
-
-    def memo(rule_name, start_pos)
+    def memo(rule_name, start_pos) #:nodoc:
       @memo[rule_name][start_pos]
     end
 
-    def inject_memo(rule_name, start_pos, result, end_pos, failure_pos, failure_msg)
-      @memo[rule_name][start_pos] = MemoEntry.new(result, end_pos, failure_pos, failure_msg)
+    # @private
+    def inject_memo(rule_name, start_pos, result, end_pos) #:nodoc:
+      @memo[rule_name][start_pos] = MemoEntry.new(result, end_pos)
     end
 
     # @private
-    def memorize(m, result) #:nodoc:
+    def inject_fail(rule_name, fail_pos) #:nodoc:
+      @memo[rule_name][fail_pos] = MemoEntry.new(false, fail_pos)
+    end
+
+    # @private
+    def save(m, result) #:nodoc:
       m.end_pos = @scanner.pos
-      m.failure_pos = @failure_pos
-      m.failure_msg = @failure_msg
       m.result = result
     end
 
     # @private
     def recall(m, rule_name) #:nodoc:
       @scanner.pos = m.end_pos
-      @failure_pos = m.failure_pos
-      @failure_msg = m.failure_msg
       m.result
     end
 
     # @private
     class MemoEntry #:nodoc:
-      def initialize(result, end_pos, failure_pos, failure_msg)
+      def initialize(result, end_pos)
         @result = result
         @end_pos = end_pos
-        @failure_pos = failure_pos
-        @failure_msg = failure_msg
       end
-      attr_accessor :result, :end_pos, :failure_pos, :failure_msg
+      attr_accessor :result, :end_pos
     end
 
   end

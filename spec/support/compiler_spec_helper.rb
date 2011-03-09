@@ -1,100 +1,69 @@
 require 'strscan'
 
 module CompilerSpecHelper
-  
-  ParserBase = Rattler::Runtime::RecursiveDescentParser
-  
-  def define_parser(&block)
-    Rattler::Parsers.define(&block)
+
+  def define_grammar(&block)
+    Rattler::Grammar::Grammar.new(Rattler::Parsers.define(&block))
   end
-  
-  def compile_parser(&block)
-    Rattler::BackEnd::Compiler.
-      compile_parser(ParserBase, define_parser(&block))
-  end
-  
-  def compile(rules=nil, &block)
-    Compile.new(rules || define_parser(&block))
-  end
-  
-  class Compile
-    def initialize(rules)
-      @rules = rules
-    end
-    def description
-      'compile the parser'
-    end
-    def matches?(target)
-      @compiled_parser = target.compile_parser(ParserBase, @rules)
-      !@compiled_parser.nil?
-    end
-    def failure_message_for_should
-      "expected Compiler to compile the parser"
-    end
-    def test_parsing(test_input)
-      CompileTestParsing.new(@rules, test_input)
-    end
-  end
-  
-  class CompileTestParsing < Compile
-    def initialize(rules, test_input)
-      super rules
-      @rule_name = @rules.first.name
-      @repeat = 1
-      @test_input = test_input
-    end
-    def description
-      super + ' to equivalent parsing code'
-    end
-    def as(rule_name)
-      @rule_name = rule_name
-      self
-    end
-    def twice
-      repeating(2).times
-    end
-    def repeating(n)
-      @repeat = n
-      self
-    end
-    def times
-      self
-    end
-    def matches?(target)
-      if super
-        scanner = StringScanner.new(@test_input)
-        parser = @compiled_parser.new(@test_input)
-        @repeat.times do
-          @expected_result = normalize @rules[@rule_name].parse(scanner, @rules)
-          @actual_result = normalize parser.match(@rule_name)
-          @expected_pos = scanner.pos
-          @actual_pos = parser.pos
-          @correct_result = @expected_result == @actual_result
-          @correct_pos = @expected_pos == @actual_pos
-          return false unless @correct_result && @correct_pos
+
+  RSpec::Matchers.define :parse do |source|
+    match do |parser_class|
+      parser = parser_class.new(source)
+      @repeat ||= 1
+      actual_results = (1..@repeat).map { parser.parse or false }
+      if @other_parser
+        expected_results = (1..@repeat).map { @other_parser.parse or false }
+        if mismatch = expected_results.zip(actual_results).find {|a, b| a != b }
+          @wrong_result = true
+          @expected_result, @actual_result = mismatch
         end
+        @expected_pos = @other_parser.pos
+        @actual_pos = parser.pos
+        @wrong_pos = @expected_pos != @actual_pos
       end
+      @wrong_fail = @should_succeed && actual_results.any? {|_| !_ }
+      @wrong_success = @should_fail && actual_results.any? {|_| _ }
+      not (@wrong_result or @wrong_fail or @wrong_success)
     end
-    def failure_message_for_should
-      if @compiled_parser
-        "parsing #{@test_input.inspect}\n" +
-        if @correct_result
-          "incorrect parse position\n" +
-          "expected: #{@expected_pos}\n" +
-          "     got: #{@actual_pos}"
-        else
-          "incorrect result\n" +
-          "expected: #{@expected_result.inspect}\n" +
-          "     got: #{@actual_result.inspect}"
-        end
-      else
-        super
+
+    chain :succeeding do |*args|
+      @repeat = args.shift unless args.empty?
+      @should_succeed = true
+    end
+
+    chain :failing do
+      @should_fail = true
+    end
+
+    chain :like do |other_parser_class|
+      @other_parser = other_parser_class.new(source)
+    end
+
+    chain :twice do
+      @repeat = 2
+    end
+
+    chain(:times) {} # syntactic sugar
+
+    failure_message_for_should do |parser_class|
+      m = "exected compiled parser to parse #{source.inspect}"
+      m << " like reference parser" if @other_parser
+      m << "\n"
+      if @wrong_result
+        m << "incorrect result\n" \
+          << "expected: #{@expected_result.inspect}\n" \
+          << "     got: #{@actual_result.inspect}"
+      elsif @wrong_pos
+        m << "incorrect parse position\n" \
+          << "expected: #{@expected_pos}\n" \
+          << "     got: #{@actual_pos}"
+      elsif @wrong_success
+        m << "expected parse to fail"
+      elsif @wrong_fail
+        m << "expected parse to succeed"
       end
-    end
-    private
-    def normalize(result)
-      result.nil? ? false : result
+      m
     end
   end
-  
+
 end

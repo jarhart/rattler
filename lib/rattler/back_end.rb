@@ -17,5 +17,6 @@ module Rattler
     autoload :Compiler, 'rattler/back_end/compiler'
     autoload :ParserGenerator, 'rattler/back_end/parser_generator'
     autoload :RubyGenerator, 'rattler/back_end/ruby_generator'
+    autoload :Optimizer, 'rattler/back_end/optimizer'
   end
 end

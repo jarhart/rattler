@@ -20,7 +20,7 @@ module Rattler
       #
       # @option options [Parser] ws (nil) a parser to be used to skip whitespace
       #
-      # @return [Rattler::Parsers::Rules] a set of parse rules
+      # @return [Rattler::Parsers::RuleSet] a set of parse rules
       #
       def self.rules(options = {}, &block)
         self.new(options).rules(&block)
@@ -48,10 +48,10 @@ module Rattler
 
       # Evaluate the given block to define parse rules
       #
-      # @return [Rules] the rules defined in the block
+      # @return [RuleSet] the rules defined in the block
       def rules(&block)
         instance_exec(self, &block)
-        Rules[@rules]
+        RuleSet[@rules]
       end
 
       # Evaluate the given block to define a parse rule
@@ -104,6 +104,7 @@ module Rattler
         when :SPACE   then match /[[:space:]]/
         when :UPPER   then match /[[:upper:]]/
         when :XDIGIT  then match /[[:xdigit:]]/
+        when :WORD    then match /[[:alnum:]_]/
         when Symbol   then Apply[arg]
         else match Regexp.new(Regexp.escape(arg.to_s))
         end
@@ -133,6 +134,8 @@ module Rattler
         ZeroOrMore[to_parser(arg)]
       end
 
+      alias_method :any, :zero_or_more
+
       # Create a new one-or-more parser.
       #
       # @overload one_or_more(parser)
@@ -144,6 +147,8 @@ module Rattler
       def one_or_more(arg)
         OneOrMore[to_parser(arg)]
       end
+
+      alias_method :some, :one_or_more
 
       # Create a new list parser.
       #
@@ -341,6 +346,11 @@ module Rattler
       # @return [Match] a parser matching the POSIX +xdigit+ character class
       def xdigit
         match :XDIGIT
+      end
+
+      # @return [Match] a parser matching the +word+ character class
+      def word
+        match :WORD
       end
 
       private

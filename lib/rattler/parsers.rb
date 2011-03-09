@@ -16,7 +16,8 @@ module Rattler
   module Parsers
 
     autoload :Parser, 'rattler/parsers/parser'
-    autoload :Rules, 'rattler/parsers/rules'
+    autoload :CombinatorParser, 'rattler/parsers/combinator_parser'
+    autoload :RuleSet, 'rattler/parsers/rule_set'
     autoload :Rule, 'rattler/parsers/rule'
     autoload :Match, 'rattler/parsers/match'
     autoload :Choice, 'rattler/parsers/choice'

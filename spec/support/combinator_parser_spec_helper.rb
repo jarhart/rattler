@@ -4,21 +4,21 @@ include Rattler::Parsers
 
 module CombinatorParserSpecHelper
   include Rattler::Util::ParserSpecHelper
-  
-  @@default_rules = Rules[]
-  
+
+  @@default_rules = RuleSet[]
+
   def rules
     @@default_rules
   end
-  
+
   def parser(&block)
     Rattler::Parsers::ParserBuilder.build(&block)
   end
-  
+
   def parsing(source)
     CombinatorParsing.new(source, subject, rules)
   end
-  
+
   class CombinatorParsing
     def initialize(source, parser, rules)
       @scanner = StringScanner.new(source)
@@ -47,5 +47,5 @@ module CombinatorParserSpecHelper
       !result
     end
   end
-  
+
 end

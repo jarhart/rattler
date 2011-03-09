@@ -77,6 +77,9 @@ module Rattler::BackEnd::ParserGenerator
       when Fail
         cache_generator FailGenerator
 
+      when GroupMatch
+        cache_generator GroupMatchGenerator
+
       end
     end
 

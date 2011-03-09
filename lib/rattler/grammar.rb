@@ -17,7 +17,8 @@ module Rattler
     autoload :GrammarParser, 'rattler/grammar/grammar_parser'
     autoload :GrammarDSL, 'rattler/grammar/grammar_dsl'
     autoload :Metagrammar, 'rattler/grammar/metagrammar'
-    
+    autoload :Analysis, 'rattler/grammar/analysis'
+
     # Parse +source+ as a grammar and raise a {Rattler::Runtime::SyntaxError}
     # if the parse fails.
     #
@@ -28,7 +29,7 @@ module Rattler
     def self.parse!(source, options={})
       GrammarParser.parse!(source, options={})
     end
-    
+
     # Parse +source+ as a grammar.
     #
     # @param (see Rattler::RecursiveDescentParser#initialize)
@@ -37,6 +38,6 @@ module Rattler
     def self.parser(source, options={})
       GrammarParser.new(source, options={})
     end
-    
+
   end
 end

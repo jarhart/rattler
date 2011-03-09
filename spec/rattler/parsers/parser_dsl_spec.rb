@@ -264,7 +264,7 @@ describe ParserDSL do
           rule(:word) { match(/\w+/) }
           rule(:number) { match(/\d+/) }
         end.
-        should == Rules[
+        should == RuleSet[
           Rule[:word, Match[/\w+/]],
           Rule[:number, Match[/\d+/]]
         ]

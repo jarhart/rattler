@@ -4,7 +4,6 @@ module Rattler::BackEnd::ParserGenerator
 
   # @private
   class ExprGenerator #:nodoc:
-    # include GeneratorHelper
 
     include Rattler::Parsers
 

@@ -28,33 +28,39 @@ module Rattler::Runtime
       @lr_stack = []
     end
 
-    private
-
-    # @private
-    def apply!(rule_name, start_pos) #:nodoc:
-      lr = LR.new(false, rule_name, nil)
-      @lr_stack.push lr
-      m = inject_memo rule_name, start_pos, lr, start_pos, nil, nil
-      result = eval_rule rule_name
-      @lr_stack.pop
-      if lr.head
-        m.end_pos = @scanner.pos
-        lr.seed = result
-        lr_answer rule_name, start_pos, m
+    def apply(rule_name)
+      start_pos = @scanner.pos
+      if m = memo_lr(rule_name, start_pos)
+        recall m, rule_name
       else
-        memorize m, result
+        lr = LR.new(false, rule_name, nil)
+        @lr_stack.push lr
+        m = inject_memo rule_name, start_pos, lr, start_pos
+        result = eval_rule rule_name
+        @lr_stack.pop
+        if lr.head
+          m.end_pos = @scanner.pos
+          lr.seed = result
+          lr_answer rule_name, start_pos, m
+        else
+          save m, result
+        end
       end
     end
 
+    alias_method :memoize_lr, :apply
+
+    private
+
     # @private
-    def memo(rule_name, start_pos) #:nodoc:
-      m = super
+    def memo_lr(rule_name, start_pos) #:nodoc:
+      m = memo(rule_name, start_pos)
       head = @heads[start_pos] or return m
       if !m && !head.involves?(rule_name)
-        return inject_memo rule_name, start_pos, false, start_pos, nil, nil
+        return inject_fail rule_name, start_pos
       end
       if head.eval_set.delete(rule_name)
-        memorize m, eval_rule(rule_name)
+        save m, eval_rule(rule_name)
       end
       return m
     end
@@ -84,7 +90,7 @@ module Rattler::Runtime
       if head.rule_name == rule_name
         grow_lr(rule_name, start_pos, m, head) if m.result = m.result.seed
       else
-        memorize m, m.result.seed
+        save m, m.result.seed
       end
     end
 
@@ -99,7 +105,7 @@ module Rattler::Runtime
           @heads.delete(start_pos)
           return recall m, rule_name
         end
-        memorize m, result
+        save m, result
       end
     end
 

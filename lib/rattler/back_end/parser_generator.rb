@@ -14,6 +14,7 @@ module Rattler::BackEnd
   #
   module ParserGenerator
 
+    autoload :RuleSetGenerator, 'rattler/back_end/parser_generator/rule_set_generator'
     autoload :RuleGenerator, 'rattler/back_end/parser_generator/rule_generator'
     autoload :ExprGenerator, 'rattler/back_end/parser_generator/expr_generator'
     autoload :GeneratorHelper, 'rattler/back_end/parser_generator/generator_helper'
@@ -46,6 +47,8 @@ module Rattler::BackEnd
     autoload :TokenPropogating, 'rattler/back_end/parser_generator/token_propogating'
     autoload :SkipPropogating, 'rattler/back_end/parser_generator/skip_propogating'
     autoload :DispatchActionCode, 'rattler/back_end/parser_generator/dispatch_action_code'
+    autoload :GroupMatchGenerator, 'rattler/back_end/parser_generator/group_match_generator'
+    autoload :GroupMatch, 'rattler/back_end/parser_generator/group_match'
     autoload :GEN_METHOD_NAMES, 'rattler/back_end/parser_generator/gen_method_names'
 
     # Generate parsing code for a parser model using a ruby generator +g+.
@@ -53,49 +56,52 @@ module Rattler::BackEnd
     # @overload generate(g, grammar)
     #   @param [RubyGenerator] g the ruby generator to use
     #   @param [Rattler::Grammar::Grammar] grammar the grammar model
-    #   @return nil
+    #   @return g
     #
     # @overload generate(g, rules)
     #   @param [RubyGenerator] g the ruby generator to use
     #   @param [Rules] rules the parse rules
-    #   @return nil
+    #   @return g
     #
     # @overload generate(g, rule)
     #   @param [RubyGenerator] g the ruby generator to use
     #   @param [Rule] rule the parse rule
-    #   @return nil
+    #   @return g
     #
     # @overload generate(g, parser)
     #   @param [RubyGenerator] g the ruby generator to use
     #   @param [Parser] parser the parser model
-    #   @return nil
+    #   @return g
     #
-    def self.generate(g, parser)
-      RuleGenerator.new(g).generate(parser)
-      nil
+    def self.generate(g, parser, opts={})
+      unless opts[:no_optimize]
+        parser = ::Rattler::BackEnd::Optimizer.optimize(parser, opts)
+      end
+      RuleSetGenerator.new(g).generate(parser, opts)
+      g
     end
 
     # Generate parsing code for +parser+ using a new {RubyGenerator} with the
     # given options and return the generated code.
     #
-    # @overload code_for(grammar, options)
+    # @overload code_for(grammar, opts)
     #   @param [Rattler::Grammar::Grammar] grammar the grammar model
     #   @return [String] the generated code
     #
-    # @overload code_for(rules, options)
+    # @overload code_for(rules, opts)
     #   @param [Rules] rules the parse rules
     #   @return [String] the generated code
     #
-    # @overload code_for(rule, options)
+    # @overload code_for(rule, opts)
     #   @param [Rule] rule the parse rule
     #   @return [String] the generated code
     #
-    # @overload code_for(parser, options)
+    # @overload code_for(parser, opts)
     #   @param [Parser] parser the parser model
     #   @return [String] the generated code
     #
-    def self.code_for(parser, options={})
-      ::Rattler::BackEnd::RubyGenerator.code(options) {|g| generate(g, parser) }
+    def self.code_for(parser, opts={})
+      ::Rattler::BackEnd::RubyGenerator.code(opts) {|g| generate g, parser, opts }
     end
 
   end

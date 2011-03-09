@@ -14,7 +14,7 @@ module Rattler::Runtime
   #
   # @author Jason Arhart
   #
-  class Parser
+  class Parser < Rattler::Util::Node
 
     # Parse +source+ and raise a {SyntaxError} if the parse fails.
     #

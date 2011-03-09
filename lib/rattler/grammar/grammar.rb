@@ -11,18 +11,26 @@ module Rattler::Grammar
   # +Grammar+ represents a parsed grammar
   #
   # @author Jason Arhart
-  class Grammar
-    
+  class Grammar < Rattler::Util::Node
+
     # The name of the default parser base class
     DEFAULT_PARSER_BASE = 'Rattler::Runtime::PackratParser'
-    
+
+    @@default_opts = {
+      :grammar_name => nil,
+      :parser_name => nil,
+      :base_name => DEFAULT_PARSER_BASE,
+      :requires => [],
+      :includes => []
+    }
+
     # @private
     def self.parsed(results, *_) #:nodoc:
       options, rules = results
       self.new(rules, options)
     end
-    
-    # @param rules [Rules] the parse rules that define the parser
+
+    # @param rules [RuleSet] the parse rules that define the parser
     #
     # @option opts [String] start_rule (rules.first)
     # @option opts [String] grammar_name (nil)
@@ -31,27 +39,31 @@ module Rattler::Grammar
     # @option opts [Array<String>] requires ([])
     # @option opts [Array<String>] includes ([])
     def initialize(rules, opts={})
-      @__rules__ = rules
-      @start_rule = opts[:start_rule] || rules.first.name
-      @grammar_name = opts[:grammar_name]
-      @parser_name = opts[:parser_name]
-      @base_name = opts[:base_name] || DEFAULT_PARSER_BASE
-      @requires = opts[:requires] || []
-      @includes = opts[:includes] || []
-      @name = @grammar_name || @parser_name
-    end
-    
-    attr_reader :start_rule, :grammar_name, :parser_name, :base_name, :name
-    attr_reader :requires, :includes
-    
-    # @return the parse rules
-    def rules
-      @rules ||= begin
-        r = @__rules__.optimized
-        r.start_rule = start_rule
-        r
+      super @@default_opts.merge(opts)
+
+      case attrs[:start_rule]
+      when Symbol then attrs[:start_rule] = rules[start_rule]
+      when nil    then attrs[:start_rule] = rules.first
       end
+
+      @rules = rules.with_attrs(:start_rule => start_rule.name)
+
+      attrs[:name] ||= grammar_name || parser_name
     end
-    
+
+    attr_reader :rules
+
+    def rule(name)
+      rules[name]
+    end
+
+    def analysis
+      rules.analysis
+    end
+
+    def with_rules(new_rules)
+      self.class.new new_rules, attrs
+    end
+
   end
 end

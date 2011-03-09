@@ -59,11 +59,11 @@ module Rattler::BackEnd::ParserGenerator
     end
 
     def gen_intermediate_assert(match)
-      @g << "@scanner.skip(#{match.assert_re.inspect})"
+      @g << "@scanner.skip(#{/(?=#{match.re.source})/.inspect})"
     end
 
     def gen_intermediate_disallow(match)
-      @g << "@scanner.skip(#{match.disallow_re.inspect})"
+      @g << "@scanner.skip(#{/(?!#{match.re.source})/.inspect})"
     end
 
     def gen_intermediate_skip(match)
