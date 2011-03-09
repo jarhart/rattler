@@ -12,6 +12,10 @@ module JsonHelper
   end
 
   def string(expr)
+    eval "%q#{expr}", TOPLEVEL_BINDING
+  end
+
+  def number(expr)
     eval expr, TOPLEVEL_BINDING
   end
 

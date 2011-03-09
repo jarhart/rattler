@@ -1,30 +1,48 @@
 # JSON parser based on the grammar at http://www.json.org
 
+require File.expand_path('json_helper', File.dirname(__FILE__))
+
 parser JsonParser < Rattler::Runtime::PackratParser
 
 include JsonHelper
 
-%whitespace (SPACE+ | '/*' (! '*/' .)* '*/' | '//' [^\n]*)*
+%whitespace (SPACE+ | comment)* {
 
-object    <-  ~'{' members ~'}'                                 { object _ }
+  object    <-  ~'{' members ~'}'                                   { object _ }
 
-members   <-  pair *^ ','
+  members   <-  pair *, ','
 
-pair      <-  string ~':' value
+  pair      <-  string ~':' value
 
-array     <-  ~'[' elements ~']'
+  array     <-  ~'[' elements ~']'
 
-elements  <-  value *^ ','
+  elements  <-  value *, ','
 
-value     <-  string                                            { string _ }
-            | number !DIGIT                                     { _.to_f }
-            | object
-            | array
-            | `true`                                            { :true }
-            | `false`                                           { :false }
-            | `null`                                            { :null }
-            | fail "value expected"
+  value     <-  string
+              | number
+              | object
+              | array
+              | `true`                                              { :true }
+              | `false`                                             { :false }
+              | `null`                                              { :null }
+              | fail "value expected"
 
-string    <-  @('"' ('\\' . | [^"])* '"')
+  string    <-  @('"' char* '"')                                    { string _ }
 
-number    <-  @('-'? ('0' | [1-9] DIGIT*) ('.' DIGIT+)? ([eE] [+-]? DIGIT+)?)
+  number    <-  @(int frac? exp?)                                   { number _ }
+}
+
+%inline {
+
+  char      <-  !('"' | '\\' | CNTRL) .
+              | '\\' (["\\/bfnrt] | 'u' XDIGIT XDIGIT XDIGIT XDIGIT)
+
+  int       <-  '-'? ('0' !DIGIT | [1-9] DIGIT*)
+
+  frac      <-  '.' DIGIT+
+
+  exp       <-  [eE] [+-]? DIGIT+
+
+  comment   <-  '/*' (! '*/' .)* '*/'
+              | '//' [^\n]*
+}
