@@ -23,14 +23,14 @@ dynamically from strings.
 * An extended packrat parser that supports left-recursive grammars
 * Whitespace can be specified in one place and skipped automatically
 * Automatic and custom parse error reporting
-* Optimizing parser generator
+* Optimizing parser generator generates efficient pure-ruby parsers
 * Generated parsers are relatively readable
 * Compatible with Ruby 1.8.7 and 1.9.2, tested with MRI and JRuby on Linux and
   Windows
 
 == PROBLEMS/LIMITATIONS:
 
-* Optimizations are very limited at this point
+* No backreferences yet
 * Only strings can be parsed, so files have to be read completely before parsing
 * There are many holes in the tests so there are undoubtedly many bugs
 
@@ -42,42 +42,73 @@ dynamically from strings.
   
   # JSON parser based on the grammar at http://www.json.org
 
+  require File.expand_path('json_helper', File.dirname(__FILE__))
+
   parser JsonParser < Rattler::Runtime::PackratParser
 
-  %whitespace (SPACE+ | '/*' (! '*/' .)* '*/' | '//' [^\n]*)*
+  include JsonHelper
 
-  object    <-  ~'{' members ~'}'                                   { object _ }
+  %whitespace (SPACE+ | comment)* {
 
-  members   <-  pair *^ ','
+    object    <-  ~'{' members ~'}'                                   { object _ }
 
-  pair      <-  string ~':' value
+    members   <-  pair *, ','
 
-  array     <-  ~'[' elements ~']'
+    pair      <-  string ~':' value
 
-  elements  <-  value *^ ','
+    array     <-  ~'[' elements ~']'
 
-  value     <-  string                                              { string _ }
-              | number !DIGIT                                       { _.to_f }
-              | object
-              | array
-              | `true`                                              { :true }
-              | `false`                                             { :false }
-              | `null`                                              { :null }
-              | fail "value expected"
+    elements  <-  value *, ','
 
-  string    <-  @('"' ('\\' . | [^"])* '"')
+    value     <-  string
+                | number
+                | object
+                | array
+                | `true`                                              { :true }
+                | `false`                                             { :false }
+                | `null`                                              { :null }
+                | fail "value expected"
 
-  number    <-  @('-'? ('0' | [1-9] DIGIT*) ('.' DIGIT+)? ([eE] [+-]? DIGIT+)?)
+    string    <-  @('"' char* '"')                                    { string _ }
+
+    number    <-  @(int frac? exp?)                                   { number _ }
+  }
+
+  %inline {
+
+    char      <-  !('"' | '\\' | CNTRL) .
+                | '\\' (["\\/bfnrt] | 'u' XDIGIT XDIGIT XDIGIT XDIGIT)
+
+    int       <-  '-'? ('0' !DIGIT | [1-9] DIGIT*)
+
+    frac      <-  '.' DIGIT+
+
+    exp       <-  [eE] [+-]? DIGIT+
+
+    comment   <-  '/*' (! '*/' .)* '*/'
+                | '//' [^\n]*
+  }
 
 ==== json_helper.rb:
 
   module JsonHelper
 
     def object(members)
-      Hash[*members.flatten(1)]
+      Hash[*members.map do |_|
+        case _.last
+        when :true then [_.first, true]
+        when :false then [_.first, false]
+        when :null then [_.first, nil]
+        else _
+        end
+      end.flatten(1)]
     end
 
     def string(expr)
+      eval "%q#{expr}", TOPLEVEL_BINDING
+    end
+
+    def number(expr)
       eval expr, TOPLEVEL_BINDING
     end
 
@@ -126,14 +157,8 @@ dynamically from strings.
     include JsonGrammar
 
     def object(members)
-      Hash[*members.flatten(1)]
-    end
 
-    def string(expr)
-      eval expr, TOPLEVEL_BINDING
-    end
-
-  end
+  ...
 
 === Example 3: Dynamically generated parser class
 
@@ -156,7 +181,8 @@ dynamically from strings.
     primary <-  ~'(' expr ~')'
               | @('-'? DIGIT+ '.' DIGIT+)   { _.to_f }
               | @('-'? DIGIT+)              { _.to_i }
-  }, :type => :extended_packrat
+  },
+  :type => :extended_packrat
  
   begin
     puts Calculator.parse!(expr)
