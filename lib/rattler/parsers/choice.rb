@@ -16,13 +16,12 @@ module Rattler::Parsers
   #
   class Choice < Parser
     include Combining
-    include MatchJoining
-    
+
     # @private
     def self.parsed(results, *_) #:nodoc:
       results.reduce(:|)
     end
-    
+
     # Try each parser in order until one succeeds and return that result.
     #
     # @param (see Parser#parse_labeled)
@@ -36,7 +35,7 @@ module Rattler::Parsers
       end
       false
     end
-    
+
     # Return a new parser that tries this parser first and if it fails tries
     # +other+.
     #
@@ -45,38 +44,6 @@ module Rattler::Parsers
     def |(other)
       Choice[(children + [other])]
     end
-    
-    protected
-    
-    def optimized_children
-      join_matches super
-    end
-    
-    def token_optimized_children
-      join_matches super
-    end
-    
-    def skip_optimized_children
-      join_matches super
-    end
-    
-    def match_join(matches)
-      matches.map {|_| _.re.source }.join('|')
-    end
-    
-    def join_matches(parsers)
-      super flatten_choices(parsers)
-    end
-    
-    private
-    
-    def flatten_choices(parsers)
-      if parsers.all? {|_| Choice === _ }
-        parsers.map {|_| _.to_a }.reduce(:+)
-      else
-        parsers
-      end
-    end
-    
+
   end
 end

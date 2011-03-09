@@ -15,22 +15,19 @@ module Rattler::Parsers
   # @author Jason Arhart
   #
   class Rule < Rattler::Util::Node
-    
-    # @private
-    def self.parsed(results, *_) #:nodoc:
-      self[*results]
-    end
-    
+
     # Create a new +Rule+.
     #
     # @param [Symbol, String] name the name of the new rule
     # @param [Parser] parser the parser that defines the rule body
     #
     # @return [Rule] a new parse rule
-    def self.[](name, parser)
-      self.new(parser, :name => name.to_sym)
+    def self.[](name, parser, attrs={})
+      self.new(parser, attrs.merge(:name => name.to_sym))
     end
-    
+
+    alias_method :expr, :child
+
     # Parse using +scanner+ and +rules+ and on success return the result, on
     # failure return a false value.
     #
@@ -39,19 +36,19 @@ module Rattler::Parsers
     #
     # @return (see Parser#parse_labeled)
     def parse(scanner, rules)
-      child.parse(scanner, rules)
+      catch(:rule_failed) { return expr.parse(scanner, rules) }
+      false
     end
-    
+
+    def with_expr(new_expr)
+      Rule[name, new_expr, attrs]
+    end
+
     # @param (see Parser#with_ws)
     # @return (see Parser#with_ws)
     def with_ws(ws)
-      Rule[name, child.with_ws(ws)]
+      self.with_expr expr.with_ws(ws)
     end
-    
-    # @return (see Parser#optimized)
-    def optimized
-      Rule[name, child.optimized]
-    end
-    
+
   end
 end

@@ -15,7 +15,7 @@ module Rattler::Parsers
   # @author Jason Arhart
   #
   class Assert < Predicate
-    
+
     # Succeed or fail like the decorated parser but do not consume any input
     # and return +true+ on success.
     #
@@ -28,20 +28,6 @@ module Rattler::Parsers
       scanner.pos = pos
       result
     end
-    
-    # Return a parser that parses identically but may have a more optimized
-    # structure.
-    #
-    # @return a parser that parses identically but may have a more optimized
-    #   structure
-    def optimized
-      Assert[child.optimized]
-    end
-    
-    # @private
-    def as_match #:nodoc:
-      Match[child.assert_re] if Match === child
-    end
-    
+
   end
 end

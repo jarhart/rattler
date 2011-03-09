@@ -13,7 +13,7 @@ module Rattler::Parsers
   # and vice versa.
   #
   class Disallow < Predicate
-    
+
     # Succeed and return +true+ if and only if decorated parser fails.  Never
     # consumes any input.
     #
@@ -26,20 +26,6 @@ module Rattler::Parsers
       scanner.pos = pos
       result
     end
-    
-    # Return a parser that parses identically but may have a more optimized
-    # structure.
-    #
-    # @return a parser that parses identically but may have a more optimized
-    #   structure
-    def optimized
-      Disallow[child.optimized]
-    end
-    
-    # @private
-    def as_match #:nodoc:
-      Match[child.disallow_re] if Match === child
-    end
-    
+
   end
 end
