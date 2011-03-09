@@ -1,15 +1,14 @@
 require File.dirname(__FILE__) + '/tests_watchr_helper'
 
-watch('spec/.*_spec\.rb')           {|md| rspec_multi md[0] }
+watch('spec/.*_spec\.rb')           {|md| rspec md[0] }
 watch('lib/(.*\.rb)')               {|md| test "spec/#{File.dirname md[1]}" }
-watch('spec/.*_examples\.rb')       {|md| rspec_multi File.dirname(md[0]) }
-watch('spec/support/.*\.rb')        {|md| rspec_multi '.' }
-watch('features/.*\.(feature|rb)')  { cucumber_multi }
-watch('bin/*')                      { cucumber_multi }
+watch('spec/.*_examples\.rb')       {|md| rspec File.dirname(md[0]) }
+watch('spec/support/.*\.rb')        {|md| rspec '.' }
+watch('features/.*\.(feature|rb)')  { cucumber }
 
 def test(arg='.')
-  rspec_multi arg
-  cucumber_multi
+  rspec arg
+  cucumber
 end
 
 trap_signals
