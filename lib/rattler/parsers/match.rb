@@ -45,7 +45,7 @@ module Rattler::Parsers
     # @param (see Parser#with_ws)
     # @return (see Parser#with_ws)
     def with_ws(ws)
-      Skip[ws] & self
+      ws.skip & self
     end
 
   end

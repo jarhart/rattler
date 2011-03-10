@@ -85,6 +85,11 @@ module Rattler::Parsers
       OneOrMore[self]
     end
 
+    # @return a new parser that skips over what this parser matches
+    def skip
+      Skip[self]
+    end
+
     # @param [Parser] ws the parser used to skip whitespace
     # @return [Parser] a new parser that uses +ws+ to skip whitespace
     def with_ws(ws)

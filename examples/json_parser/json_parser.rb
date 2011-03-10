@@ -41,7 +41,7 @@ class JsonParser < Rattler::Runtime::PackratParser #:nodoc:
     while r = match(:pair)
       lp0 = @scanner.pos
       a0 << r
-      break unless @scanner.skip(/,/)
+      break unless @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\/\*)(?>(?>(?!\*\/)(?>.))*)(?>\*\/)|(?>\/\/)(?>(?>[^\n])*))*)(?>,)/)
     end
     @scanner.pos = lp0 unless lp0.nil?
     a0
@@ -100,7 +100,7 @@ class JsonParser < Rattler::Runtime::PackratParser #:nodoc:
     while r = match(:value)
       lp0 = @scanner.pos
       a0 << r
-      break unless @scanner.skip(/,/)
+      break unless @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\/\*)(?>(?>(?!\*\/)(?>.))*)(?>\*\/)|(?>\/\/)(?>(?>[^\n])*))*)(?>,)/)
     end
     @scanner.pos = lp0 unless lp0.nil?
     a0

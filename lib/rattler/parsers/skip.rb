@@ -42,7 +42,12 @@ module Rattler::Parsers
     # @param (see Parser#with_ws)
     # @return (see Parser#with_ws)
     def with_ws(ws)
-      Skip[child.with_ws(ws)]
+      child.with_ws(ws).skip
+    end
+
+    # @return (see Parser#skip)
+    def skip
+      self
     end
 
   end
