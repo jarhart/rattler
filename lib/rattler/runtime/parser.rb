@@ -25,6 +25,16 @@ module Rattler::Runtime
       self.new(source, options).parse!
     end
 
+    # Parse the entirety of +source+ and raise a {SyntaxError} if the parse
+    # fails.
+    #
+    # @param (see #initialize)
+    # @raise (see #parse!)
+    # @return (see #parse!)
+    def self.parse_fully!(source, options={})
+      self.new(source, options).parse_fully!
+    end
+
     # Create a new parser to parse +source+.
     #
     # @param [String] source the source to parse
@@ -71,7 +81,7 @@ module Rattler::Runtime
     #
     # @return (see #parse_fully)
     def parse_fully!
-      parse_full or raise_error
+      parse_fully or raise_error
     end
 
     # The current parse position
