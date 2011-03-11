@@ -159,7 +159,7 @@ module Rattler::Util
 
     # Allow attributes to be accessed as methods.
     def method_missing(symbol, *args)
-      (args.empty? and @attrs.has_key?(symbol)) ? @attrs[symbol] : super
+      (args.empty? and attrs.has_key?(symbol)) ? attrs[symbol] : super
     end
 
     # @private
@@ -184,6 +184,10 @@ module Rattler::Util
       (children.map {|_| _.inspect } +
         attrs.map {|k, v| k.inspect + '=>' + v.inspect}).join(',') +
       ']'
+    end
+
+    def to_graphviz
+      Rattler::Util::GraphViz.digraph(self)
     end
 
   end

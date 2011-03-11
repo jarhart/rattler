@@ -13,6 +13,7 @@ group :development do
   gem "aruba", ">= 0.3.0"
   gem "yard", ">= 0.6.0"
   gem "watchr", ">= 0.5.5"
+  gem "ruby-graphviz", ">= 0.9.6"
 end
 
-# gemspec
+gemspec
