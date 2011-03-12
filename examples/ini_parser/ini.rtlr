@@ -1,19 +1,24 @@
 grammar IniGrammar
 
-%whitespace (SPACE+ | ([;#] [^\n]*))* {
+%whitespace (SPACE+ | comment)* {
 
-  configuration <-  (property | section_name)* EOF      { @properties }
-
-  property      <-  name ~'=' value                     {|n,v| property n, v }
-
-  section_name  <-  ~'[' name ~']' ~eol                 {|_| section _ }
-
-  name          <-  @WORD+                              <.to_sym>
-
-  value         <-  @('"' ('\\' . | [^"])* '"')         {|_| unquote _ }
-                  | @(DIGIT+ ('.' DIGIT+))              <.to_f>
-                  | @DIGIT+                             <.to_i>
-                  | @(!eol .)*                          <.strip>
+  configuration <-  (property | section_name)* EOF              { @properties }
+        
+  property      <-  name ~'=' value                             { property *_ }
+        
+  section_name  <-  ~'[' name ~']' ~eol                         { section _ }
+        
+  name          <-  @WORD+                                      { _.to_sym }
+        
+  value         <-  @('"' ('\\' . | [^"])* '"')                 { unquote _ }
+                  | @(DIGIT+ ('.' DIGIT+))                      { _.to_f }
+                  | @DIGIT+                                     { _.to_i }
+                  | @(!eol .)*                                  { _.strip }
 }
 
-  eol           <-  ~(BLANK* (EOF | ("\r"? "\n") | (';' [^\n]*)))
+%inline {
+    
+  eol           <-  BLANK* (EOF | ("\r"? "\n") | (';' [^\n]*))
+
+  comment       <-  [;#] [^\n]*
+}
