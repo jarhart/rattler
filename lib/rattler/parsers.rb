@@ -37,6 +37,7 @@ module Rattler
     autoload :Token, 'rattler/parsers/token'
     autoload :Skip, 'rattler/parsers/skip'
     autoload :Label, 'rattler/parsers/label'
+    autoload :BackReference, 'rattler/parsers/back_reference'
     autoload :Fail, 'rattler/parsers/fail'
     autoload :ParserDSL, 'rattler/parsers/parser_dsl'
     autoload :Predicate, 'rattler/parsers/predicate'

@@ -9,7 +9,7 @@ Feature: Skip Operator
   Scenario: Sequence with skipped sub-expressions
     Given a grammar with:
       """
-      sum <- ~"(" /\d+/ ~"+" /\d+/ ~")"
+      sum <- ~"(" @DIGIT+ ~"+" @DIGIT+ ~")"
       """
     When I parse "(23+45)"
     Then the parse result should be ["23", "45"]

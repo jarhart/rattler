@@ -40,7 +40,7 @@ module Rattler::BackEnd::ParserGenerator
       lookahead do
         @g.block("#{result_name} = begin") do
           sequence.each do |_|
-            @g.suffix(' &&') { generate _, :intermediate_skip, scope }.newline
+            @g.suffix(' &&') { scope = gen_matching _, scope }.newline
           end
           @g << "true"
         end
@@ -57,7 +57,7 @@ module Rattler::BackEnd::ParserGenerator
       lookahead do
         @g.block("#{result_name} = !begin") do
           @g.intersperse_nl(sequence, ' &&') do |_|
-            generate _, :intermediate_skip, scope
+            scope = gen_matching _, scope
           end
         end
         @g.newline
@@ -94,7 +94,7 @@ module Rattler::BackEnd::ParserGenerator
     def gen_token_top_level(sequence, scope={})
       with_backtracking do
         sequence.each do |_|
-          @g.suffix(' &&') { generate _, :intermediate_skip, scope }.newline
+          @g.suffix(' &&') { scope = gen_matching _, scope }.newline
         end
         @g << "@scanner.string[#{saved_pos_name}...(@scanner.pos)]"
       end
@@ -107,13 +107,22 @@ module Rattler::BackEnd::ParserGenerator
     def gen_skip_top_level(sequence, scope={})
       with_backtracking do
         sequence.each do |_|
-          @g.suffix(' &&') { generate _, :intermediate_skip, scope }.newline
+          @g.suffix(' &&') { scope = gen_matching _, scope }.newline
         end
         @g << "true"
       end
     end
 
     private
+
+    def gen_matching(child, scope)
+      if child.labeled?
+        @g.surround("(#{capture_name} = ", ')') { generate child, :basic, scope }
+      else
+        generate child, :intermediate_skip, scope
+      end
+      child.labeled? ? scope.merge(child.label => last_capture_name) : scope
+    end
 
     def gen_capturing(child, scope)
       if child.capturing?

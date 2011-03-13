@@ -22,7 +22,7 @@ Feature: Nonterminals
       """
       expr  <-  as "b"
       as    <-  "a" as
-              | "a"
+              / "a"
       """
     When I parse "aaab"
     Then the parse result should be [["a", ["a", "a"]], "b"]

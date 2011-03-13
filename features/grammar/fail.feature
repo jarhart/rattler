@@ -25,7 +25,7 @@ Feature: Fail Expressions
     Given a grammar with:
       """
       expr  <-  fail_rule "something really bad happened"
-              | .*
+              / .*
       """
     When I parse "anything"
     Then the parse should fail
@@ -34,7 +34,7 @@ Feature: Fail Expressions
   Scenario: Fail-parse
     Given a grammar with:
       """
-      a <- b | .*
+      a <- b / .*
       b <- fail_parse "something catastrophic happened"
       """
     When I parse "anything"
@@ -44,7 +44,7 @@ Feature: Fail Expressions
   Scenario: Fail-expression at the end of an ordered choice
     Given a grammar with:
       """
-      expr  <- a | b | fail "something bad happened"
+      expr  <- a / b / fail "something bad happened"
       a     <- "a"
       b     <- "b"
       """

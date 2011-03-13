@@ -11,16 +11,6 @@ describe Rattler::Grammar::GrammarParser do
 
   describe '#match(:expression)' do
 
-    context 'given a perl-style regex' do
-
-      context 'delimited with "/"s' do
-        it 'parses as a regex match' do
-          matching(' /\\d+(?:\\.\\d+)?/ ').as(:expression).
-            should result_in(Match[/\d+(?:\.\d+)?/]).at(16)
-        end
-      end
-    end
-
     context 'given a string literal' do
 
       context 'delimited by double quotes' do
@@ -34,6 +24,44 @@ describe Rattler::Grammar::GrammarParser do
         it 'parses as a regex match' do
           matching(%{ 'a string' }).as(:expression).
             should result_in(Match[/a\ string/]).at(11)
+        end
+      end
+
+      context 'using "general delimited text" syntax' do
+
+        context 'with "(" and ")"' do
+          it 'parses as a regex match' do
+            matching(' %(a string) ').as(:expression).
+              should result_in(Match[/a\ string/]).at(12)
+          end
+        end
+
+        context 'with "{" and "}"' do
+          it 'parses as a regex match' do
+            matching(' %{a string} ').as(:expression).
+              should result_in(Match[/a\ string/]).at(12)
+          end
+        end
+
+        context 'with "[" and "]"' do
+          it 'parses as a regex match' do
+            matching(' %[a string] ').as(:expression).
+              should result_in(Match[/a\ string/]).at(12)
+          end
+        end
+
+        context 'with "<" and ">"' do
+          it 'parses as a regex match' do
+            matching(' %<a string> ').as(:expression).
+              should result_in(Match[/a\ string/]).at(12)
+          end
+        end
+
+        context 'with arbitrary delimiters' do
+          it 'parses as a regex match' do
+            matching(' %!a string! ').as(:expression).
+              should result_in(Match[/a\ string/]).at(12)
+          end
         end
       end
 
@@ -163,8 +191,8 @@ describe Rattler::Grammar::GrammarParser do
                 at(24)
     end
 
-    it 'parses choice expressions' do
-      matching(' string | number ').as(:expression).
+    it 'parses ordered choice expressions' do
+      matching(' string / number ').as(:expression).
         should result_in(Choice[Apply[:string], Apply[:number]]).at(16)
     end
 

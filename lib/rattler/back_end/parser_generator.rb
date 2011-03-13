@@ -40,6 +40,7 @@ module Rattler::BackEnd
     autoload :TokenGenerator, 'rattler/back_end/parser_generator/token_generator'
     autoload :SkipGenerator, 'rattler/back_end/parser_generator/skip_generator'
     autoload :LabelGenerator, 'rattler/back_end/parser_generator/label_generator'
+    autoload :BackReferenceGenerator, 'rattler/back_end/parser_generator/back_reference_generator'
     autoload :FailGenerator, 'rattler/back_end/parser_generator/fail_generator'
     autoload :RepeatGenerating, 'rattler/back_end/parser_generator/repeat_generating'
     autoload :ListGenerating, 'rattler/back_end/parser_generator/list_generating'

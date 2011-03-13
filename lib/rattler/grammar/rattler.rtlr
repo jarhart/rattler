@@ -4,7 +4,7 @@ grammar Rattler::Grammar::Metagrammar
 
 include Rattler::Parsers
 
-%whitespace (SPACE+ | comment)* {
+%whitespace (SPACE+ / comment)* {
 
   grammar           <-  heading rules EOF                                       <Grammar>
 
@@ -13,156 +13,158 @@ include Rattler::Parsers
   requires          <-  (~`require` @(!eol .)+ ~eol)*                           { { :requires => _ } }
 
   module_decl       <-  ~`parser` constant (~'<' constant)? ~eol                { parser_decl *_ }
-                      | ~`grammar` constant ~eol                                { { :grammar_name => _ } }
+                      / ~`grammar` constant ~eol                                { { :grammar_name => _ } }
 
   includes          <-  (~`include` constant ~eol)*                             { { :includes => _ } }
 
-  rules             <-  (directive | rule | block_close)+                       <RuleSet>
+  rules             <-  (directive / rule / block_close)+                       <RuleSet>
 
-  directive         <-  ws_directive | wc_directive | inline_directive
+  directive         <-  ws_directive / wc_directive / inline_directive
 
   ws_directive      <-  ws_decl ~'{'                                            { start_ws _ }
-                      | ws_decl                                                 { set_ws _ }
+                      / ws_decl                                                 { set_ws _ }
 
   ws_decl           <-  ~`%whitespace` unattributed
 
   wc_directive      <-  wc_decl ~'{'                                            { start_wc _ }
-                      | wc_decl                                                 { set_wc _ }
+                      / wc_decl                                                 { set_wc _ }
 
   wc_decl           <-  ~`%word_character` unattributed
 
   inline_directive  <-  ~`%inline` ~'{'                                         { start_inline }
-                      | ~`%inline`                                              { set_inline }
+                      / ~`%inline`                                              { set_inline }
 
   block_close       <-  ~'}'                                                    { end_block }
 
   rule              <-  identifier ~'<-' expression                             { rule *_ }
 
-  unattributed      <-  unattributed ~'|' terms                                 <Choice>
-                      | terms
+  unattributed      <-  unattributed ~'/' terms                                 <Choice>
+                      / terms
 
-  expression        <-  expression ~'|' attributed                              <Choice>
-                      | attributed
+  expression        <-  expression ~'/' attributed                              <Choice>
+                      / attributed
 
   attributed        <-  attributed ~'<' node_action? ~'>'                       <DispatchAction>
-                      | attributed ~'{' action ~'}'                             <DirectAction>
-                      | terms
+                      / attributed ~'{' action ~'}'                             <DirectAction>
+                      / terms
 
   node_action       <-  @(name (~'.' var_name)?)
 
-  action            <-  @(('{' [^}]* '}' | [^{}])*)
+  action            <-  @(  ('{' [^}]* '}'
+                          / [^{}])* )
 
   terms             <-  terms term                                              <Sequence>
-                      | term
+                      / term
 
-  term              <-  fail_expr | labeled | labelable
+  term              <-  fail_expr / labeled / labelable
 
-  fail_expr         <-  (`fail` | `fail_rule` | `fail_parse`) fail_arg          <Fail>
+  fail_expr         <-  (`fail` / `fail_rule` / `fail_parse`) fail_arg          <Fail>
 
   fail_arg          <-  ~'(' literal ~')'
-                      | literal
+                      / literal
 
   labeled           <-  var_name ~':' labelable                                 <Label>
 
   labelable         <-  list
-                      | list_term
+                      / list_term
 
-  list              <-  list_term ~('*,' | '*^') list_term                      <List>
-                      | list_term ~('+,' | '+^') list_term                      <List1>
+  list              <-  list_term ~'*,' list_term                               <List>
+                      / list_term ~'+,' list_term                               <List1>
 
   list_term         <-  prefixed
-                      | prefixable
-                      | fail 'term expected'
+                      / prefixable
+                      / fail 'term expected'
 
   prefixed          <-  ~'&' prefixable                                         <Assert>
-                      | ~'!' prefixable                                         <Disallow>
-                      | ~'~' prefixable                                         <Skip>
-                      | ~'@' prefixable                                         <Token>
+                      / ~'!' prefixable                                         <Disallow>
+                      / ~'~' prefixable                                         <Skip>
+                      / ~'@' prefixable                                         <Token>
 
-  prefixable        <-  suffixed | primary
+  prefixable        <-  suffixed / primary
 
   suffixed          <-  primary ~'?'                                            <Optional>
-                      | primary ~'*' !(',' | '^')                               <ZeroOrMore>
-                      | primary ~'+' !(',' | '^')                               <OneOrMore>
+                      / primary ~'*' !','                                       <ZeroOrMore>
+                      / primary ~'+' !','                                       <OneOrMore>
 
   primary           <-  ~'(' expression ~')'
-                      | atom
+                      / atom
 
   atom              <-  ~`EOF`                                                  <Eof>
-                      | posix_class                                             { posix_class _ }
-                      | identifier !'<-'                                        <Apply>
-                      | literal                                                 { literal _ }
-                      | word_literal                                            { word_literal _ }
-                      | class                                                   { char_class _ }
-                      | regexp                                                  <Match>
-                      | ~'.'                                                    { Match[/./] }
-                      | fail 'atom expected'
+                      / posix_class                                             { posix_class _ }
+                      / identifier !'<-'                                        <Apply>
+                      / literal                                                 { literal _ }
+                      / word_literal                                            { word_literal _ }
+                      / class                                                   { char_class _ }
+                      / back_reference                                          <BackReference>
+                      / ~'.'                                                    { Match[/./] }
+                      / fail 'atom expected'
 
 %inline
 
   posix_class       <-  `ALNUM`
-                      | `ALPHA`
-                      | `ASCII`
-                      | `BLANK`
-                      | `CNTRL`
-                      | `DIGIT`
-                      | `GRAPH`
-                      | `LOWER`
-                      | `PRINT`
-                      | `PUNCT`
-                      | `SPACE`
-                      | `UPPER`
-                      | `XDIGIT`
-                      | `WORD`
-                      | fail 'posix_class expected'
+                      / `ALPHA`
+                      / `ASCII`
+                      / `BLANK`
+                      / `CNTRL`
+                      / `DIGIT`
+                      / `GRAPH`
+                      / `LOWER`
+                      / `PRINT`
+                      / `PUNCT`
+                      / `SPACE`
+                      / `UPPER`
+                      / `XDIGIT`
+                      / `WORD`
+                      / fail 'posix_class expected'
 
-  literal           <-  @('"' ('\\' . | [^"])* '"')
-                      | @("'" ('\\' . | [^'])* "'")
+  literal           <-  @('"' ('\\' . / [^"])* '"')
+                      / @("'" ('\\' . / [^'])* "'")
+                      / @('%(' ('\\' . / [^)])* ')')
+                      / @('%{' ('\\' . / [^}])* '}')
+                      / @('%[' ('\\' . / [^\]])* ']')
+                      / @('%<' ('\\' . / [^>])* '>')
+                      / @('%' q:PUNCT ('\\' . / !$q .)* $q)
 
-  word_literal      <-  @("`" ('\\' . | [^`])* "`")
+  word_literal      <-  @("`" ('\\' . / [^`])* "`")
 
   class             <-  @('[' (!']' range)+  ']')
 
-  regexp            <-  @('%r'? '/' ('\\' . | [^\/])+ '/' ([iomx]+ ! WORD)?)
-                      | @('%r(' ('\\' . | [^)])+ ')' ([iomx]+ ! WORD)?)
-                      | @('%r{' ('\\' . | [^}])+ '}' ([iomx]+ ! WORD)?)
-                      | @('%r[' ('\\' . | [^\]])+ ']' ([iomx]+ ! WORD)?)
-                      | @('%r<' ('\\' . | [^>])+ '>' ([iomx]+ ! WORD)?)
-
   name              <-  var_name
-                      | constant
+                      / constant
 
   identifier        <-  !`EOF` @WORD+
 
+  back_reference    <-  @('$' LOWER WORD*)
+
   var_name          <-  @(LOWER WORD*)
 
-  constant          <-  @((const_name '::')* const_name)
+  constant          <-  @((UPPER WORD* '::')* UPPER WORD*)
 
   const_name        <-  @(UPPER WORD*)
 }
 
   range             <-  @(  '[:' posix_name ':]'
-                          | class_char ('-' class_char)?)
+                          / class_char ('-' class_char)?)
 
   posix_name        <-  `alnum`
-                      | `alpha`
-                      | `ascii`
-                      | `blank`
-                      | `cntrl`
-                      | `digit`
-                      | `graph`
-                      | `lower`
-                      | `print`
-                      | `punct`
-                      | `space`
-                      | `upper`
-                      | `xdigit`
+                      / `alpha`
+                      / `ascii`
+                      / `blank`
+                      / `cntrl`
+                      / `digit`
+                      / `graph`
+                      / `lower`
+                      / `print`
+                      / `punct`
+                      / `space`
+                      / `upper`
+                      / `xdigit`
 
   class_char        <-  @(  '\\' [0-3] [0-7] [0-7]
-                          | '\\x' XDIGIT XDIGIT
-                          | '\\' .
-                          | [^\\\]] )
+                          / '\\x' XDIGIT XDIGIT
+                          / '\\' .
+                          / [^\\\]] )
 
-  eol               <-  ~(BLANK* (EOF | ';' | ("\r"? "\n") | ('#' [^\n]*)))
+  eol               <-  ~(BLANK* (EOF / ';' / ("\r"? "\n") / ('#' [^\n]*)))
 
   comment           <-  ~('#' [^\n]*)

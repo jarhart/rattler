@@ -14,7 +14,7 @@ Feature: Whitespace
     Given a grammar with:
       """
       %whitespace SPACE* {
-        word <- /\w+/
+        word <- @WORD+
       }
       """
     When I parse "  foo"
@@ -24,7 +24,7 @@ Feature: Whitespace
     Given a grammar with:
       """
       %whitespace SPACE*
-      word <- /\w+/
+      word <- @WORD+
       """
     When I parse "  foo"
     Then the parse result should be "foo"

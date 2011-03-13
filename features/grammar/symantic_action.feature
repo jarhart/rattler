@@ -15,7 +15,7 @@ Feature: Symantic Actions
   Scenario: Single token
     Given a grammar with:
       """
-      integer <- /\d+/ {|s| s.to_i }
+      integer <- @DIGIT+ {|s| s.to_i }
       """
     When I parse "42"
     Then the parse result should be 42
@@ -24,7 +24,7 @@ Feature: Symantic Actions
     Given a grammar with:
       """
       %whitespace SPACE*
-      product <- /\d+/ /\d+/ {|a,b| a.to_i * b.to_i }
+      product <- @DIGIT+ @DIGIT+ {|a,b| a.to_i * b.to_i }
       """
     When I parse "3 16"
     Then the parse result should be 48
@@ -32,7 +32,7 @@ Feature: Symantic Actions
   Scenario: Sequence with non-capturing expressions
     Given a grammar with:
       """
-      sum <- ~"(" /\d+/ ~"+" /\d+/ ~")" {|a,b| a.to_i + b.to_i }
+      sum <- ~"(" @DIGIT+ ~"+" @DIGIT+ ~")" {|a,b| a.to_i + b.to_i }
       """
     When I parse "(23+17)"
     Then the parse result should be 40
@@ -40,7 +40,7 @@ Feature: Symantic Actions
   Scenario: Sequence with labeled expressions
     Given a grammar with:
       """
-      sum <- "(" left:/\d+/ "+" right:/\d+/ ")" { left.to_i + right.to_i }
+      sum <- "(" left:@DIGIT+ "+" right:@DIGIT+ ")" { left.to_i + right.to_i }
       """
     When I parse "(17+29)"
     Then the parse result should be 46
@@ -48,7 +48,7 @@ Feature: Symantic Actions
   Scenario: Single token using "_"
     Given a grammar with:
       """
-      integer <- /\d+/ { _.to_i }
+      integer <- @DIGIT+ { _.to_i }
       """
     When I parse "23"
     Then the parse result should be 23
@@ -57,7 +57,7 @@ Feature: Symantic Actions
     Given a grammar with:
       """
       %whitespace SPACE*
-      ints <- /\d+/ /\d+/ { _.reverse }
+      ints <- @DIGIT+ @DIGIT+ { _.reverse }
       """
     When I parse "3 16"
     Then the parse result should be ["16", "3"]
@@ -66,7 +66,7 @@ Feature: Symantic Actions
     Given a grammar with:
       """
       %whitespace SPACE*
-      ints <- /\d+/ /\d+/ {|_| _.to_i }
+      ints <- @DIGIT+ @DIGIT+ {|_| _.to_i }
       """
     When I parse "3 16"
     Then the parse result should be 3

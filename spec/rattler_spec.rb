@@ -38,8 +38,8 @@ describe 'Rattler' do
     context 'given a grammar source string' do
 
       let(:result) { Rattler.compile_parser({}, %{
-        word  <-  /\w+/
-        num   <-  /\d+/
+        word  <-  @WORD+
+        num   <-  @DIGIT+
       })}
 
       it 'returns a parser class with rule methods defined by the grammar' do

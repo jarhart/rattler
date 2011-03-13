@@ -74,6 +74,9 @@ module Rattler::BackEnd::ParserGenerator
       when Label
         cache_generator LabelGenerator
 
+      when BackReference
+        cache_generator BackReferenceGenerator
+
       when Fail
         cache_generator FailGenerator
 
