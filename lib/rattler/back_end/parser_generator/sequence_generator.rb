@@ -13,32 +13,34 @@ module Rattler::BackEnd::ParserGenerator
       @capture_names = []
     end
 
-    def gen_basic_nested(sequence)
-      atomic_block { gen_basic_top_level sequence }
+    def gen_basic_nested(sequence, scope={})
+      atomic_block { gen_basic_top_level sequence, scope }
     end
 
-    def gen_basic_top_level(sequence)
+    def gen_basic_top_level(sequence, scope={})
       with_backtracking do
         if sequence.capture_count == 1 and sequence.children.last.capturing?
           @g.intersperse_nl(sequence, ' &&') do |child|
-            gen_capturing(child) { generate child }
+            scope = gen_capturing(child, scope) { generate child, :basic, scope }
           end
         else
-          sequence.each { |_| @g.suffix(' &&') { gen_capturing _ }.newline }
+          sequence.each do |child|
+            @g.suffix(' &&') { scope = gen_capturing child, scope }.newline
+          end
           @g << result_expr(sequence)
         end
       end
     end
 
-    def gen_assert_nested(sequence)
-      atomic_block { gen_assert_top_level sequence }
+    def gen_assert_nested(sequence, scope={})
+      atomic_block { gen_assert_top_level sequence, scope }
     end
 
-    def gen_assert_top_level(sequence)
+    def gen_assert_top_level(sequence, scope={})
       lookahead do
         @g.block("#{result_name} = begin") do
           sequence.each do |_|
-            @g.suffix(' &&') { generate _, :intermediate_skip }.newline
+            @g.suffix(' &&') { generate _, :intermediate_skip, scope }.newline
           end
           @g << "true"
         end
@@ -47,15 +49,15 @@ module Rattler::BackEnd::ParserGenerator
       @g << result_name
     end
 
-    def gen_disallow_nested(sequence)
-      atomic_block { gen_disallow_top_level sequence }
+    def gen_disallow_nested(sequence, scope={})
+      atomic_block { gen_disallow_top_level sequence, scope }
     end
 
-    def gen_disallow_top_level(sequence)
+    def gen_disallow_top_level(sequence, scope={})
       lookahead do
         @g.block("#{result_name} = !begin") do
           @g.intersperse_nl(sequence, ' &&') do |_|
-            generate _, :intermediate_skip
+            generate _, :intermediate_skip, scope
           end
         end
         @g.newline
@@ -63,51 +65,49 @@ module Rattler::BackEnd::ParserGenerator
       @g << result_name
     end
 
-    def gen_dispatch_action_nested(sequence, code)
+    def gen_dispatch_action_nested(sequence, code, scope={})
       atomic_block do
-        gen_dispatch_action_top_level sequence, code
+        gen_dispatch_action_top_level sequence, code, scope
       end
     end
 
-    def gen_dispatch_action_top_level(sequence, code)
-      gen_action_code(sequence) do |labeled|
-        dispatch_action_result(code,
-          :array_expr => result_array_expr(sequence), :labeled => labeled)
+    def gen_dispatch_action_top_level(sequence, code, scope={})
+      gen_action_code(sequence, scope) do |new_scope|
+        code.bind new_scope, result_array_expr(sequence)
       end
     end
 
-    def gen_direct_action_nested(sequence, action)
-      atomic_block { gen_direct_action_top_level sequence, action }
+    def gen_direct_action_nested(sequence, code, scope={})
+      atomic_block { gen_direct_action_top_level sequence, code, scope }
     end
 
-    def gen_direct_action_top_level(sequence, action)
-      gen_action_code(sequence) do |labeled|
-        direct_action_result(action,
-          :bind_args => @capture_names, :labeled => labeled)
+    def gen_direct_action_top_level(sequence, code, scope={})
+      gen_action_code(sequence, scope) do |new_scope|
+        "(#{code.bind new_scope, @capture_names})"
       end
     end
 
-    def gen_token_nested(sequence)
-      atomic_block { gen_token_top_level sequence }
+    def gen_token_nested(sequence, scope={})
+      atomic_block { gen_token_top_level sequence, scope }
     end
 
-    def gen_token_top_level(sequence)
+    def gen_token_top_level(sequence, scope={})
       with_backtracking do
         sequence.each do |_|
-          @g.suffix(' &&') { generate _, :intermediate_skip }.newline
+          @g.suffix(' &&') { generate _, :intermediate_skip, scope }.newline
         end
         @g << "@scanner.string[#{saved_pos_name}...(@scanner.pos)]"
       end
     end
 
-    def gen_skip_nested(sequence)
-      atomic_block { gen_skip_top_level sequence }
+    def gen_skip_nested(sequence, scope={})
+      atomic_block { gen_skip_top_level sequence, scope }
     end
 
-    def gen_skip_top_level(sequence)
+    def gen_skip_top_level(sequence, scope={})
       with_backtracking do
         sequence.each do |_|
-          @g.suffix(' &&') { generate _, :intermediate_skip }.newline
+          @g.suffix(' &&') { generate _, :intermediate_skip, scope }.newline
         end
         @g << "true"
       end
@@ -115,16 +115,17 @@ module Rattler::BackEnd::ParserGenerator
 
     private
 
-    def gen_capturing(child)
+    def gen_capturing(child, scope)
       if child.capturing?
         if block_given?
           yield
         else
-          @g.surround("(#{capture_name} = ", ')') { generate child }
+          @g.surround("(#{capture_name} = ", ')') { generate child, :basic, scope }
         end
       else
-        generate child, :intermediate
+        generate child, :intermediate, scope
       end
+      child.labeled? ? scope.merge(child.label => last_capture_name) : scope
     end
 
     def with_backtracking
@@ -153,14 +154,12 @@ module Rattler::BackEnd::ParserGenerator
       end
     end
 
-    def gen_action_code(sequence)
+    def gen_action_code(sequence, scope={})
       with_backtracking do
-        labeled = {}
         for child in sequence
-          @g.suffix(' &&') { gen_capturing child }.newline
-          labeled[child.label] = last_capture_name if child.labeled?
+          @g.suffix(' &&') { scope = gen_capturing child, scope }.newline
         end
-        @g << yield(labeled)
+        @g << yield(scope)
       end
     end
 

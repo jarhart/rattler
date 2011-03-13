@@ -457,20 +457,6 @@ shared_examples_for 'a compiled parser' do
 
       it { should parse('451a').succeeding.like reference_parser }
       it { should parse('    ').failing.like reference_parser }
-
-      context 'with labels' do
-        let(:grammar) { define_grammar do
-          rule :assignment do
-            dispatch_action(
-              label(:word, /[[:alpha:]]+/) |
-              label(:num,  /[[:digit:]]+/)
-            )
-          end
-        end }
-        it { should parse('foo ').succeeding.like reference_parser }
-        it { should parse('42 ').succeeding.like reference_parser }
-        it { should parse('   ').failing.like reference_parser }
-      end
     end
 
     context 'with a nested sequence rule' do

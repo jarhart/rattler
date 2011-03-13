@@ -95,11 +95,11 @@ describe DirectAction do
 
     context 'with a one-or-more parser' do
 
-      subject { DirectAction[OneOrMore[Match[/\d/]], '|s| s'] }
+      subject { DirectAction[OneOrMore[Match[/\d/]], '|s| s * 2'] }
 
       context 'when the nested parser matches' do
         it 'applies the action to an array containing the matches' do
-          parsing('451a').should result_in(['4', '5', '1']).at(3)
+          parsing('451a').should result_in(%w{4 5 1 4 5 1}).at(3)
         end
       end
 
@@ -127,6 +127,20 @@ describe DirectAction do
       context 'when the parser matches' do
         it 'applies the action with no arguments' do
           parsing('abc123 ').should result_in(42).at(6)
+        end
+      end
+    end
+
+    context 'with a labeled parser' do
+      subject do
+        DirectAction[
+          Label[:word, Match[/[[:alpha:]]+/]],
+          "word * 2"
+        ]
+      end
+      context 'when the parser matches' do
+        it 'applies the action binding the label to the result' do
+          parsing('foo ').should result_in('foofoo').at(3)
         end
       end
     end

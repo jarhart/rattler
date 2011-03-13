@@ -7,22 +7,22 @@ module Rattler::BackEnd::ParserGenerator
     include ListGenerating
     include NestedSubGenerating
 
-    def gen_assert(optional)
+    def gen_assert(optional, scope={})
       @g << 'true'
     end
 
-    def gen_disallow(optional)
+    def gen_disallow(optional, scope={})
       @g << 'false'
     end
 
-    def gen_skip_top_level(list)
+    def gen_skip_top_level(list, scope={})
       (@g << "#{saved_pos_name} = nil").newline
       @g << 'while '
-      generate list.child, :intermediate_skip
+      generate list.child, :intermediate_skip, scope
       @g.block '' do
         (@g << "#{saved_pos_name} = @scanner.pos").newline
         @g << 'break unless '
-        generate list.sep_parser, :intermediate_skip
+        generate list.sep_parser, :intermediate_skip, scope
       end.newline
       @g << "@scanner.pos = #{saved_pos_name} unless #{saved_pos_name}.nil?"
       @g.newline << true

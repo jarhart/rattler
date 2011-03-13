@@ -26,8 +26,8 @@ module Rattler::Parsers
     # @return [Array, true] an array containing the decorated parser's parse
     #   results if it matches or an empty array if not, or always +true+ if the
     #   decorated parser is not <tt>capturing?</tt>
-    def parse(scanner, rules, labeled = {})
-      if result = child.parse(scanner, rules)
+    def parse(scanner, rules, scope = {})
+      if result = child.parse(scanner, rules, scope)
         capturing? ? [result] : true
       else
         capturing? ? [] : true

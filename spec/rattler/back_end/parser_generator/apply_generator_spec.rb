@@ -86,7 +86,7 @@ r
 
   describe '#gen_dispatch_action' do
 
-    let(:code) { DispatchActionCode.new('Word', 'parsed') }
+    let(:code) { NodeCode.new('Word', 'parsed') }
 
     context 'when nested' do
       it 'generates nested apply-rule code with a dispatch action' do

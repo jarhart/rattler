@@ -6,100 +6,84 @@ module Rattler::BackEnd::ParserGenerator
   class ChoiceGenerator < ExprGenerator #:nodoc:
     include NestedSubGenerating
 
-    def gen_basic_nested(choice)
-      atomic_block { gen_basic_top_level choice }
+    def gen_basic_nested(choice, scope={})
+      atomic_block { gen_basic_top_level choice, scope }
     end
 
-    def gen_basic_top_level(choice)
-      @g.intersperse_nl(choice, ' ||') {|_| generate _ }
+    def gen_basic_top_level(choice, scope={})
+      @g.intersperse_nl(choice, ' ||') {|_| generate _, :basic, scope }
     end
 
-    def gen_assert_nested(choice)
-      atomic_expr { gen_assert_top_level choice }
+    def gen_assert_nested(choice, scope={})
+      atomic_expr { gen_assert_top_level choice, scope }
     end
 
-    def gen_assert_top_level(choice)
-      gen_intermediate_assert choice
+    def gen_assert_top_level(choice, scope={})
+      gen_intermediate_assert choice, scope
       @g << ' && true'
     end
 
-    def gen_disallow(choice)
+    def gen_disallow(choice, scope={})
       @g << '!'
-      gen_intermediate_assert choice
+      gen_intermediate_assert choice, scope
     end
 
-    def gen_dispatch_action_nested(choice, code)
-      atomic_block { gen_dispatch_action_top_level choice, code }
+    def gen_dispatch_action_nested(choice, code, scope={})
+      atomic_block { gen_dispatch_action_top_level choice, code, scope }
     end
 
-    def gen_dispatch_action_top_level(choice, code)
-      gen_action_code choice do |labeled|
-        dispatch_action_result(code, :labeled => labeled)
-      end
+    def gen_dispatch_action_top_level(choice, code, scope={})
+      gen_action_code(choice) { code.bind scope, "[#{result_name}]" }
     end
 
-    def gen_direct_action_nested(choice, action)
-      atomic_block { gen_direct_action_top_level choice, action }
+    def gen_direct_action_nested(choice, code, scope={})
+      atomic_block { gen_direct_action_top_level choice, code }
     end
 
-    def gen_direct_action_top_level(choice, action)
-      gen_action_code choice do |labeled|
-        direct_action_result(action, :labeled => labeled)
-      end
+    def gen_direct_action_top_level(choice, code, scope={})
+      gen_action_code(choice) { "(#{code.bind scope, [result_name]})" }
     end
 
-    def gen_token_nested(choice)
-      atomic_block { gen_token_top_level choice }
+    def gen_token_nested(choice, scope={})
+      atomic_block { gen_token_top_level choice, scope }
     end
 
-    def gen_token_top_level(choice)
-      @g.intersperse_nl(choice, ' ||') {|_| generate _, :token }
+    def gen_token_top_level(choice, scope={})
+      @g.intersperse_nl(choice, ' ||') {|_| generate _, :token, scope }
     end
 
-    def gen_skip_nested(choice)
-      @g.surround('(', ')') { gen_skip_top_level choice }
+    def gen_skip_nested(choice, scope={})
+      @g.surround('(', ')') { gen_skip_top_level choice, scope }
     end
 
-    def gen_skip_top_level(choice)
-      gen_intermediate_skip choice
+    def gen_skip_top_level(choice, scope={})
+      gen_intermediate_skip choice, scope
       @g << ' && true'
     end
 
-    def gen_intermediate_assert(choice)
+    def gen_intermediate_assert(choice, scope={})
       atomic_block do
         @g.intersperse_nl(choice, ' ||') do |_|
-          generate _, :intermediate_assert
+          generate _, :intermediate_assert, scope
         end
       end
     end
 
-    def gen_intermediate_skip(choice)
+    def gen_intermediate_skip(choice, scope={})
       atomic_block do
         @g.intersperse_nl(choice, ' ||') do |_|
-          generate _, :intermediate_skip
+          generate _, :intermediate_skip, scope
         end
       end
     end
 
     private
 
-    def gen_action_code(choice)
-      labeled = choice.any? {|_| _.labeled? } ? labeled_name : nil
+    def gen_action_code(choice, scope={})
       @g.block("(#{result_name} = begin", 'end)') do
-        (@g << "#{labeled} = nil").newline if labeled
-        @g.intersperse_nl(choice, ' ||') do |child|
-          if child.labeled?
-            atomic_expr do
-              @g.surround("(#{result_name} = ", ')') { generate child }
-              @g << " && (#{labeled} = {:#{child.label} => #{result_name}})"
-              @g << " && #{result_name}"
-            end
-          else
-            generate child
-          end
-        end
+        @g.intersperse_nl(choice, ' ||') {|child| generate child }
       end << ' && '
-      @g << yield(labeled)
+      @g << yield
     end
 
     def labeled_name

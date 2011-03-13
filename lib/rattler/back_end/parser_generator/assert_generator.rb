@@ -5,67 +5,66 @@ module Rattler::BackEnd::ParserGenerator
   # @private
   class AssertGenerator < ExprGenerator #:nodoc:
 
-    def gen_basic(assert)
-      generate assert.child, :assert
+    def gen_basic(assert, scope={})
+      generate assert.child, :assert, scope
     end
 
-    def gen_assert(assert)
-      gen_basic assert
+    def gen_assert(assert, scope={})
+      gen_basic assert, scope
     end
 
-    def gen_disallow(assert)
+    def gen_disallow(assert, scope={})
       @g << 'false'
     end
 
-    def gen_skip_nested(assert)
-      gen_basic_nested assert
+    def gen_skip_nested(assert, scope={})
+      gen_basic_nested assert, scope
     end
 
-    def gen_skip_top_level(assert)
-      gen_basic_top_level assert
+    def gen_skip_top_level(assert, scope={})
+      gen_basic_top_level assert, scope
     end
 
-    def gen_dispatch_action_nested(assert, code)
-      atomic_block { gen_dispatch_action_top_level assert, code }
+    def gen_dispatch_action_nested(assert, code, scope={})
+      atomic_block { gen_dispatch_action_top_level assert, code, scope }
     end
 
-    def gen_dispatch_action_top_level(assert, code)
-      gen_action assert,
-        dispatch_action_result(code, :array_expr => '[]')
+    def gen_dispatch_action_top_level(assert, code, scope={})
+      gen_action assert, code.bind(scope, '[]'), scope
     end
 
-    def gen_direct_action_nested(assert, code)
-      atomic_block { gen_direct_action_top_level assert, code }
+    def gen_direct_action_nested(assert, code, scope={})
+      atomic_block { gen_direct_action_top_level assert, code, scope }
     end
 
-    def gen_direct_action_top_level(assert, code)
-      gen_action assert, direct_action_result(code)
+    def gen_direct_action_top_level(assert, code, scope={})
+      gen_action assert, "(#{code.bind scope, []})", scope
     end
 
-    def gen_token_nested(assert)
-      atomic_block { gen_token_top_level assert }
+    def gen_token_nested(assert, scope={})
+      atomic_block { gen_token_top_level assert, scope }
     end
 
-    def gen_token_top_level(assert)
-      gen_action assert, "''"
+    def gen_token_top_level(assert, scope={})
+      gen_action assert, "''", scope
     end
 
-    def gen_intermediate(assert)
-      generate assert.child, :intermediate_assert
+    def gen_intermediate(assert, scope={})
+      generate assert.child, :intermediate_assert, scope
     end
 
-    def gen_intermediate_assert(assert)
-      gen_intermediate assert
+    def gen_intermediate_assert(assert, scope={})
+      gen_intermediate assert, scope
     end
 
-    def gen_intermediate_skip(assert)
-      gen_intermediate assert
+    def gen_intermediate_skip(assert, scope={})
+      gen_intermediate assert, scope
     end
 
     private
 
-    def gen_action(assert, result_code)
-      gen_intermediate assert
+    def gen_action(assert, result_code, scope={})
+      gen_intermediate assert, scope
       (@g << ' &&').newline << result_code
     end
 

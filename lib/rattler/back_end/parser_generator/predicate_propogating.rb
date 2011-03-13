@@ -4,20 +4,20 @@ module Rattler::BackEnd::ParserGenerator
   # @private
   module PredicatePropogating #:nodoc:
 
-    def gen_assert(parser)
-      generate parser.child, :assert
+    def gen_assert(parser, scope={})
+      generate parser.child, :assert, scope
     end
 
-    def gen_disallow(parser)
-      generate parser.child, :disallow
+    def gen_disallow(parser, scope={})
+      generate parser.child, :disallow, scope
     end
 
-    def gen_intermediate_assert(parser)
-      generate parser.child, :intermediate_assert
+    def gen_intermediate_assert(parser, scope={})
+      generate parser.child, :intermediate_assert, scope
     end
 
-    def gen_intermediate_disallow(parser)
-      generate parser.child, :intermediate_disallow
+    def gen_intermediate_disallow(parser, scope={})
+      generate parser.child, :intermediate_disallow, scope
     end
 
   end

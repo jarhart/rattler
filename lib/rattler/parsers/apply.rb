@@ -14,7 +14,7 @@ module Rattler::Parsers
   # @author Jason Arhart
   #
   class Apply < Parser
-    
+
     # Create a new parser that parses by applying the parse rule referenced
     # by +rule_name+.
     #
@@ -25,20 +25,20 @@ module Rattler::Parsers
     def self.[](rule_name)
       self.new(:rule_name => rule_name.to_sym)
     end
-    
+
     # @private
     def self.parsed(results) #:nodoc:
       self[results.first]
     end
-    
+
     # Apply the parse rule referenced by the #rule_name.
     #
     # @param (see Parser#parse_labeled)
     #
     # @return the result of applying the referenced parse rule
-    def parse(scanner, rules, labeled = {})
+    def parse(scanner, rules, scope = {})
       (rule = rules[rule_name]) && rule.parse(scanner, rules)
     end
-    
+
   end
 end

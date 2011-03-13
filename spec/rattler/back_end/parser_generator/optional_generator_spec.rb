@@ -58,7 +58,7 @@ describe OptionalGenerator do
 
   describe '#gen_dispatch_action' do
 
-    let(:code) { DispatchActionCode.new('Word', 'parsed') }
+    let(:code) { NodeCode.new('Word', 'parsed') }
 
     context 'when nested' do
       it 'generates nested optional matching code with a dispatch action' do

@@ -22,9 +22,9 @@ module Rattler::Parsers
     # @param (see Parser#parse_labeled)
     #
     # @return [Boolean] +true+ if the decorated parser succeeds
-    def parse(scanner, rules, labeled = {})
+    def parse(scanner, rules, scope = {})
       pos = scanner.pos
-      result = (child.parse(scanner, rules) && true)
+      result = (child.parse(scanner, rules, scope) && true)
       scanner.pos = pos
       result
     end

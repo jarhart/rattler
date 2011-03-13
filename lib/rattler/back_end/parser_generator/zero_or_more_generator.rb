@@ -7,17 +7,17 @@ module Rattler::BackEnd::ParserGenerator
     include RepeatGenerating
     include NestedSubGenerating
 
-    def gen_assert(optional)
+    def gen_assert(optional, scope={})
       @g << 'true'
     end
 
-    def gen_disallow(optional)
+    def gen_disallow(optional, scope={})
       @g << 'false'
     end
 
-    def gen_skip_top_level(repeat)
+    def gen_skip_top_level(repeat, scope={})
       @g << 'while '
-      generate repeat.child, :intermediate_skip
+      generate repeat.child, :intermediate_skip, scope
       (@g << '; end').newline
       @g << 'true'
     end

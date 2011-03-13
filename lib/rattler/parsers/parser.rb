@@ -41,18 +41,6 @@ module Rattler::Parsers
       false
     end
 
-    # Parse and on success associate the label with the parse result if
-    # +labeled?+ and +capturing?+.
-    #
-    # @param [StringScanner] scanner the scanner used match patterns
-    # @param [Rules] rules the parse rules defining the parser
-    # @param [Hash] labeled a hash for associating labels with children
-    #
-    # @return the parse result on success, or a false value on failure
-    def parse_labeled(scanner, rules, labeled)
-      parse(scanner, rules, labeled)
-    end
-
     # @param [Parser] other the parser to try if this parser fails.
     # @return a new parser that tries this parser first and if it fails tries
     #   +other+

@@ -8,36 +8,30 @@ module Rattler::BackEnd::ParserGenerator
     include TokenPropogating
     include SkipPropogating
 
-    def gen_basic(skip)
-      generate skip.child, :skip
+    def gen_basic(skip, scope={})
+      generate skip.child, :skip, scope
     end
 
-    def gen_dispatch_action_nested(skip, code)
-      atomic_block { gen_dispatch_action_top_level skip, code }
+    def gen_dispatch_action_nested(skip, code, scope={})
+      atomic_block { gen_dispatch_action_top_level skip, code, scope }
     end
 
-    def gen_dispatch_action_top_level(skip, code)
-      gen_intermediate_skip skip
-      (@g << ' &&').newline
-      @g << dispatch_action_result(code, :array_expr => '[]')
+    def gen_dispatch_action_top_level(skip, code, scope={})
+      gen_intermediate_skip skip, scope
+      (@g << ' &&').newline << code.bind(scope, '[]')
     end
 
-    def gen_direct_action_nested(skip, action)
-      atomic_block { gen_direct_action_top_level skip, action }
+    def gen_direct_action_nested(skip, code, scope={})
+      atomic_block { gen_direct_action_top_level skip, code, scope }
     end
 
-    def gen_direct_action_top_level(skip, action)
-      gen_intermediate_skip skip
-      (@g << ' &&').newline
-      @g << direct_action_result(action, :bind_args => [])
+    def gen_direct_action_top_level(skip, code, scope={})
+      gen_intermediate_skip skip, scope
+      (@g << ' &&').newline << '(' << code.bind(scope, []) << ')'
     end
 
-    def gen_intermediate(skip)
-      generate skip.child, :intermediate_skip
-    end
-
-    def gen_intermediate_skip(skip)
-      gen_intermediate skip
+    def gen_intermediate(skip, scope={})
+      gen_intermediate_skip skip, scope
     end
 
   end

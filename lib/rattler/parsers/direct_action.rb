@@ -16,16 +16,16 @@ module Rattler::Parsers
   #
   class DirectAction < Parser
     include Combining
-    
+
     def self.[](child, code)
       self.new(child, :code => code)
     end
-    
+
     # @private
     def self.parsed(results, *_) #:nodoc:
       self[*results]
     end
-    
+
     # If the wrapped parser matches at the parse position, return the result
     # of applying the symantic action, otherwise return a false value.
     #
@@ -33,48 +33,45 @@ module Rattler::Parsers
     #
     # @return the result of applying the symantic action, or a false value if
     #   the parse failed.
-    def parse(scanner, rules, l = {})
-      labeled = {}
-      if result = child.parse(scanner, rules, labeled)
+    def parse(scanner, rules, scope = {})
+      if result = parse_child(child, scanner, rules, scope) {|_| scope = _ }
         if not capturing?
           apply([])
         elsif result.respond_to?(:to_ary)
-          apply(result, labeled)
+          apply(result, scope)
         else
-          apply([result], labeled)
+          apply([result], scope)
         end
       end
     end
-    
+
     def bindable_code
       @bindable_code ||= ActionCode.new(code)
     end
-    
-    def bind(*args)
-      bindable_code.bind(*args)
+
+    def bind(scope, bind_args)
+      bindable_code.bind(scope, bind_args)
     end
-    
-    # @private
-    def token_optimized #:nodoc:
-      child.token_optimized
-    end
-    
-    # @private
-    def skip_optimized #:nodoc:
-      child.skip_optimized
-    end
-    
+
     private
-    
-    def apply(results, labeled={})
-      l = {}
-      labeled.each {|k, v| l[k] = v.inspect }
-      if child.variable_capture_count?
-        eval(bind([results.inspect], l))
+
+    def parse_child(child, scanner, rules, scope)
+      if child.is_a? Sequence
+        child.parse_and_yield_scope(scanner, rules, scope) {|_| yield _ }
       else
-        eval(bind(results.map {|_| _.inspect }, l))
+        child.parse(scanner, rules, scope) {|_| yield _ }
       end
     end
-    
+
+    def apply(results, scope={})
+      code_scope = {}
+      scope.each {|k, v| code_scope[k] = v.inspect }
+      if child.variable_capture_count?
+        eval(bind(code_scope, [results.inspect]))
+      else
+        eval(bind(code_scope, results.map {|_| _.inspect }))
+      end
+    end
+
   end
 end

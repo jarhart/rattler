@@ -23,14 +23,14 @@ module Rattler::Parsers
 
     attr_reader :param_names, :body
 
-    def bind(*args)
-      bindings = {}
-      if args.first.respond_to?(:to_ary)
-        a = args.shift
-        bindings.merge!(blank_binding(a)).merge!(arg_bindings(a))
-      end
-      bindings.merge!(to_bindings args.shift) unless args.empty?
-      bind_in body, bindings
+    def bind(scope, bind_args)
+      bind_in body, scoped_bindings(scope, bind_args)
+    end
+
+    def scoped_bindings(scope, bind_args)
+      to_bindings(scope).
+        merge(blank_binding(bind_args)).
+        merge(arg_bindings(bind_args))
     end
 
     def blank_binding(args)
@@ -70,18 +70,6 @@ module Rattler::Parsers
       new_code = code
       bindings.each do |k, v|
         next unless k and v
-        if bindings.has_key? '*_'
-          puts('-' * 70)
-          p new_code
-          puts "substituting #{k.inspect} -> #{v.to_s.inspect}"
-          p new_code
-          puts('-' * 70)
-        end
-        unless k.is_a? Regexp
-          puts('!' * 70)
-          p bindings
-          puts('!' * 70)
-        end
         new_code = new_code.gsub(k, v.to_s)
       end
       new_code

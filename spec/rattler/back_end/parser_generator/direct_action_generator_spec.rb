@@ -70,7 +70,7 @@ end
 
   describe '#gen_dispatch_action' do
 
-    let(:code) { DispatchActionCode.new('Word', 'parsed') }
+    let(:code) { NodeCode.new('Word', 'parsed') }
 
     context 'when nested' do
       it 'generates nested matching code with a direct action and a dispatch action' do

@@ -5,67 +5,66 @@ module Rattler::BackEnd::ParserGenerator
   # @private
   class DisallowGenerator < ExprGenerator #:nodoc:
 
-    def gen_basic(disallow)
-      generate disallow.child, :disallow
+    def gen_basic(disallow, scope={})
+      generate disallow.child, :disallow, scope
     end
 
-    def gen_assert(disallow)
+    def gen_assert(disallow, scope={})
       @g << 'false'
     end
 
-    def gen_disallow(disallow)
-      gen_basic disallow
+    def gen_disallow(disallow, scope={})
+      gen_basic disallow, scope
     end
 
-    def gen_skip_nested(disallow)
-      gen_basic_nested disallow
+    def gen_skip_nested(disallow, scope={})
+      gen_basic_nested disallow, scope
     end
 
-    def gen_skip_top_level(disallow)
-      gen_basic_top_level disallow
+    def gen_skip_top_level(disallow, scope={})
+      gen_basic_top_level disallow, scope
     end
 
-    def gen_dispatch_action_nested(disallow, code)
-      atomic_block { gen_dispatch_action_top_level disallow, code }
+    def gen_dispatch_action_nested(disallow, code, scope={})
+      atomic_block { gen_dispatch_action_top_level disallow, code, scope }
     end
 
-    def gen_dispatch_action_top_level(disallow, code)
-      gen_action disallow,
-        dispatch_action_result(code, :array_expr => '[]')
+    def gen_dispatch_action_top_level(disallow, code, scope={})
+      gen_action disallow, code.bind(scope, '[]'), scope
     end
 
-    def gen_direct_action_nested(disallow, code)
-      atomic_block { gen_direct_action_top_level disallow, code }
+    def gen_direct_action_nested(disallow, code, scope={})
+      atomic_block { gen_direct_action_top_level disallow, code, scope }
     end
 
-    def gen_direct_action_top_level(disallow, code)
-      gen_action disallow, direct_action_result(code)
+    def gen_direct_action_top_level(disallow, code, scope={})
+      gen_action disallow, "(#{code.bind scope, []})", scope
     end
 
-    def gen_token_nested(disallow)
-      atomic_block { gen_token_top_level disallow }
+    def gen_token_nested(disallow, scope={})
+      atomic_block { gen_token_top_level disallow, scope }
     end
 
-    def gen_token_top_level(disallow)
-      gen_action disallow, "''"
+    def gen_token_top_level(disallow, scope={})
+      gen_action disallow, "''", scope
     end
 
-    def gen_intermediate(disallow)
-      generate disallow.child, :intermediate_disallow
+    def gen_intermediate(disallow, scope={})
+      generate disallow.child, :intermediate_disallow, scope
     end
 
-    def gen_intermediate_disallow(disallow)
-      gen_intermediate disallow
+    def gen_intermediate_disallow(disallow, scope={})
+      gen_intermediate disallow, scope
     end
 
-    def gen_intermediate_skip(disallow)
-      gen_intermediate disallow
+    def gen_intermediate_skip(disallow, scope={})
+      gen_intermediate disallow, scope
     end
 
     private
 
-    def gen_action(disallow, result_code)
-      gen_intermediate disallow
+    def gen_action(disallow, result_code, scope={})
+      gen_intermediate disallow, scope
       (@g << ' &&').newline << result_code
     end
 

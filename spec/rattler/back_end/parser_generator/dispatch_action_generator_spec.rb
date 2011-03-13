@@ -70,7 +70,7 @@ Rattler::Runtime::ParseNode.parsed([r])
 
   describe '#gen_dispatch_action' do
 
-    let(:code) { DispatchActionCode.new('Word', 'parsed') }
+    let(:code) { NodeCode.new('Word', 'parsed') }
 
     context 'when nested' do
       it 'generates nested matching code with nested dispatch actions' do

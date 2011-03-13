@@ -21,9 +21,9 @@ module Rattler::Parsers
     # @param (see Parser#parse_labeled)
     #
     # @return (see Match#parse)
-    def parse(scanner, rules, labeled = {})
+    def parse(scanner, rules, scope = {})
       p = scanner.pos
-      child.parse(scanner, rules) && scanner.string[p...(scanner.pos)]
+      child.parse(scanner, rules, scope) && scanner.string[p...(scanner.pos)]
     end
 
     # @param (see Parser#with_ws)

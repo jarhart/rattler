@@ -67,12 +67,19 @@ module Rattler::Util
     # @return [Matcher]
     RSpec::Matchers.define :result_in do |expected|
       match do |target|
-        (target.result == expected) &&
-        (!@expected_pos || (target.pos == @expected_pos))
+        (target.result == expected) and
+        (not @expected_pos or
+          target.pos == @expected_pos) and
+        (not @expected_bindings or
+          @expected_bindings.all?{|k, v| target.scope[k] == v })
       end
 
       chain :at do |pos|
         @expected_pos = pos
+      end
+
+      chain :with_scope do |bindings|
+        @expected_bindings = bindings
       end
 
       failure_message_for_should do |target|

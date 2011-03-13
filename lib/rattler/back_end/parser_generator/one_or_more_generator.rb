@@ -8,10 +8,10 @@ module Rattler::BackEnd::ParserGenerator
     include NestedSubGenerating
     include PredicatePropogating
 
-    def gen_skip_top_level(one_or_more)
+    def gen_skip_top_level(one_or_more, scope={})
       (@g << "#{result_name} = false").newline
       @g << 'while '
-      generate one_or_more.child, :intermediate_skip
+      generate one_or_more.child, :intermediate_skip, scope
       @g.block('') { @g << "#{result_name} = true" }.newline
       @g << result_name
     end
@@ -37,12 +37,12 @@ module Rattler::BackEnd::ParserGenerator
   class TopLevelOneOrMoreGenerator < OneOrMoreGenerator #:nodoc:
     include TopLevel
 
-    def gen_assert(parser)
-      generate parser.child, :assert_top_level
+    def gen_assert(parser, scope = {})
+      generate parser.child, :assert_top_level, scope
     end
 
-    def gen_disallow(parser)
-      generate parser.child, :disallow_top_level
+    def gen_disallow(parser, scope = {})
+      generate parser.child, :disallow_top_level, scope
     end
 
   end

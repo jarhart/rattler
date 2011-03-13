@@ -35,8 +35,10 @@ module Rattler::Parsers
     # @param rules (see Parser#parse_labeled)
     #
     # @return (see Parser#parse_labeled)
-    def parse(scanner, rules)
-      catch(:rule_failed) { return expr.parse(scanner, rules) }
+    def parse(scanner, rules, scope = {})
+      catch(:rule_failed) do
+        return expr.parse(scanner, rules, scope)
+      end
       false
     end
 

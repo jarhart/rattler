@@ -5,15 +5,15 @@ module Rattler::BackEnd::ParserGenerator
   # @private
   class ApplyGenerator < ExprGenerator #:nodoc:
 
-    def gen_basic(apply)
+    def gen_basic(apply, scope={})
       @g << "match(:#{apply.rule_name})"
     end
 
-    def gen_assert_nested(apply)
+    def gen_assert_nested(apply, scope={})
       atomic_block { gen_assert_top_level apply }
     end
 
-    def gen_assert_top_level(apply)
+    def gen_assert_top_level(apply, scope={})
       lookahead do
         @g.surround("#{result_name} = (", ')') { gen_skip_top_level apply }
         @g.newline
@@ -21,11 +21,11 @@ module Rattler::BackEnd::ParserGenerator
       @g << result_name
     end
 
-    def gen_disallow_nested(apply)
+    def gen_disallow_nested(apply, scope={})
       atomic_block { gen_disallow_top_level apply }
     end
 
-    def gen_disallow_top_level(apply)
+    def gen_disallow_top_level(apply, scope={})
       lookahead do
         @g.surround("#{result_name} = !", '') { gen_basic_nested apply }
         @g.newline
@@ -33,34 +33,34 @@ module Rattler::BackEnd::ParserGenerator
       @g << result_name
     end
 
-    def gen_dispatch_action_nested(apply, code)
+    def gen_dispatch_action_nested(apply, code, scope={})
       atomic_expr { gen_dispatch_action_top_level apply, code }
     end
 
-    def gen_dispatch_action_top_level(apply, code)
+    def gen_dispatch_action_top_level(apply, code, scope={})
       @g.surround("(#{result_name} = ", ')') { gen_basic apply }
-      @g << ' && ' << dispatch_action_result(code)
+      @g << ' && ' << code.bind(scope, "[#{result_name}]")
     end
 
-    def gen_direct_action_nested(apply, action)
-      atomic_expr { gen_direct_action_top_level apply, action }
+    def gen_direct_action_nested(apply, code, scope={})
+      atomic_expr { gen_direct_action_top_level apply, code }
     end
 
-    def gen_direct_action_top_level(apply, action)
+    def gen_direct_action_top_level(apply, code, scope={})
       @g.surround("(#{result_name} = ", ')') { gen_basic apply }
-      @g << ' && ' << direct_action_result(action)
+      @g << ' && (' << code.bind(scope, [result_name]) << ')'
     end
 
-    def gen_skip_nested(apply)
+    def gen_skip_nested(apply, scope={})
       atomic_expr { gen_skip_top_level apply }
     end
 
-    def gen_skip_top_level(apply)
+    def gen_skip_top_level(apply, scope={})
       gen_intermediate_skip apply
       @g << ' && true'
     end
 
-    def gen_intermediate_skip(apply)
+    def gen_intermediate_skip(apply, scope={})
       gen_basic apply
     end
 

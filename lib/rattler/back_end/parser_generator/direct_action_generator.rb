@@ -8,30 +8,30 @@ module Rattler::BackEnd::ParserGenerator
     include TokenPropogating
     include SkipPropogating
 
-    def gen_basic_nested(action)
-      generate action.child, :direct_action_nested, action.bindable_code
+    def gen_basic_nested(action, scope={})
+      generate action.child, :direct_action_nested, action.bindable_code, scope
     end
 
-    def gen_basic_top_level(action)
-      generate action.child, :direct_action_top_level, action.bindable_code
+    def gen_basic_top_level(action, scope={})
+      generate action.child, :direct_action_top_level, action.bindable_code, scope
     end
 
-    def gen_dispatch_action_nested(inner, code)
-      atomic_block { gen_dispatch_action_top_level inner, code }
+    def gen_dispatch_action_nested(inner, code, scope={})
+      atomic_block { gen_dispatch_action_top_level inner, code, scope }
     end
 
-    def gen_dispatch_action_top_level(inner, code)
-      @g.surround("(#{result_name} = ", ')') { gen_basic_nested inner }
-      (@g << ' &&').newline << dispatch_action_result(code)
+    def gen_dispatch_action_top_level(inner, code, scope={})
+      @g.surround("(#{result_name} = ", ')') { gen_basic_nested inner, scope }
+      (@g << ' &&').newline << code.bind(scope, "[#{result_name}]")
     end
 
-    def gen_direct_action_nested(inner, code)
-      atomic_block { gen_direct_action_top_level inner, code }
+    def gen_direct_action_nested(inner, code, scope={})
+      atomic_block { gen_direct_action_top_level inner, code, scope }
     end
 
-    def gen_direct_action_top_level(inner, code)
-      @g.surround("(#{result_name} = ", ')') { gen_basic_nested inner }
-      (@g << ' &&').newline << direct_action_result(code)
+    def gen_direct_action_top_level(inner, code, scope={})
+      @g.surround("(#{result_name} = ", ')') { gen_basic_nested inner, scope }
+      (@g << ' &&').newline << '(' << code.bind(scope, [result_name]) << ')'
     end
 
   end

@@ -90,7 +90,7 @@ end
 
   describe '#gen_dispatch_action' do
 
-    let(:code) { DispatchActionCode.new('Atom', 'parsed') }
+    let(:code) { NodeCode.new('Atom', 'parsed') }
 
     context 'when nested' do
       it 'generates nested choice matching code with a dispatch action' do

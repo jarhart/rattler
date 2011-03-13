@@ -6,74 +6,75 @@ module Rattler::BackEnd::ParserGenerator
   class OptionalGenerator < ExprGenerator #:nodoc:
     include NestedSubGenerating
 
-    def gen_basic_nested(optional)
-      atomic_expr { gen_basic_top_level optional }
+    def gen_basic_nested(optional, scope={})
+      atomic_expr { gen_basic_top_level optional, scope }
     end
 
-    def gen_basic_top_level(optional)
+    def gen_basic_top_level(optional, scope={})
       if optional.capturing?
-        @g.surround("(#{result_name} = ", ')') { generate optional.child }
+        @g.surround("(#{result_name} = ", ')') do
+          generate optional.child, :basic, scope
+        end
         @g << " ? [#{result_name}] : []"
       else
-        gen_skip_top_level optional
+        gen_skip_top_level optional, scope
       end
     end
 
-    def gen_assert(optional)
+    def gen_assert(optional, scope={})
       @g << 'true'
     end
 
-    def gen_disallow(optional)
+    def gen_disallow(optional, scope={})
       @g << 'false'
     end
 
-    def gen_dispatch_action_nested(optional, code)
-      atomic_block { gen_dispatch_action_top_level optional, code }
+    def gen_dispatch_action_nested(optional, code, scope={})
+      atomic_block { gen_dispatch_action_top_level optional, code, scope }
     end
 
-    def gen_dispatch_action_top_level(optional, code)
+    def gen_dispatch_action_top_level(optional, code, scope={})
       @g << "#{result_name} = "
-      generate optional.child
-      @g.newline << dispatch_action_result(code,
-          :array_expr => "#{result_name} ? [#{result_name}] : []")
+      generate optional.child, :basic, scope
+      @g.newline << code.bind(scope, "#{result_name} ? [#{result_name}] : []")
     end
 
-    def gen_direct_action_nested(optional, action)
-      atomic_block { gen_direct_action_top_level optional, action }
+    def gen_direct_action_nested(optional, code, scope={})
+      atomic_block { gen_direct_action_top_level optional, code, scope }
     end
 
-    def gen_direct_action_top_level(optional, action)
+    def gen_direct_action_top_level(optional, code, scope={})
       @g << "#{result_name} = "
-      generate optional.child
-      @g.newline << direct_action_result(action,
-          :bind_args => ["(#{result_name} ? [#{result_name}] : [])"])
+      generate optional.child, :basic, scope
+      @g.newline <<
+        '(' << code.bind(scope, ["(#{result_name} ? [#{result_name}] : [])"]) << ')'
     end
 
-    def gen_token_nested(optional)
-      atomic_block { gen_token_top_level optional }
+    def gen_token_nested(optional, scope={})
+      atomic_block { gen_token_top_level optional, scope }
     end
 
-    def gen_token_top_level(optional)
-      generate optional.child, :token
+    def gen_token_top_level(optional, scope={})
+      generate optional.child, :token, scope
       @g << " || ''"
     end
 
-    def gen_skip_nested(optional)
-      atomic_block { gen_skip_top_level optional }
+    def gen_skip_nested(optional, scope={})
+      atomic_block { gen_skip_top_level optional, scope }
     end
 
-    def gen_skip_top_level(optional)
-      generate optional.child, :intermediate_skip
+    def gen_skip_top_level(optional, scope={})
+      generate optional.child, :intermediate_skip, scope
       @g.newline << 'true'
     end
 
     private
 
-    def gen_capturing(optional)
+    def gen_capturing(optional, scope={})
       if optional.capturing?
         yield
       else
-        gen_skip_top_level optional
+        gen_skip_top_level optional, scope
       end
     end
 

@@ -2,6 +2,8 @@ require File.expand_path(File.dirname(__FILE__) + '/../../spec_helper')
 
 describe Rattler::Parsers::ActionCode do
 
+  subject { ActionCode.new(code) }
+
   describe '#param_names' do
     context 'when the code has block parameters' do
 
@@ -98,73 +100,94 @@ describe Rattler::Parsers::ActionCode do
   end
 
   describe '#bind' do
+
+    let(:scope) { {} }
+
     context 'when the code uses block parameters' do
 
-      subject { ActionCode.new('|a, b| a + b') }
+      let(:code) { '|a, b| a + b' }
 
       it 'replaces block parameter names with corresponding arguments' do
-        subject.bind(['r0_0', 'r0_1']).should == 'r0_0 + r0_1'
+        subject.bind(scope, ['r0_0', 'r0_1']).should == 'r0_0 + r0_1'
       end
     end
 
     context 'when the code refers to labels' do
 
-      subject { ActionCode.new('l + r') }
+      let(:scope) { {:l => 'r0_3', :r => 'r0_5'} }
+
+      let(:code) { 'l + r' }
 
       it 'replaces label names with associated arguments' do
-        subject.bind({:l => 'r0_3', :r => 'r0_5'}).should == 'r0_3 + r0_5'
+        subject.bind(scope, []).should == 'r0_3 + r0_5'
       end
     end
 
     context 'when the code uses block parameters and label names' do
 
-      subject { ActionCode.new('|a, b| a * c + b * d') }
+      let(:scope) { {:c => 'r0_3', :d => 'r0_5'} }
+
+      let(:code) { '|a, b| a * c + b * d' }
 
       it 'replaces both block parameter names and label names' do
-        subject.bind(['r0_0', 'r0_1'], {:c => 'r0_3', :d => 'r0_5'}).
+        subject.bind(scope, ['r0_0', 'r0_1']).
           should == 'r0_0 * r0_3 + r0_1 * r0_5'
+      end
+    end
+
+    context 'when the code uses block parameters that are label names' do
+
+      let(:scope) { {:b => 'r0_3', :c => 'r0_5'} }
+
+      let(:code) { '|a, b| a * c + b' }
+
+      it 'the block parameters shadow the label names' do
+        subject.bind(scope, ['r0_0', 'r0_1']).
+          should == 'r0_0 * r0_5 + r0_1'
       end
     end
 
     context 'when the code uses "_"' do
 
-      subject { ActionCode.new('_.to_s') }
+      let(:code) { '_.to_s' }
 
       context 'given one argument' do
         it 'replaces "_" with the argument' do
-          subject.bind(['r0']).should == 'r0.to_s'
+          subject.bind(scope, ['r0']).should == 'r0.to_s'
         end
       end
 
       context 'given multiple arguments' do
         it 'replaces "_" with the array of arguments' do
-          subject.bind(['r0_0', 'r0_1']).should == '[r0_0, r0_1].to_s'
+          subject.bind(scope, ['r0_0', 'r0_1']).
+            should == '[r0_0, r0_1].to_s'
         end
       end
     end
 
     context 'when the code uses "_" as a block parameter' do
 
-      subject { ActionCode.new('|_| _.to_f') }
+      let(:code) { '|_| _.to_f' }
 
-      it 'shadows the default "_" binding' do
-        subject.bind(['r0_0', 'r0_1']).should == 'r0_0.to_f'
+      it 'the block parameter shadows the default "_" binding' do
+        subject.bind(scope, ['r0_0', 'r0_1']).should == 'r0_0.to_f'
       end
     end
 
     context 'when the code uses "*_"' do
 
-      subject { ActionCode.new('do_stuff *_') }
+      let(:code) { 'do_stuff *_' }
 
       context 'given one argument' do
         it 'replaces "*_" with the argument' do
-          subject.bind(['r0']).should == 'do_stuff r0'
+          subject.bind(scope, ['r0']).should == 'do_stuff r0'
         end
       end
 
       context 'given multiple arguments' do
         it 'replaces "*_" with the arguments' do
-          subject.bind(['r0_0', 'r0_1']).should == 'do_stuff r0_0, r0_1'
+          subject.bind(scope, ['r0_0', 'r0_1']).
+            should == 'do_stuff r0_0, r0_1'
         end
       end
     end

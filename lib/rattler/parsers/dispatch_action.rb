@@ -71,23 +71,38 @@ module Rattler::Parsers
     #
     # @return the result of applying the symantic action, or a false value if
     #   the parse failed.
-    def parse(scanner, rules, l = {})
-      labeled = {}
-      if result = child.parse(scanner, rules, labeled)
+    def parse(scanner, rules, scope = {})
+      if result = parse_child(child, scanner, rules, scope) {|_| scope = _ }
         if not capturing?
           apply([])
         elsif result.respond_to?(:to_ary)
-          apply(result, labeled)
+          apply(result, scope)
         else
-          apply([result], labeled)
+          apply([result], scope)
         end
       end
     end
 
+    def bindable_code
+      @bindable_code ||= NodeCode.new(target, method_name)
+    end
+
+    def bind(scope, bind_args)
+      bindable_code.bind(scope, bind_args)
+    end
+
     private
 
-    def apply(results, labeled={})
-      attrs = labeled.empty? ? {} : {:labeled => labeled}
+    def parse_child(child, scanner, rules, scope)
+      if child.is_a? Sequence
+        child.parse_and_yield_scope(scanner, rules, scope) {|_| yield _ }
+      else
+        child.parse(scanner, rules, scope) {|_| yield _ }
+      end
+    end
+
+    def apply(results, scope={})
+      attrs = scope.empty? ? {} : {:labeled => scope}
       target_class.send method_name, results, attrs
     end
 

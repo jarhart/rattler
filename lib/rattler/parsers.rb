@@ -43,6 +43,7 @@ module Rattler
     autoload :Combining, 'rattler/parsers/combining'
     autoload :MatchJoining, 'rattler/parsers/match_joining'
     autoload :ActionCode, 'rattler/parsers/action_code'
+    autoload :NodeCode, 'rattler/parsers/node_code'
 
     class <<self
       # Define parse rules with the given block

@@ -24,9 +24,9 @@ module Rattler::Parsers
     #
     # @return [Array, true] an array containing the decorated parser's parse
     #   results, or +true+ if the decorated parser is not <tt>capturing?</tt>
-    def parse(scanner, rules, labeled = {})
+    def parse(scanner, rules, scope = {})
       a = []
-      while result = child.parse(scanner, rules)
+      while result = child.parse(scanner, rules, scope)
         a << result
       end
       capturing? ? a : true

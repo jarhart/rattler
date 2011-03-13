@@ -14,79 +14,79 @@ module Rattler::BackEnd::ParserGenerator
       @repeat_level = repeat_level
     end
 
-    def gen_basic_nested(parser)
-      gen_basic parser
+    def gen_basic_nested(parser, scope={})
+      gen_basic parser, scope
     end
 
-    def gen_basic_top_level(parser)
-      gen_basic parser
+    def gen_basic_top_level(parser, scope={})
+      gen_basic parser, scope
     end
 
-    def gen_assert_nested(parser)
-      gen_assert parser
+    def gen_assert_nested(parser, scope={})
+      gen_assert parser, scope
     end
 
-    def gen_assert_top_level(parser)
-      gen_assert parser
+    def gen_assert_top_level(parser, scope={})
+      gen_assert parser, scope
     end
 
-    def gen_disallow_nested(parser)
-      gen_disallow parser
+    def gen_disallow_nested(parser, scope={})
+      gen_disallow parser, scope
     end
 
-    def gen_disallow_top_level(parser)
-      gen_disallow parser
+    def gen_disallow_top_level(parser, scope={})
+      gen_disallow parser, scope
     end
 
-    def gen_dispatch_action_nested(parser, target, method_name)
-      gen_dispatch_action parser, target, method_name
+    def gen_dispatch_action_nested(parser, code, scope={})
+      gen_dispatch_action parser, code, scope
     end
 
-    def gen_dispatch_action_top_level(parser, target, method_name)
-      gen_dispatch_action parser, target, method_name
+    def gen_dispatch_action_top_level(parser, code, scope={})
+      gen_dispatch_action parser, code, scope
     end
 
-    def gen_direct_action_nested(parser, action)
-      gen_direct_action parser, action
+    def gen_direct_action_nested(parser, code, scope={})
+      gen_direct_action parser, code, scope
     end
 
-    def gen_direct_action_top_level(parser, action)
-      gen_direct_action parser, action
+    def gen_direct_action_top_level(parser, code, scope={})
+      gen_direct_action parser, code, scope
     end
 
-    def gen_token_nested(parser)
-      atomic_block { gen_token_top_level parser }
+    def gen_token_nested(parser, scope={})
+      atomic_block { gen_token_top_level parser, scope }
     end
 
-    def gen_token_top_level(parser)
+    def gen_token_top_level(parser, scope={})
       (@g << "tp = @scanner.pos").newline
-      gen_intermediate_skip parser
+      gen_intermediate_skip parser, scope
       (@g << ' &&').newline
       @g << "@scanner.string[tp...(@scanner.pos)]"
     end
 
-    def gen_skip_nested(parser)
-      gen_skip parser
+    def gen_skip_nested(parser, scope={})
+      gen_skip parser, scope
     end
 
-    def gen_skip_top_level(parser)
-      gen_skip parser
+    def gen_skip_top_level(parser, scope={})
+      gen_skip parser, scope
     end
 
-    def gen_intermediate(parser)
-      gen_basic_nested parser
+    def gen_intermediate(parser, scope={})
+      gen_basic_nested parser, scope
     end
 
-    def gen_intermediate_assert(parser)
-      gen_assert_nested parser
+    def gen_intermediate_assert(parser, scope={})
+      gen_assert_nested parser, scope
     end
 
-    def gen_intermediate_disallow(parser)
-      gen_disallow_nested parser
+    def gen_intermediate_disallow(parser, scope={})
+      gen_disallow_nested parser, scope
     end
 
-    def gen_intermediate_skip(parser)
-      gen_skip_nested parser
+    def gen_intermediate_skip(parser, scope={})
+      gen_skip_nested parser, scope
     end
 
     protected
@@ -107,18 +107,6 @@ module Rattler::BackEnd::ParserGenerator
 
     def saved_pos_name
       "p#{sequence_level}"
-    end
-
-    def dispatch_action_result(code, opts = {})
-      array_expr = opts[:array_expr] || "[#{result_name}]"
-      labeled = opts[:labeled]
-      code.bind array_expr, labeled
-    end
-
-    def direct_action_result(code, opts = {})
-      bind_args = opts[:bind_args] || [result_name]
-      labeled = opts[:labeled] || {}
-      "(#{code.bind bind_args, labeled})"
     end
 
     def lookahead

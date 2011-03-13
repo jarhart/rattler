@@ -24,3 +24,11 @@ Feature: Labels
         """
     When I parse "6/2"
     Then the parse result should be Fraction[["6", "/", "2"], {:labeled => {:numer => "6", :denom => "2"}}]
+
+  Scenario: Nested scope
+    Given a grammar with:
+      """
+      a <- word:@ALPHA+ (@DIGIT+ {|num| "#{num} #{word}" })
+      """
+    When I parse "abc123"
+    Then the parse result should be ["abc", "123 abc"]

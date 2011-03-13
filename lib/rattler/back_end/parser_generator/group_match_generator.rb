@@ -8,30 +8,28 @@ module Rattler::BackEnd::ParserGenerator
     include TokenPropogating
     include SkipPropogating
 
-    def gen_basic_nested(group_match)
-      atomic_block { gen_basic_top_level group_match }
+    def gen_basic_nested(group_match, scope={})
+      atomic_block { gen_basic_top_level group_match, scope }
     end
 
-    def gen_basic_top_level(group_match)
+    def gen_basic_top_level(group_match, scope={})
       gen_capture group_match, result_expr(group_match)
     end
 
-    def gen_dispatch_action_nested(group_match, code)
-      atomic_block { gen_dispatch_action_top_level group_match, code }
+    def gen_dispatch_action_nested(group_match, code, scope={})
+      atomic_block { gen_dispatch_action_top_level group_match, code, scope }
     end
 
-    def gen_dispatch_action_top_level(group_match, code)
-      gen_capture group_match, dispatch_action_result(code,
-                      :array_expr => "[#{group_exprs(group_match).join ', '}]")
+    def gen_dispatch_action_top_level(group_match, code, scope={})
+      gen_capture group_match, code.bind(scope, "[#{group_exprs(group_match).join ', '}]")
     end
 
-    def gen_direct_action_nested(group_match, code)
-      atomic_block { gen_direct_action_top_level group_match, code }
+    def gen_direct_action_nested(group_match, code, scope={})
+      atomic_block { gen_direct_action_top_level group_match, code, scope }
     end
 
-    def gen_direct_action_top_level(group_match, code)
-      gen_capture group_match, direct_action_result(code,
-                                        :bind_args => group_exprs(group_match))
+    def gen_direct_action_top_level(group_match, code, scope={})
+      gen_capture group_match, "(#{code.bind(scope, group_exprs(group_match))})"
     end
 
     private

@@ -46,7 +46,6 @@ module Rattler::BackEnd
     autoload :PredicatePropogating, 'rattler/back_end/parser_generator/predicate_propogating'
     autoload :TokenPropogating, 'rattler/back_end/parser_generator/token_propogating'
     autoload :SkipPropogating, 'rattler/back_end/parser_generator/skip_propogating'
-    autoload :DispatchActionCode, 'rattler/back_end/parser_generator/dispatch_action_code'
     autoload :GroupMatchGenerator, 'rattler/back_end/parser_generator/group_match_generator'
     autoload :GroupMatch, 'rattler/back_end/parser_generator/group_match'
     autoload :GEN_METHOD_NAMES, 'rattler/back_end/parser_generator/gen_method_names'

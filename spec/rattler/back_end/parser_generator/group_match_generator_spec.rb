@@ -66,7 +66,7 @@ end
 
   describe '#gen_dispatch_action' do
 
-    let(:code) { DispatchActionCode.new('Word', 'parsed') }
+    let(:code) { NodeCode.new('Word', 'parsed') }
 
     context 'given a single-group match' do
 

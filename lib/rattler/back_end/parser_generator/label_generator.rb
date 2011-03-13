@@ -8,16 +8,35 @@ module Rattler::BackEnd::ParserGenerator
     include TokenPropogating
     include SkipPropogating
 
-    def gen_basic(label)
-      generate label.child, :basic
+    def gen_basic(label, scope={})
+      generate label.child, :basic, scope
     end
 
-    def gen_dispatch_action(label, code)
-      generate label.child, :dispatch_action, code
+    def gen_dispatch_action(label, code, scope={})
+      generate label.child, :dispatch_action, code, scope
     end
 
-    def gen_direct_action(label, code)
-      generate label.child, :direct_action, code
+    def gen_direct_action_nested(label, code, scope={})
+      atomic_block { gen_direct_action_top_level label, code, scope }
+    end
+
+    def gen_direct_action_top_level(label, code, scope={})
+      scope = gen_capturing label.child, scope, label.label
+      (@g << ' &&').newline << '(' << code.bind(scope, [result_name]) << ')'
+    end
+
+    private
+
+    def gen_capturing(child, scope, label)
+      if child.capturing?
+        @g.surround("(#{result_name} = ", ')') do
+          generate child, :basic_nested, scope
+        end
+        scope.merge(label => result_name)
+      else
+        generate child, :intermediate, scope
+        scope
+      end
     end
 
   end
