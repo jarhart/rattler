@@ -19,20 +19,20 @@ dynamically from strings.
 == FEATURES:
 
 * Uses readable PEG-like grammars
-* A packrat parser to cache results for backtracking
-* An extended packrat parser that supports left-recursive grammars
+* Supports directly and indirectly left-recursive grammars
 * Whitespace can be specified in one place and skipped automatically
 * Automatic and custom parse error reporting
 * Optimizing parser generator generates efficient pure-ruby parsers
-* Generated parsers are relatively readable
 * Compatible with Ruby 1.8.7 and 1.9.2, tested with MRI and JRuby on Linux and
   Windows
 
 == PROBLEMS/LIMITATIONS:
 
-* No backreferences yet
 * Only strings can be parsed, so files have to be read completely before parsing
 * There are many holes in the tests so there are undoubtedly many bugs
+* Optimzations are not complete
+* Support for composable grammars is not yet implemented
+* Symantics of automatic whitespace skipping could be refined
 
 == EXAMPLES:
 
@@ -48,7 +48,7 @@ dynamically from strings.
 
   include JsonHelper
 
-  %whitespace (SPACE+ | comment)* {
+  %whitespace (SPACE+ / comment)* {
 
     object    <-  ~'{' members ~'}'                                   { object _ }
 
@@ -61,13 +61,13 @@ dynamically from strings.
     elements  <-  value *, ','
 
     value     <-  string
-                | number
-                | object
-                | array
-                | `true`                                              { :true }
-                | `false`                                             { :false }
-                | `null`                                              { :null }
-                | fail "value expected"
+                / number
+                / object
+                / array
+                / `true`                                              { :true }
+                / `false`                                             { :false }
+                / `null`                                              { :null }
+                / fail "value expected"
 
     string    <-  @('"' char* '"')                                    { string _ }
 
@@ -76,17 +76,17 @@ dynamically from strings.
 
   %inline {
 
-    char      <-  !('"' | '\\' | CNTRL) .
-                | '\\' (["\\/bfnrt] | 'u' XDIGIT XDIGIT XDIGIT XDIGIT)
+    char      <-  !('"' / '\\' / CNTRL) .
+                / '\\' (["\\/bfnrt] / 'u' XDIGIT XDIGIT XDIGIT XDIGIT)
 
-    int       <-  '-'? ('0' !DIGIT | [1-9] DIGIT*)
+    int       <-  '-'? ('0' !DIGIT / [1-9] DIGIT*)
 
     frac      <-  '.' DIGIT+
 
     exp       <-  [eE] [+-]? DIGIT+
 
     comment   <-  '/*' (! '*/' .)* '*/'
-                | '//' [^\n]*
+                / '//' [^\n]*
   }
 
 ==== json_helper.rb:
@@ -131,7 +131,7 @@ dynamically from strings.
 
   grammar JsonGrammar
 
-  %whitespace (SPACE+ | '/*' (! '*/' .)* '*/' | '//' [^\n]*)*
+  %whitespace (SPACE+ / comment)* {
 
   ...
 
@@ -165,17 +165,16 @@ dynamically from strings.
     
     start   <-  expr EOF
     
-    expr    <-  expr ~'+' term              {|a, b| a + b }
-              | expr ~'-' term              {|a, b| a - b }
-              | term
+    expr    <-  expr ~'+' term                  {|a, b| a + b }
+              / expr ~'-' term                  {|a, b| a - b }
+              / term
     
-    term    <-  term ~'*' primary           {|a, b| a * b }
-              | term ~'/' primary           {|a, b| a / b }
-              | primary
+    term    <-  term ~'*' primary               {|a, b| a * b }
+              / term ~'/' primary               {|a, b| a / b }
+              / primary
     
     primary <-  ~'(' expr ~')'
-              | @('-'? DIGIT+ '.' DIGIT+)   { _.to_f }
-              | @('-'? DIGIT+)              { _.to_i }
+              / @('-'? DIGIT+ ('.' DIGIT+)?)    { _.to_f }
   },
   :type => :extended_packrat
  
