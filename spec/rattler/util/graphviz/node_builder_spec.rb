@@ -1,4 +1,5 @@
 require File.expand_path(File.dirname(__FILE__) + '/../../../spec_helper')
+require 'set'
 
 describe Rattler::Util::GraphViz::NodeBuilder do
 
@@ -49,32 +50,32 @@ describe Rattler::Util::GraphViz::NodeBuilder do
     context 'given an array' do
 
       let(:object) { ['a', 'b', 'c'] }
-      let(:children) { ['a', 'b', 'c'] }
 
       it 'iterates over the members' do
-        subject.each_child_of(object) {|_| _.should == children.shift }
-        children.should be_empty
+        children = []
+        subject.each_child_of(object) {|_| children << _ }
+        children.should == ['a', 'b', 'c']
       end
     end
 
     context 'given a hash with compound values' do
 
       let(:object) { {:a => ['a1', 'a2'], :b => 'b'} }
-      let(:children) { [[:a, ['a1', 'a2']], [:b, 'b']] }
 
       it 'iterates over the pairs' do
-        subject.each_child_of(object) {|_| _.should == children.shift }
-        children.should be_empty
+        children = Set[]
+        subject.each_child_of(object) {|_| children << _ }
+        children.should == Set[[:a, ['a1', 'a2']], [:b, 'b']]
       end
     end
 
     context 'given a hash with simple values' do
 
       let(:object) { {:a => 'a', :b => 'b'} }
-      let(:children) { [] }
 
       it 'does nothing' do
-        subject.each_child_of(object) {|_| _.should == children.shift }
+        children = Set[]
+        subject.each_child_of(object) {|_| children << _}
         children.should be_empty
       end
     end
