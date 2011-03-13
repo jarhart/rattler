@@ -1,8 +1,8 @@
 grammar IniGrammar
 
-%whitespace (SPACE+ | comment)* {
+%whitespace (SPACE+ / comment)* {
 
-  configuration <-  (property | section_name)* EOF              { @properties }
+  configuration <-  (property / section_name)* EOF              { @properties }
         
   property      <-  name ~'=' value                             { property *_ }
         
@@ -10,15 +10,15 @@ grammar IniGrammar
         
   name          <-  @WORD+                                      { _.to_sym }
         
-  value         <-  @('"' ('\\' . | [^"])* '"')                 { unquote _ }
-                  | @(DIGIT+ ('.' DIGIT+))                      { _.to_f }
-                  | @DIGIT+                                     { _.to_i }
-                  | @(!eol .)*                                  { _.strip }
+  value         <-  @('"' ('\\' . / [^"])* '"')                 { unquote _ }
+                  / @(DIGIT+ ('.' DIGIT+))                      { _.to_f }
+                  / @DIGIT+                                     { _.to_i }
+                  / @(!eol .)*                                  { _.strip }
 }
 
 %inline {
     
-  eol           <-  BLANK* (EOF | ("\r"? "\n") | (';' [^\n]*))
+  eol           <-  BLANK* (EOF / ("\r"? "\n") / (';' [^\n]*))
 
   comment       <-  [;#] [^\n]*
 }

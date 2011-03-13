@@ -6,7 +6,7 @@ parser JsonParser < Rattler::Runtime::PackratParser
 
 include JsonHelper
 
-%whitespace (SPACE+ | comment)* {
+%whitespace (SPACE+ / comment)* {
 
   object    <-  ~'{' members ~'}'                                   { object _ }
 
@@ -19,13 +19,13 @@ include JsonHelper
   elements  <-  value *, ','
 
   value     <-  string
-              | number
-              | object
-              | array
-              | `true`                                              { :true }
-              | `false`                                             { :false }
-              | `null`                                              { :null }
-              | fail "value expected"
+              / number
+              / object
+              / array
+              / `true`                                              { :true }
+              / `false`                                             { :false }
+              / `null`                                              { :null }
+              / fail "value expected"
 
   string    <-  @('"' char* '"')                                    { string _ }
 
@@ -34,15 +34,15 @@ include JsonHelper
 
 %inline {
 
-  char      <-  !('"' | '\\' | CNTRL) .
-              | '\\' (["\\/bfnrt] | 'u' XDIGIT XDIGIT XDIGIT XDIGIT)
+  char      <-  !('"' / '\\' / CNTRL) .
+              / '\\' (["\\/bfnrt] / 'u' XDIGIT XDIGIT XDIGIT XDIGIT)
 
-  int       <-  '-'? ('0' !DIGIT | [1-9] DIGIT*)
+  int       <-  '-'? ('0' !DIGIT / [1-9] DIGIT*)
 
   frac      <-  '.' DIGIT+
 
   exp       <-  [eE] [+-]? DIGIT+
 
   comment   <-  '/*' (! '*/' .)* '*/'
-              | '//' [^\n]*
+              / '//' [^\n]*
 }
