@@ -8,7 +8,7 @@ require 'rattler'
 
 module Rattler::BackEnd::Optimizer
   #
-  # A token of a match is equivalent to the match by itself.
+  # A token wrapping a terminal parser is redundant.
   #
   # @author Jason Arhart
   #
@@ -19,11 +19,19 @@ module Rattler::BackEnd::Optimizer
     protected
 
     def _applies_to?(parser, context)
-      parser.is_a?(Token) and parser.child.is_a?(Match)
+      parser.is_a? Token and
+      terminal? parser.child
     end
 
     def _apply(parser, context)
       parser.child
+    end
+
+    def terminal?(parser)
+      case parser
+      when Match, Token, BackReference then true
+      else false
+      end
     end
 
   end

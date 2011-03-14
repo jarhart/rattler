@@ -14,6 +14,24 @@ describe Rattler::BackEnd::Optimizer::SimplifyTokenMatch do
         subject.apply(parser, :any).should == Match[/a/]
       end
     end
+
+    context 'given a token of a back reference' do
+
+      let(:parser) { Token[BackReference[:a]] }
+
+      it 'returns the back reference' do
+        subject.apply(parser, :any).should == BackReference[:a]
+      end
+    end
+
+    context 'given a token of a token' do
+
+      let(:parser) { Token[Token[Apply[:foo]]] }
+
+      it 'returns the inner token' do
+        subject.apply(parser, :any).should == Token[Apply[:foo]]
+      end
+    end
   end
 
   describe '#applies_to?' do
@@ -27,7 +45,25 @@ describe Rattler::BackEnd::Optimizer::SimplifyTokenMatch do
       end
     end
 
-    context 'given a token of something other than a match' do
+    context 'given a token of a back reference' do
+
+      let(:parser) { Token[BackReference[:a]] }
+
+      it 'returns true' do
+        subject.applies_to?(parser, :any).should be_true
+      end
+    end
+
+    context 'given a token of a token' do
+
+      let(:parser) { Token[Token[Apply[:foo]]] }
+
+      it 'returns true' do
+        subject.applies_to?(parser, :any).should be_true
+      end
+    end
+
+    context 'given a token of something other than a terminal parser' do
 
       let(:parser) { Token[Apply[:foo]] }
 
