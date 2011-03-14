@@ -16,4 +16,4 @@ group :development do
   gem "ruby-graphviz", ">= 0.9.6"
 end
 
-gemspec
+#gemspec
