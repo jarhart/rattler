@@ -14,7 +14,7 @@ A language syntax is specified in a grammar using the Rattler syntax. Parser
 classes and modules can be generated statically using the "rtlr" command or
 dynamically from strings.
 
-{RDoc}[http://rubydoc.info/gems/rattler/0.2.2/frames]
+{RDoc}[http://rubydoc.info/gems/rattler/0.4.0/frames]
 
 == FEATURES:
 

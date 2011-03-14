@@ -1,3 +1,26 @@
+== 0.4.0 2011-03-13
+
+Rattler is nearly complete. Composable grammars and polish are left.
+
+=== New Features
+* Back references
+* General-delimited text syntax for string literals
+* %inline directive
+* A proper optimizer
+* GraphViz digraph generation using ruby-graphviz gem
+
+=== Changes
+* ordered choice operator changed to "/" making Rattler a superset of PEG
+* list matching syntax changed "*^" and "+^" to "*," and "+,"
+* labels now have lexical scope, with sequences introducing new local scopes
+
+=== Removed Features
+* Regexp literals in the grammars
+
+=== Bugfixes
+* list matching feature not skipping whitespace before separators
+* other stuff
+
 == 0.3.0 2011-02-24
 
 Improved parsing performance, new grammar features, indirect left-recursion.
@@ -6,6 +29,9 @@ Improved parsing performance, new grammar features, indirect left-recursion.
 * ExtendedPackratParser supports indirect left-recursion
 * Grammar syntax for matching lists of things with interspered separators
 * "_" in symantic actions refers to all of the parse results
+
+=== New documentation
+* New example: JSON parser
 
 === Removed Features
 * <.method> shorcut syntax for symantic actions
