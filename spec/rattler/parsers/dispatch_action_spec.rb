@@ -3,14 +3,15 @@ require File.expand_path(File.dirname(__FILE__) + '/../../spec_helper')
 describe DispatchAction do
   include CombinatorParserSpecHelper
 
+  subject { DispatchAction[nested_parser] }
+
   describe '#parse' do
 
     context 'with a capturing parser' do
-      subject do
-        DispatchAction[
-          Sequence[Match[/[[:alpha:]]+/], Match[/\=/], Match[/[[:digit:]]+/]]
-        ]
-      end
+
+      let (:nested_parser) { Sequence[
+        Match[/[[:alpha:]]+/], Match[/\=/], Match[/[[:digit:]]+/]
+      ] }
 
       context 'when the parser matches' do
         it 'applies the action to the result' do
@@ -22,6 +23,18 @@ describe DispatchAction do
       context 'when the parser fails' do
         it 'fails' do
           parsing('val=x').should fail
+        end
+      end
+    end
+
+    context 'with a non-capturing parser' do
+
+      let (:nested_parser) { Skip[Match[/,/]] }
+
+      context 'when the parser matches' do
+        it 'applies the action to an empty array' do
+          parsing(', ').
+          should result_in(Rattler::Runtime::ParseNode.parsed([])).at(1)
         end
       end
     end

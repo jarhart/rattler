@@ -2,10 +2,11 @@ require File.expand_path(File.dirname(__FILE__) + '/../../spec_helper')
 
 describe Rattler::Parsers::NodeCode do
 
-  subject { described_class.new(target_name, method_name) }
+  subject { described_class.new(target_name, method_name, target_attrs) }
 
   let(:target_name) { 'Expr' }
   let(:method_name) { 'parsed' }
+  let(:target_attrs) { {} }
 
   describe '#bind' do
 
@@ -42,6 +43,16 @@ describe Rattler::Parsers::NodeCode do
       it 'binds the scope as labeled results' do
         subject.bind(scope, ['a', 'b']).
           should == 'Expr.parsed([a, b], :labeled => {:word => w})'
+      end
+    end
+
+    context 'with target_attrs' do
+
+      let(:target_attrs) { {:name => 'expression'} }
+
+      it '' do
+        subject.bind(scope, ['a', 'b']).
+          should == 'Expr.parsed([a, b], :name => "expression")'
       end
     end
   end

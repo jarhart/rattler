@@ -218,8 +218,72 @@ module Rattler
               @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)((?>(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>(?>[[:lower:]])(?>(?>[[:alnum:]_])*))|(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>(?>(?>(?>[[:upper:]])(?>(?>[[:alnum:]_])*)(?>::))*)(?>[[:upper:]])(?>(?>[[:alnum:]_])*)))(?>(?>(?>\.)(?>(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>(?>[[:lower:]])(?>(?>[[:alnum:]_])*))))?))/) &&
               @scanner[1]
             end) ? [r] : [])) &&
+            (r0_2 = ((r = begin
+              begin
+                @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)((?>")(?>(?>(?>\\)(?>.)|[^"])*)(?>"))/) &&
+                @scanner[1]
+              end ||
+              begin
+                @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)((?>')(?>(?>(?>\\)(?>.)|[^'])*)(?>'))/) &&
+                @scanner[1]
+              end ||
+              begin
+                @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)((?>%\()(?>(?>(?>\\)(?>.)|[^)])*)(?>\)))/) &&
+                @scanner[1]
+              end ||
+              begin
+                @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)((?>%\{)(?>(?>(?>\\)(?>.)|[^}])*)(?>\}))/) &&
+                @scanner[1]
+              end ||
+              begin
+                @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)((?>%\[)(?>(?>(?>\\)(?>.)|[^\]])*)(?>\]))/) &&
+                @scanner[1]
+              end ||
+              begin
+                @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)((?>%<)(?>(?>(?>\\)(?>.)|[^>])*)(?>>))/) &&
+                @scanner[1]
+              end ||
+              begin
+                p1 = @scanner.pos
+                begin
+                  @scanner.skip(/(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*/) &&
+                  begin
+                    p2 = @scanner.pos
+                    begin
+                      @scanner.skip(/%/) &&
+                      (r2_0 = @scanner.scan(/[[:punct:]]/)) &&
+                      begin
+                        while begin
+                          @scanner.skip(/(?>\\)(?>.)/) ||
+                          begin
+                            p3 = @scanner.pos
+                            begin
+                              @scanner.skip(/(?!#{r2_0})/) &&
+                              @scanner.skip(/./) &&
+                              true
+                            end || begin
+                              @scanner.pos = p3
+                              false
+                            end
+                          end
+                        end; end
+                        true
+                      end &&
+                      @scanner.skip(/#{r2_0}/) &&
+                      @scanner.string[p2...(@scanner.pos)]
+                    end || begin
+                      @scanner.pos = p2
+                      false
+                    end
+                  end
+                end || begin
+                  @scanner.pos = p1
+                  false
+                end
+              end
+            end) ? [r] : [])) &&
             @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>>)/) &&
-            DispatchAction.parsed(select_captures([r0_0, r0_1]))
+            DispatchAction.parsed(select_captures([r0_0, r0_1, r0_2]))
           end || begin
             @scanner.pos = p0
             false

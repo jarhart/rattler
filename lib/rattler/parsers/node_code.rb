@@ -15,12 +15,13 @@ module Rattler::Parsers
       self.new(action.target, action.method_name)
     end
 
-    def initialize(target_name, method_name)
+    def initialize(target_name, method_name, target_attrs = {})
       @target_name = target_name
       @method_name = method_name
+      @target_attrs = target_attrs
     end
 
-    attr_reader :target_name, :method_name
+    attr_reader :target_name, :method_name, :target_attrs
 
     def bind(scope, bind_args)
       args = [array_expr(bind_args)]
@@ -28,6 +29,7 @@ module Rattler::Parsers
         labeled = '{' + scope.map {|k, v| ":#{k} => #{v}"}.join(', ') + '}'
         args << ":labeled => #{labeled}"
       end
+      target_attrs.each {|k, v| args << ":#{k} => #{v.inspect}" }
       t = target_name == 'self' ? '' : "#{target_name}."
       "#{t}#{method_name}(#{args.join ', '})"
     end

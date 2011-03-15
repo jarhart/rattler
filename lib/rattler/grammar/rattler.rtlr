@@ -44,7 +44,7 @@ include Rattler::Parsers
   expression        <-  expression ~'/' attributed                              <Choice>
                       / attributed
 
-  attributed        <-  attributed ~'<' node_action? ~'>'                       <DispatchAction>
+  attributed        <-  attributed ~'<' node_action? literal? ~'>'              <DispatchAction>
                       / attributed ~'{' action ~'}'                             <DirectAction>
                       / terms
 

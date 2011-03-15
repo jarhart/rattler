@@ -167,20 +167,90 @@ describe Rattler::Grammar::GrammarParser do
       end
     end
 
-    it 'parses dispatch-action-attributed expressions' do
-      matching(' expr <Expr> ').as(:expression).
-        should result_in(DispatchAction[Apply[:expr], {:target => 'Expr', :method => 'parsed'}]).
-        at(12)
+    context 'given a dispatch-action-attributed expression' do
+
+      context 'given an action with a class name' do
+        it 'parses as a DispatchAction with the default method' do
+          matching(' expr <Expr> ').as(:expression).
+            should result_in(DispatchAction[Apply[:expr],
+              {:target => 'Expr', :method => 'parsed'}
+            ]).at(12)
+        end
+
+        context 'with a literal' do
+          it 'uses the literal as the name' do
+            matching(' expr <Expr "expression"> ').as(:expression).
+              should result_in(DispatchAction[Apply[:expr],
+                {:target => 'Expr', :method => 'parsed',
+                  :target_attrs => {:name => 'expression'} }
+              ]).at(25)
+          end
+        end
+      end
+
+      context 'given an action with a class and method names' do
+        it 'parses as a DispatchAction with the default method' do
+          matching(' expr <Expr.eval> ').as(:expression).
+            should result_in(DispatchAction[Apply[:expr],
+              {:target => 'Expr', :method => 'eval'}
+            ]).at(17)
+        end
+
+        context 'with a literal' do
+          it 'uses the literal as the name' do
+            matching(' expr <Expr.eval "expression"> ').as(:expression).
+              should result_in(DispatchAction[Apply[:expr],
+                { :target => 'Expr', :method => 'eval',
+                  :target_attrs => {:name => 'expression'} }
+              ]).at(30)
+          end
+        end
+      end
+
+      context 'given an empty action' do
+        it 'parses as a DispatchAction with the default target and method' do
+          matching(' expr <> ').as(:expression).
+            should result_in(DispatchAction[Apply[:expr],
+              {:target => 'Rattler::Runtime::ParseNode', :method => 'parsed'}
+            ]).at(8)
+        end
+      end
+
+      context 'given just a literal' do
+        it 'parses as a default node with the literal as the name' do
+          matching(' expr <"expression"> ').as(:expression).
+            should result_in(DispatchAction[Apply[:expr],
+              { :target => 'Rattler::Runtime::ParseNode',
+                :method => 'parsed',
+                :target_attrs => {:name => 'expression'} }
+            ]).at(20)
+        end
+      end
     end
 
-    it 'parses direct-action-attributed expressions' do
-      matching(' digits {|_| _.to_i} ').as(:expression).
-        should result_in(DirectAction[Apply[:digits], '|_| _.to_i']).at(20)
+    context 'given direct-action-attributed expression' do
+      it 'parses as a DirectAction' do
+        matching(' digits {|_| _.to_i} ').as(:expression).
+          should result_in(DirectAction[Apply[:digits], '|_| _.to_i']).at(20)
+      end
     end
 
-    it 'parses sequence expressions' do
-      matching(' name "=" value ').as(:expression).
-        should result_in(Sequence[Apply[:name], Match[%r{=}], Apply[:value]]).at(15)
+    context 'given a sequence expression' do
+      it 'parses as a Sequence' do
+        matching(' name "=" value ').as(:expression).
+          should result_in(Sequence[Apply[:name], Match[%r{=}], Apply[:value]]).at(15)
+      end
+
+      context 'with a nested sequence expression' do
+        it 'parses as a nested Sequence' do
+          matching(' a (b c) d ').as(:expression).
+            should result_in(Sequence[
+              Apply[:a],
+              Sequence[Apply[:b], Apply[:c]],
+              Apply[:d]
+            ]).at(10)
+        end
+      end
     end
 
     it 'parses attributed sequence expressions' do

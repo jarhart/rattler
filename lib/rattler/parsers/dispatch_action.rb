@@ -25,8 +25,13 @@ module Rattler::Parsers
 
     # @private
     def self.parsed(results, *_) #:nodoc:
-      attributed, optional_attribute = results
-      self[attributed, optional_attribute.first || @@node_defaults[:target]]
+      attributed, optional_attribute, optional_name = results
+      a = self[attributed, optional_attribute.first || @@node_defaults[:target]]
+      unless optional_name.empty?
+        a.with_attrs(:target_attrs => {:name => eval(optional_name.first, TOPLEVEL_BINDING)})
+      else
+        a
+      end
     end
 
     # @private
@@ -59,10 +64,11 @@ module Rattler::Parsers
       super(children, self.class.parse_attrs_arg(attrs_arg))
       @@node_defaults.each {|k, v| attrs[k] ||= v } unless attrs[:code]
       @method_name = attrs[:method]
+      @target_attrs = attrs[:target_attrs] || {}
     end
 
     # the name of the method used as the symantic action
-    attr_reader :method_name
+    attr_reader :method_name, :target_attrs
 
     # If the wrapped parser matches at the parse position, return the result
     # of applying the symantic action, otherwise return a false value.
@@ -84,7 +90,7 @@ module Rattler::Parsers
     end
 
     def bindable_code
-      @bindable_code ||= NodeCode.new(target, method_name)
+      @bindable_code ||= NodeCode.new(target, method_name, target_attrs)
     end
 
     def bind(scope, bind_args)
