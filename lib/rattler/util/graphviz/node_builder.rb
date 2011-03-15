@@ -18,7 +18,13 @@ module Rattler::Util::GraphViz
     # Yield any children of +o+ that should be represented as separate nodes in
     # the graph.
     def each_child_of(o)
-      o.each {|_| yield _ } if array_like? o and not record_like? o
+      if array_like? o and not record_like? o
+        if o.respond_to? :to_hash
+          o.each {|k, v| yield Mapping.new(k, v) }
+        else
+          o.each {|_| yield _ }
+        end
+      end
     end
 
     # Return the options for a node representing +o+.
@@ -31,7 +37,7 @@ module Rattler::Util::GraphViz
     # @return the shape option for a node representing +o+.
     def node_shape(o)
       case o
-      when Hash, Array
+      when Array, Hash, Mapping
         'circle'
       when String, Numeric, Symbol
         'plaintext'
@@ -49,6 +55,8 @@ module Rattler::Util::GraphViz
         record_label(o, o)
       elsif array_like? o
         type_label(o)
+      elsif o.respond_to? :to_str
+        "\"#{o}\""
       else
         o.inspect
       end
@@ -58,6 +66,7 @@ module Rattler::Util::GraphViz
       case o
       when Hash then '\\{\\}'
       when Array then '\\[\\]'
+      when Mapping then '-&gt;'
       else o.respond_to?(:name) ? o.name : o.class.name
       end
     end
@@ -73,11 +82,25 @@ module Rattler::Util::GraphViz
     end
 
     def record_label(o, h)
-      '{' + ([type_label(o)] + hash_content_labels(h)).join('|') + '}'
+      fields = h.reject {|k,v| k == :name }
+      '{' + ([type_label(o)] + hash_content_labels(fields)).join('|') + '}'
     end
 
     def hash_content_labels(h)
       h.map {|pair| '{' + pair.map {|_| _.inspect }.join('|') + '}' }
+    end
+
+    # @private
+    class Mapping #:nodoc:
+      def initialize(key, value)
+        @key = key
+        @value = value
+      end
+      attr_reader :key, :value
+      def each
+        yield key
+        yield value
+      end
     end
 
   end

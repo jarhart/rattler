@@ -3,6 +3,46 @@ require 'set'
 
 describe Rattler::Util::GraphViz::NodeBuilder do
 
+  describe '#node_label' do
+
+    context 'given a number' do
+      it 'returns a number as a string' do
+        subject.node_label(42).should == '42'
+      end
+    end
+
+    context 'given a string' do
+      it 'returns the string surrounded by escaped quotes' do
+        subject.node_label('abc').should == '"abc"'
+      end
+    end
+
+    context 'given an unnamed record-like object' do
+      it 'returns a record label with the class name' do
+        subject.node_label(Rattler::Util::Node[]).should == '{Rattler::Util::Node}'
+      end
+    end
+
+    context 'given a named record-like object' do
+      it 'returns a record label with a name' do
+        subject.node_label(Rattler::Util::Node[{:name => 'IDENT'}]).
+          should == '{IDENT}'
+      end
+    end
+
+    context 'given an array-like object' do
+      it 'returns "[]" escaped' do
+        subject.node_label(['let', 'x', '=', '1']).should == '\\[\\]'
+      end
+    end
+
+    context 'given a hash with compound values' do
+      it 'returns "{}" escaped' do
+        subject.node_label({:a => 'a', :b => ['a1', 'a2']}).should == '\\{\\}'
+      end
+    end
+  end
+
   describe '#array_like?' do
 
     context 'given an array' do
@@ -11,7 +51,7 @@ describe Rattler::Util::GraphViz::NodeBuilder do
       end
     end
 
-    context 'given a hash' do
+    context 'given a simple hash' do
       it 'returns true' do
         subject.array_like?({:a => 'a'}).should be_true
       end
@@ -62,10 +102,10 @@ describe Rattler::Util::GraphViz::NodeBuilder do
 
       let(:object) { {:a => ['a1', 'a2'], :b => 'b'} }
 
-      it 'iterates over the pairs' do
+      it 'iterates over the pairs yielding Mappings' do
         children = Set[]
         subject.each_child_of(object) {|_| children << _ }
-        children.should == Set[[:a, ['a1', 'a2']], [:b, 'b']]
+        children.should have(2).mappings
       end
     end
 
