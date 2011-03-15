@@ -1,3 +1,13 @@
+== 0.4.1 2011-03-15
+
+GraphViz support improvements.
+
+=== New Features
+* Syntax for easily naming parse nodes
+
+=== Bufixes
+* Handling of strings by graphviz builder
+
 == 0.4.0 2011-03-13
 
 Rattler is nearly complete. Composable grammars and polish are left.
