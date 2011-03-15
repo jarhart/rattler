@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{rattler}
-  s.version = "0.4.0"
+  s.version = "0.4.1"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Jason Arhart"]
-  s.date = %q{2011-03-12}
+  s.date = %q{2011-03-15}
   s.default_executable = %q{rtlr}
   s.description = %q{Simple language recognition tool for Ruby based on packrat parsing}
   s.email = %q{jarhart@gmail.com}
@@ -189,6 +189,7 @@ Gem::Specification.new do |s|
     "spec/rattler/back_end/optimizer/reduce_repeat_match_spec.rb",
     "spec/rattler/back_end/optimizer/simplify_redundant_repeat_spec.rb",
     "spec/rattler/back_end/optimizer/simplify_token_match_spec.rb",
+    "spec/rattler/back_end/optimizer_spec.rb",
     "spec/rattler/back_end/parser_generator/apply_generator_spec.rb",
     "spec/rattler/back_end/parser_generator/assert_generator_spec.rb",
     "spec/rattler/back_end/parser_generator/back_reference_generator_spec.rb",
@@ -198,6 +199,7 @@ Gem::Specification.new do |s|
     "spec/rattler/back_end/parser_generator/dispatch_action_generator_spec.rb",
     "spec/rattler/back_end/parser_generator/fail_generator_spec.rb",
     "spec/rattler/back_end/parser_generator/group_match_generator_spec.rb",
+    "spec/rattler/back_end/parser_generator/group_match_spec.rb",
     "spec/rattler/back_end/parser_generator/label_generator_spec.rb",
     "spec/rattler/back_end/parser_generator/list1_generator_spec.rb",
     "spec/rattler/back_end/parser_generator/list_generator_spec.rb",
@@ -269,7 +271,25 @@ Gem::Specification.new do |s|
       s.add_development_dependency(%q<yard>, [">= 0.6.0"])
       s.add_development_dependency(%q<watchr>, [">= 0.5.5"])
       s.add_development_dependency(%q<ruby-graphviz>, [">= 0.9.6"])
+      s.add_development_dependency(%q<rattler>, [">= 0"])
+      s.add_development_dependency(%q<bundler>, ["~> 1.0.0"])
+      s.add_development_dependency(%q<jeweler>, ["~> 1.5.2"])
+      s.add_development_dependency(%q<rspec>, [">= 2.3.0"])
+      s.add_development_dependency(%q<cucumber>, [">= 0.8.0"])
+      s.add_development_dependency(%q<aruba>, [">= 0.3.0"])
+      s.add_development_dependency(%q<yard>, [">= 0.6.0"])
+      s.add_development_dependency(%q<watchr>, [">= 0.5.5"])
+      s.add_development_dependency(%q<ruby-graphviz>, [">= 0.9.6"])
     else
+      s.add_dependency(%q<bundler>, ["~> 1.0.0"])
+      s.add_dependency(%q<jeweler>, ["~> 1.5.2"])
+      s.add_dependency(%q<rspec>, [">= 2.3.0"])
+      s.add_dependency(%q<cucumber>, [">= 0.8.0"])
+      s.add_dependency(%q<aruba>, [">= 0.3.0"])
+      s.add_dependency(%q<yard>, [">= 0.6.0"])
+      s.add_dependency(%q<watchr>, [">= 0.5.5"])
+      s.add_dependency(%q<ruby-graphviz>, [">= 0.9.6"])
+      s.add_dependency(%q<rattler>, [">= 0"])
       s.add_dependency(%q<bundler>, ["~> 1.0.0"])
       s.add_dependency(%q<jeweler>, ["~> 1.5.2"])
       s.add_dependency(%q<rspec>, [">= 2.3.0"])
@@ -280,6 +300,15 @@ Gem::Specification.new do |s|
       s.add_dependency(%q<ruby-graphviz>, [">= 0.9.6"])
     end
   else
+    s.add_dependency(%q<bundler>, ["~> 1.0.0"])
+    s.add_dependency(%q<jeweler>, ["~> 1.5.2"])
+    s.add_dependency(%q<rspec>, [">= 2.3.0"])
+    s.add_dependency(%q<cucumber>, [">= 0.8.0"])
+    s.add_dependency(%q<aruba>, [">= 0.3.0"])
+    s.add_dependency(%q<yard>, [">= 0.6.0"])
+    s.add_dependency(%q<watchr>, [">= 0.5.5"])
+    s.add_dependency(%q<ruby-graphviz>, [">= 0.9.6"])
+    s.add_dependency(%q<rattler>, [">= 0"])
     s.add_dependency(%q<bundler>, ["~> 1.0.0"])
     s.add_dependency(%q<jeweler>, ["~> 1.5.2"])
     s.add_dependency(%q<rspec>, [">= 2.3.0"])
