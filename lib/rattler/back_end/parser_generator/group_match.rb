@@ -14,5 +14,13 @@ module Rattler::BackEnd::ParserGenerator
       num_groups
     end
 
+    def parse(scanner, rules, scope={})
+      scanner.scan(re) && if num_groups == 1
+        scanner[1]
+      else
+        (1..num_groups).map {|_| scanner[_] }
+      end
+    end
+
   end
 end

@@ -1,15 +1,9 @@
 shared_examples_for 'a compiled parser' do
   include CompilerSpecHelper
 
-  subject do
-    described_class.compile_parser(compiled_parser_base, grammar)
-  end
+  subject { compiled_parser }
 
-  let :reference_parser do
-    Rattler::Parsers::CombinatorParser.as_class(grammar.rules.first, grammar.rules)
-  end
-
-  let(:compiled_parser_base) { Rattler::Runtime::RecursiveDescentParser }
+  let(:reference_parser) { combinator_parser grammar }
 
   ########## match ##########
   context 'with a match rule' do

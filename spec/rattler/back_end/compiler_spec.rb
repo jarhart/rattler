@@ -5,6 +5,13 @@ describe Rattler::BackEnd::Compiler do
   include CompilerSpecHelper
 
   describe '.compile_parser result' do
+
+    let :compiled_parser do
+      described_class.compile_parser compiled_parser_base, grammar
+    end
+
+    let(:compiled_parser_base) { Rattler::Runtime::RecursiveDescentParser }
+
     it_behaves_like 'a compiled parser'
   end
 

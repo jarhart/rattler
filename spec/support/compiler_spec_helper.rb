@@ -6,6 +6,10 @@ module CompilerSpecHelper
     Rattler::Grammar::Grammar.new(Rattler::Parsers.define(&block))
   end
 
+  def combinator_parser(g)
+    Rattler::Parsers::CombinatorParser.as_class(g.rules.first, g.rules)
+  end
+
   RSpec::Matchers.define :parse do |source|
     match do |parser_class|
       parser = parser_class.new(source)
