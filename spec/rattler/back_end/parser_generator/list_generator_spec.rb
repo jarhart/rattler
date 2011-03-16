@@ -7,12 +7,12 @@ describe ListGenerator do
 
   include ParserGeneratorSpecHelper
 
-  let(:list) { List[Match[/w+/], Match[/[,;]/]] }
+  let(:list) { List0[Match[/w+/], Match[/[,;]/]] }
 
   describe '#gen_basic' do
 
     let :list do
-      List[Choice[Match[/[[:alpha:]]/], Match[/[[:digit:]]/]], Match[/[,;]/]]
+      List0[Choice[Match[/[[:alpha:]]/], Match[/[[:digit:]]/]], Match[/[,;]/]]
     end
 
     context 'when nested' do
@@ -59,7 +59,7 @@ a
 
     context 'with a non-capturing parser' do
 
-      let(:list) { List[Skip[Match[/w+/]], Match[/[,;]/]] }
+      let(:list) { List0[Skip[Match[/w+/]], Match[/[,;]/]] }
 
       context 'when nested' do
         it 'generates nested list skipping code' do

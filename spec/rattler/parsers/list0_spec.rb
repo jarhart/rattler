@@ -1,13 +1,13 @@
 require File.expand_path(File.dirname(__FILE__) + '/../../spec_helper')
 
-describe List do
+describe List0 do
   include CombinatorParserSpecHelper
 
   describe '#parse' do
 
     context 'with a capturing term parser' do
 
-      subject { List[Match[/\w+/], Match[/[,;]/]] }
+      subject { List0[Match[/\w+/], Match[/[,;]/]] }
 
       context 'when no terms match' do
         it 'returns an empty array without advancing' do
@@ -36,7 +36,7 @@ describe List do
 
     context 'with a non-capturing parser' do
 
-      subject { List[Skip[Match[/\w+/]], Match[/[,;]/]] }
+      subject { List0[Skip[Match[/\w+/]], Match[/[,;]/]] }
 
       context 'when no terms match' do
         it 'returns true without advancing' do
@@ -62,7 +62,7 @@ describe List do
 
     context 'with a capturing term parser' do
 
-      subject { List[Match[/\w+/], Match[/[,;]/]] }
+      subject { List0[Match[/\w+/], Match[/[,;]/]] }
 
       it 'is true' do
         subject.should be_capturing
@@ -71,7 +71,7 @@ describe List do
 
     context 'with a non-capturing term parser' do
 
-      subject { List[Skip[Match[/\w+/]], Match[/[,;]/]] }
+      subject { List0[Skip[Match[/\w+/]], Match[/[,;]/]] }
 
       it 'is true' do
         subject.should_not be_capturing

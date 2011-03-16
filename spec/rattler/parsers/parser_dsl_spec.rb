@@ -78,12 +78,12 @@ describe ParserDSL do
     context 'given parsers' do
       it 'creates a list parser' do
         subject.list(subject.match(/\w+/), subject.match(/,/)).
-        should == List[Match[/\w+/], Match[/,/]]
+        should == List0[Match[/\w+/], Match[/,/]]
       end
     end
     context 'given match arguments' do
       it 'creates a list parser' do
-        subject.list(/\w+/, ',').should == List[Match[/\w+/], Match[/,/]]
+        subject.list(/\w+/, ',').should == List0[Match[/\w+/], Match[/,/]]
       end
     end
   end

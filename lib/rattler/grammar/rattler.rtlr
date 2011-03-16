@@ -68,7 +68,7 @@ include Rattler::Parsers
   labelable         <-  list
                       / list_term
 
-  list              <-  list_term ~'*,' list_term                               <List>
+  list              <-  list_term ~'*,' list_term                               <List0>
                       / list_term ~'+,' list_term                               <List1>
 
   list_term         <-  prefixed

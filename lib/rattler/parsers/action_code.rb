@@ -24,31 +24,11 @@ module Rattler::Parsers
     attr_reader :param_names, :body
 
     def bind(scope, bind_args)
-      bind_in body, scoped_bindings(scope, bind_args)
+      bind_in body, scope, bind_args
     end
 
     def scoped_bindings(scope, bind_args)
-      to_bindings(scope).
-        merge(blank_binding(bind_args)).
-        merge(arg_bindings(bind_args))
-    end
-
-    def blank_binding(args)
-      case args.size
-
-      when 0
-        {}
-
-      when 1
-        { /\*_\b/ => args.first,
-          /\b_\b/ => args.first }
-
-      else
-        list = args.join(', ')
-        { /\*_\b/ => list,
-          /\b_\b/ => '[' + list + ']' }
-
-      end
+      to_bindings(scope).merge(arg_bindings(bind_args))
     end
 
     def arg_bindings(args)
@@ -66,13 +46,27 @@ module Rattler::Parsers
       bindings
     end
 
-    def bind_in(code, bindings)
-      new_code = code
-      bindings.each do |k, v|
+    def bind_in(code, scope, bind_args)
+      new_code = code.dup
+      unless param_names.include? '_' or scope.has_key? '_'
+        bind_blanks!(new_code, bind_args)
+      end
+      scoped_bindings(scope, bind_args).each do |k, v|
         next unless k and v
-        new_code = new_code.gsub(k, v.to_s)
+        new_code.gsub!(k, v.to_s)
       end
       new_code
+    end
+
+    def bind_blanks!(code, bind_args)
+      if bind_args.size > 1
+        list = bind_args.join(', ')
+        code.gsub!(/\*_\b/, list)
+        code.gsub!(/\b_\b/, "[#{list}]")
+      elsif bind_args.size == 1
+        code.gsub!(/\*_\b/, bind_args.first)
+        code.gsub!(/\b_\b/, bind_args.first)
+      end
     end
 
   end

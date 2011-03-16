@@ -44,7 +44,7 @@ module Rattler::BackEnd::ParserGenerator
       when OneOrMore
         cache_generator OneOrMoreGenerator, :new_repeat_level => true
 
-      when List
+      when List0
         cache_generator ListGenerator, :new_repeat_level => true
 
       when List1

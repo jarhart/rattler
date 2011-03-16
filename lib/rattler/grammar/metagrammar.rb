@@ -545,7 +545,7 @@ module Rattler
             (r0_0 = match(:list_term)) &&
             @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>\*,)/) &&
             (r0_1 = match(:list_term)) &&
-            List.parsed(select_captures([r0_0, r0_1]))
+            List0.parsed(select_captures([r0_0, r0_1]))
           end || begin
             @scanner.pos = p0
             false

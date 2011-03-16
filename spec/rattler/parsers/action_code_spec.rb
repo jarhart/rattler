@@ -44,35 +44,6 @@ describe Rattler::Parsers::ActionCode do
     end
   end
 
-  describe '#blank_binding' do
-
-    subject { ActionCode.new('') }
-
-    context 'given no arguments' do
-      it 'returns an empty hash' do
-        subject.blank_binding([]).should == {}
-      end
-    end
-
-    context 'given one argument' do
-      it 'binds "_" and "*_" to the argument' do
-        subject.blank_binding(['r0']).should == {
-          /\*_\b/ => 'r0',
-          /\b_\b/ => 'r0'
-        }
-      end
-    end
-
-    context 'given more than one argument' do
-      it 'binds "*_" to the arguments and "_" to the array of arguments' do
-        subject.blank_binding(['r0_0', 'r0_1']).should == {
-          /\*_\b/ => 'r0_0, r0_1',
-          /\b_\b/ => '[r0_0, r0_1]'
-        }
-      end
-    end
-  end
-
   describe '#arg_bindings' do
     context 'when the code has block parameters' do
 
