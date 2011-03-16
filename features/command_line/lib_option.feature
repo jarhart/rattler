@@ -6,6 +6,7 @@ Feature: --lib option
   on the library directory by converting camel-case to underscore. To specify
   an explicit destination directory use the --dest (or -d) option.
 
+  @command-line
   Scenario: Grammar as top-level module
     Given a file named "binary.rtlr" with:
       """
@@ -20,6 +21,7 @@ Feature: --lib option
         module BinaryGrammar
         """
 
+  @command-line
   Scenario: Grammar as a nested module
     Given a file named "binary.rtlr" with:
       """

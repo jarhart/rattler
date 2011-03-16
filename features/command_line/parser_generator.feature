@@ -3,6 +3,7 @@ Feature: Parser Generator
   The "rtlr" command is used to generate a grammar module or parser class from
   a Rattler grammar file.
   
+  @command-line
   Scenario: Getting help
     When I run "rtlr --help"
     Then the output should contain:
@@ -19,6 +20,7 @@ Feature: Parser Generator
           -h, --help                       Show this message
       """
 
+  @command-line
   Scenario: Generate a grammar module
     Given a file named "binary.rtlr" with:
       """
@@ -49,6 +51,7 @@ Feature: Parser Generator
         end
         """
   
+  @command-line
   Scenario: Generate a parser class
     Given a file named "binary.rtlr" with:
       """

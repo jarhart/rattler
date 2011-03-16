@@ -3,6 +3,7 @@ Feature: --output option
   Use the --output (or -o) option to specify a different output file name, or
   "-" for STDOUT.
 
+  @command-line
   Scenario: Specify a different file name
     Given a file named "binary.rtlr" with:
       """
@@ -17,6 +18,7 @@ Feature: --output option
         module BinaryGrammar
         """
 
+  @command-line
   Scenario: Use "-" to write to STDOUT
     Given a file named "binary.rtlr" with:
       """

@@ -4,6 +4,7 @@ Feature: --dest option
   By default Rattler uses the module path of the grammar to build a destination
   directory by converting camel-case to underscore.
 
+  @command-line
   Scenario: Overriding the destination directory
     Given a file named "binary.rtlr" with:
       """

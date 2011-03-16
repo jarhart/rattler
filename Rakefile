@@ -40,10 +40,13 @@ end
 # end
 
 require 'cucumber/rake/task'
-Cucumber::Rake::Task.new(:features)
+Cucumber::Rake::Task.new :features do |t|
+  t.profile = 'jruby' if Cucumber::JRUBY
+end
 
-task :default => :spec
+task :default => :test
 
+desc 'Run all tests'
 task :test => [:spec, :features]
 
 require 'yard'
