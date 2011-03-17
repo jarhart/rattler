@@ -11,25 +11,6 @@ module Rattler::BackEnd::ParserGenerator
     def gen_basic(token, scope={})
       generate token.child, :token, scope
     end
-
-    def gen_dispatch_action_nested(token, code, scope={})
-      atomic_block { gen_dispatch_action_top_level token, code, scope }
-    end
-
-    def gen_dispatch_action_top_level(token, code, scope={})
-      @g.surround("(#{result_name} = ", ')') { gen_basic token, scope }
-      (@g << ' &&').newline << code.bind(scope, "[#{result_name}]")
-    end
-
-    def gen_direct_action_nested(token, code, scope={})
-      atomic_block { gen_direct_action_top_level token, code, scope }
-    end
-
-    def gen_direct_action_top_level(token, code, scope={})
-      @g.surround("(#{result_name} = ", ')') { gen_basic token, scope }
-      (@g << ' &&').newline << '(' << code.bind(scope, [result_name]) << ')'
-    end
-
   end
 
   # @private

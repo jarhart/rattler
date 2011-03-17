@@ -12,22 +12,18 @@ module Rattler::BackEnd::ParserGenerator
       generate skip.child, :skip, scope
     end
 
-    def gen_dispatch_action_nested(skip, code, scope={})
-      atomic_block { gen_dispatch_action_top_level skip, code, scope }
+    def gen_dispatch_action(skip, code, scope={})
+      expr :block do
+        gen_intermediate_skip skip, scope
+        (@g << ' &&').newline << code.bind(scope, '[]')
+      end
     end
 
-    def gen_dispatch_action_top_level(skip, code, scope={})
-      gen_intermediate_skip skip, scope
-      (@g << ' &&').newline << code.bind(scope, '[]')
-    end
-
-    def gen_direct_action_nested(skip, code, scope={})
-      atomic_block { gen_direct_action_top_level skip, code, scope }
-    end
-
-    def gen_direct_action_top_level(skip, code, scope={})
-      gen_intermediate_skip skip, scope
-      (@g << ' &&').newline << '(' << code.bind(scope, []) << ')'
+    def gen_direct_action(skip, code, scope={})
+      expr :block do
+        gen_intermediate_skip skip, scope
+        (@g << ' &&').newline << '(' << code.bind(scope, []) << ')'
+      end
     end
 
     def gen_intermediate(skip, scope={})

@@ -15,11 +15,13 @@ module Rattler::BackEnd::ParserGenerator
       @g << 'false'
     end
 
-    def gen_skip_top_level(repeat, scope={})
-      @g << 'while '
-      generate repeat.child, :intermediate_skip, scope
-      (@g << '; end').newline
-      @g << 'true'
+    def gen_skip(repeat, scope={})
+      expr :block do
+        @g << 'while '
+        generate repeat.child, :intermediate_skip, scope
+        (@g << '; end').newline
+        @g << 'true'
+      end
     end
 
     protected

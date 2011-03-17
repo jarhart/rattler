@@ -16,22 +16,19 @@ module Rattler::BackEnd::ParserGenerator
       generate label.child, :dispatch_action, code, scope
     end
 
-    def gen_direct_action_nested(label, code, scope={})
-      atomic_block { gen_direct_action_top_level label, code, scope }
-    end
-
-    def gen_direct_action_top_level(label, code, scope={})
-      scope = gen_capturing label.child, scope, label.label
-      (@g << ' &&').newline << '(' << code.bind(scope, [result_name]) << ')'
+    def gen_direct_action(label, code, scope={})
+      expr :block do
+        scope = gen_capturing label.child, scope, label.label
+        (@g << ' &&').newline
+        @g.surround('(', ')') { @g << code.bind(scope, direct_action_args) }
+      end
     end
 
     private
 
     def gen_capturing(child, scope, label)
       if child.capturing?
-        @g.surround("(#{result_name} = ", ')') do
-          generate child, :basic_nested, scope
-        end
+        gen_capture { gen_nested child, :basic, scope }
         scope.merge(label => result_name)
       else
         generate child, :intermediate, scope

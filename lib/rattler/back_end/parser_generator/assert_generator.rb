@@ -17,36 +17,20 @@ module Rattler::BackEnd::ParserGenerator
       @g << 'false'
     end
 
-    def gen_skip_nested(assert, scope={})
-      gen_basic_nested assert, scope
+    def gen_skip(assert, scope={})
+      gen_basic assert, scope
     end
 
-    def gen_skip_top_level(assert, scope={})
-      gen_basic_top_level assert, scope
+    def gen_dispatch_action(assert, code, scope={})
+      expr(:block) { gen_action assert, code.bind(scope, '[]'), scope }
     end
 
-    def gen_dispatch_action_nested(assert, code, scope={})
-      atomic_block { gen_dispatch_action_top_level assert, code, scope }
+    def gen_direct_action(assert, code, scope={})
+      expr(:block) { gen_action assert, "(#{code.bind scope, []})", scope }
     end
 
-    def gen_dispatch_action_top_level(assert, code, scope={})
-      gen_action assert, code.bind(scope, '[]'), scope
-    end
-
-    def gen_direct_action_nested(assert, code, scope={})
-      atomic_block { gen_direct_action_top_level assert, code, scope }
-    end
-
-    def gen_direct_action_top_level(assert, code, scope={})
-      gen_action assert, "(#{code.bind scope, []})", scope
-    end
-
-    def gen_token_nested(assert, scope={})
-      atomic_block { gen_token_top_level assert, scope }
-    end
-
-    def gen_token_top_level(assert, scope={})
-      gen_action assert, "''", scope
+    def gen_token(assert, scope={})
+      expr(:block) { gen_action assert, "''", scope }
     end
 
     def gen_intermediate(assert, scope={})

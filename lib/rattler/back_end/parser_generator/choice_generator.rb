@@ -6,21 +6,17 @@ module Rattler::BackEnd::ParserGenerator
   class ChoiceGenerator < ExprGenerator #:nodoc:
     include NestedSubGenerating
 
-    def gen_basic_nested(choice, scope={})
-      atomic_block { gen_basic_top_level choice, scope }
+    def gen_basic(choice, scope={})
+      expr :block do
+        @g.intersperse_nl(choice, ' ||') {|_| generate _, :basic, scope }
+      end
     end
 
-    def gen_basic_top_level(choice, scope={})
-      @g.intersperse_nl(choice, ' ||') {|_| generate _, :basic, scope }
-    end
-
-    def gen_assert_nested(choice, scope={})
-      atomic_expr { gen_assert_top_level choice, scope }
-    end
-
-    def gen_assert_top_level(choice, scope={})
-      gen_intermediate_assert choice, scope
-      @g << ' && true'
+    def gen_assert(choice, scope={})
+      expr do
+        gen_intermediate_assert choice, scope
+        @g << ' && true'
+      end
     end
 
     def gen_disallow(choice, scope={})
@@ -28,41 +24,33 @@ module Rattler::BackEnd::ParserGenerator
       gen_intermediate_assert choice, scope
     end
 
-    def gen_dispatch_action_nested(choice, code, scope={})
-      atomic_block { gen_dispatch_action_top_level choice, code, scope }
+    def gen_dispatch_action(choice, code, scope={})
+      expr :block do
+        gen_action_code(choice) { code.bind scope, "[#{result_name}]" }
+      end
     end
 
-    def gen_dispatch_action_top_level(choice, code, scope={})
-      gen_action_code(choice) { code.bind scope, "[#{result_name}]" }
+    def gen_direct_action(choice, code, scope={})
+      expr :block do
+        gen_action_code(choice) { "(#{code.bind scope, [result_name]})" }
+      end
     end
 
-    def gen_direct_action_nested(choice, code, scope={})
-      atomic_block { gen_direct_action_top_level choice, code }
+    def gen_token(choice, scope={})
+      expr :block do
+        @g.intersperse_nl(choice, ' ||') {|_| generate _, :token, scope }
+      end
     end
 
-    def gen_direct_action_top_level(choice, code, scope={})
-      gen_action_code(choice) { "(#{code.bind scope, [result_name]})" }
-    end
-
-    def gen_token_nested(choice, scope={})
-      atomic_block { gen_token_top_level choice, scope }
-    end
-
-    def gen_token_top_level(choice, scope={})
-      @g.intersperse_nl(choice, ' ||') {|_| generate _, :token, scope }
-    end
-
-    def gen_skip_nested(choice, scope={})
-      @g.surround('(', ')') { gen_skip_top_level choice, scope }
-    end
-
-    def gen_skip_top_level(choice, scope={})
-      gen_intermediate_skip choice, scope
-      @g << ' && true'
+    def gen_skip(choice, scope={})
+      expr do
+        gen_intermediate_skip choice, scope
+        @g << ' && true'
+      end
     end
 
     def gen_intermediate_assert(choice, scope={})
-      atomic_block do
+      @g.block 'begin' do
         @g.intersperse_nl(choice, ' ||') do |_|
           generate _, :intermediate_assert, scope
         end
@@ -70,7 +58,7 @@ module Rattler::BackEnd::ParserGenerator
     end
 
     def gen_intermediate_skip(choice, scope={})
-      atomic_block do
+      @g.block 'begin' do
         @g.intersperse_nl(choice, ' ||') do |_|
           generate _, :intermediate_skip, scope
         end

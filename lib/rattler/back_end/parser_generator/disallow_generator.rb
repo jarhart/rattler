@@ -17,36 +17,20 @@ module Rattler::BackEnd::ParserGenerator
       gen_basic disallow, scope
     end
 
-    def gen_skip_nested(disallow, scope={})
-      gen_basic_nested disallow, scope
+    def gen_skip(disallow, scope={})
+      gen_basic disallow, scope
     end
 
-    def gen_skip_top_level(disallow, scope={})
-      gen_basic_top_level disallow, scope
+    def gen_dispatch_action(disallow, code, scope={})
+      expr(:block) { gen_action disallow, code.bind(scope, '[]'), scope }
     end
 
-    def gen_dispatch_action_nested(disallow, code, scope={})
-      atomic_block { gen_dispatch_action_top_level disallow, code, scope }
+    def gen_direct_action(disallow, code, scope={})
+      expr(:block) { gen_action disallow, "(#{code.bind scope, []})", scope }
     end
 
-    def gen_dispatch_action_top_level(disallow, code, scope={})
-      gen_action disallow, code.bind(scope, '[]'), scope
-    end
-
-    def gen_direct_action_nested(disallow, code, scope={})
-      atomic_block { gen_direct_action_top_level disallow, code, scope }
-    end
-
-    def gen_direct_action_top_level(disallow, code, scope={})
-      gen_action disallow, "(#{code.bind scope, []})", scope
-    end
-
-    def gen_token_nested(disallow, scope={})
-      atomic_block { gen_token_top_level disallow, scope }
-    end
-
-    def gen_token_top_level(disallow, scope={})
-      gen_action disallow, "''", scope
+    def gen_token(disallow, scope={})
+      expr(:block) { gen_action disallow, "''", scope }
     end
 
     def gen_intermediate(disallow, scope={})

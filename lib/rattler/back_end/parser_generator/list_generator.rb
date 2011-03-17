@@ -15,17 +15,11 @@ module Rattler::BackEnd::ParserGenerator
       @g << 'false'
     end
 
-    def gen_skip_top_level(list, scope={})
-      (@g << "#{saved_pos_name} = nil").newline
-      @g << 'while '
-      generate list.child, :intermediate_skip, scope
-      @g.block '' do
-        (@g << "#{saved_pos_name} = @scanner.pos").newline
-        @g << 'break unless '
-        generate list.sep_parser, :intermediate_skip, scope
-      end.newline
-      @g << "@scanner.pos = #{saved_pos_name} unless #{saved_pos_name}.nil?"
-      @g.newline << true
+    def gen_skip(list, scope={})
+      expr :block do
+        gen_skipping list, scope
+        @g.newline << 'true'
+      end
     end
 
     protected

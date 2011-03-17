@@ -4,58 +4,48 @@ module Rattler::BackEnd::ParserGenerator
   # @private
   module RepeatGenerating #:nodoc:
 
-    def gen_basic_nested(repeat, scope={})
-      atomic_block { gen_basic_top_level repeat, scope }
-    end
-
-    def gen_basic_top_level(repeat, scope={})
+    def gen_basic(repeat, scope={})
       if repeat.capturing?
-        gen_loop repeat, :basic_nested, scope
-        gen_result accumulator_name
+        expr :block do
+          gen_loop(repeat) { |child| gen_nested child, :basic, scope }
+          gen_result accumulator_name
+        end
       else
-        gen_skip_top_level repeat, scope
+        gen_skip repeat, scope
       end
     end
 
-    def gen_dispatch_action_nested(repeat, code, scope={})
-      atomic_block do
-        gen_dispatch_action_top_level repeat, code, scope
+    def gen_dispatch_action(repeat, code, scope={})
+      expr :block do
+        gen_loop repeat
+        gen_result code.bind(scope, "select_captures(#{accumulator_name})")
       end
     end
 
-    def gen_dispatch_action_top_level(repeat, code, scope={})
-      gen_loop repeat, :basic, scope
-      gen_result code.bind(scope, "select_captures(#{accumulator_name})")
+    def gen_direct_action(repeat, code, scope={})
+      expr :block do
+        gen_loop repeat
+        gen_result('(' + code.bind(scope, ["select_captures(#{accumulator_name})"]) + ')')
+      end
     end
 
-    def gen_direct_action_nested(repeat, code, scope={})
-      atomic_block { gen_direct_action_top_level repeat, code, scope }
-    end
-
-    def gen_direct_action_top_level(repeat, code, scope={})
-      gen_loop repeat, :basic, scope
-      gen_result('(' + code.bind(scope, ["select_captures(#{accumulator_name})"]) + ')')
-    end
-
-    def gen_token_nested(repeat, scope={})
-      atomic_block { gen_token_top_level repeat, scope }
-    end
-
-    def gen_token_top_level(repeat, scope={})
-      gen_loop repeat, :token, scope
-      gen_result "#{accumulator_name}.join"
-    end
-
-    def gen_skip_nested(repeat, scope={})
-      atomic_block { gen_skip_top_level repeat, scope }
+    def gen_token(repeat, scope={})
+      expr :block do
+        gen_loop(repeat) { |child| generate child, :token, scope }
+        gen_result "#{accumulator_name}.join"
+      end
     end
 
     private
 
-    def gen_loop(repeat, child_as = :basic, scope={})
+    def gen_loop(repeat, scope={})
       (@g << "#{accumulator_name} = []").newline
       @g << "while #{result_name} = "
-      generate repeat.child, child_as, scope
+      if block_given?
+        yield repeat.child
+      else
+        generate repeat.child, :basic, scope
+      end
       @g.block('') { @g << "#{accumulator_name} << #{result_name}" }.newline
     end
 

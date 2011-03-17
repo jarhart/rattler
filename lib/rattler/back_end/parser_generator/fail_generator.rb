@@ -5,47 +5,27 @@ module Rattler::BackEnd::ParserGenerator
   # @private
   class FailGenerator < ExprGenerator #:nodoc:
 
-    def gen_basic_nested(fail, scope={})
+    def gen_basic(fail, scope={})
       case fail.attrs[:type]
-      when :expr  then gen_fail_expr_nested fail.message
-      when :rule  then gen_fail_rule_nested fail.message
-      when :parse then gen_fail_parse_nested fail.message
-      end
-    end
-
-    def gen_basic_top_level(fail, scope={})
-      case fail.attrs[:type]
-      when :expr  then gen_fail_expr_top_level fail.message
-      when :rule  then gen_fail_rule_top_level fail.message
-      when :parse then gen_fail_parse_top_level fail.message
+      when :expr  then gen_fail_expr fail.message
+      when :rule  then gen_fail_rule fail.message
+      when :parse then gen_fail_parse fail.message
       end
     end
 
     private
 
-    def gen_fail_expr_nested(message)
-      atomic_expr { gen_fail_expr_top_level message }
+    def gen_fail_expr(message)
+      expr { @g << "fail! { #{message.inspect} }" }
     end
 
-    def gen_fail_expr_top_level(message)
-      @g << "fail! { #{message.inspect} }"
-    end
-
-    def gen_fail_rule_nested(message)
-      gen_fail_rule_top_level message
-      @g.newline << 'false'
-    end
-
-    def gen_fail_rule_top_level(message)
+    def gen_fail_rule(message)
       @g << "return(fail! { #{message.inspect} })"
+      @g.newline << 'false' if nested?
     end
 
-    def gen_fail_parse_nested(message)
-      atomic_expr { gen_fail_parse_top_level message }
-    end
-
-    def gen_fail_parse_top_level(message)
-      @g << "fail_parse { #{message.inspect} }"
+    def gen_fail_parse(message)
+      expr { @g << "fail_parse { #{message.inspect} }" }
     end
 
   end

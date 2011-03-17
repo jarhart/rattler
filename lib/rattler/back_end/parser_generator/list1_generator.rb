@@ -8,19 +8,12 @@ module Rattler::BackEnd::ParserGenerator
     include NestedSubGenerating
     include PredicatePropogating
 
-    def gen_skip_top_level(list, scope={})
-      (@g << "#{result_name} = false").newline
-      (@g << "#{saved_pos_name} = nil").newline
-      @g << 'while '
-      generate list.child, :intermediate_skip, scope
-      @g.block '' do
-        (@g << "#{result_name} = true").newline
-        (@g << "#{saved_pos_name} = @scanner.pos").newline
-        @g << 'break unless '
-        generate list.sep_parser, :intermediate_skip, scope
-      end.newline
-      @g << "@scanner.pos = #{saved_pos_name} unless #{saved_pos_name}.nil?"
-      @g.newline << result_name
+    def gen_skip(list, scope={})
+      expr :block do
+        (@g << "#{result_name} = false").newline
+        gen_skipping(list, scope) { (@g << "#{result_name} = true").newline }
+        @g.newline << result_name
+      end
     end
 
     protected
@@ -45,11 +38,11 @@ module Rattler::BackEnd::ParserGenerator
     include TopLevel
 
     def gen_assert(parser, scope = {})
-      generate parser.child, :assert_top_level, scope
+      gen_top_level parser.child, :assert, scope
     end
 
     def gen_disallow(parser, scope = {})
-      generate parser.child, :disallow_top_level, scope
+      gen_top_level parser.child, :disallow, scope
     end
 
   end

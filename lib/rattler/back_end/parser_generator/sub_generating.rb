@@ -10,12 +10,16 @@ module Rattler::BackEnd::ParserGenerator
     protected
 
     def generate(parser, as=:basic, *args)
-      case parser
-      when Eof then gen_eof
-      else generator(parser).send(:"gen_#{as}", parser, *args)
-      end
+      gen_with generator(parser), parser, as, *args
     end
 
+    def gen_nested(parser, as=:basic, *args)
+      gen_with generator(parser, :nested), parser, as, *args
+    end
+
+    def gen_top_level(parser, as=:basic, *args)
+      gen_with generator(parser, :top_level), parser, as, *args
+    end
 
     def gen_eof
       @g << '@scanner.eos?'
@@ -23,77 +27,86 @@ module Rattler::BackEnd::ParserGenerator
 
     private
 
-    def generator(parser)
+    def gen_with(g, parser, as=:basic, *args)
+      case parser
+      when Eof then gen_eof
+      else g.send(:"gen_#{as}", parser, *args)
+      end
+    end
+
+    def generator(parser, context=nil)
+      context ||= default_context
+
       case parser
 
       when Match
-        cache_generator MatchGenerator
+        cache_generator MatchGenerator, context
 
       when Choice
-        cache_generator ChoiceGenerator, :new_choice_level => true
+        cache_generator ChoiceGenerator, context, :new_choice_level => true
 
       when Sequence
-        new_generator SequenceGenerator, :new_sequence_level => true
+        new_generator SequenceGenerator, context, :new_sequence_level => true
 
       when Optional
-        cache_generator OptionalGenerator
+        cache_generator OptionalGenerator, context
 
       when ZeroOrMore
-        cache_generator ZeroOrMoreGenerator, :new_repeat_level => true
+        cache_generator ZeroOrMoreGenerator, context, :new_repeat_level => true
 
       when OneOrMore
-        cache_generator OneOrMoreGenerator, :new_repeat_level => true
+        cache_generator OneOrMoreGenerator, context, :new_repeat_level => true
 
       when List0
-        cache_generator ListGenerator, :new_repeat_level => true
+        cache_generator ListGenerator, context, :new_repeat_level => true
 
       when List1
-        cache_generator List1Generator, :new_repeat_level => true
+        cache_generator List1Generator, context, :new_repeat_level => true
 
       when Apply
-        cache_generator ApplyGenerator
+        cache_generator ApplyGenerator, context
 
       when Assert
-        cache_generator AssertGenerator
+        cache_generator AssertGenerator, context
 
       when Disallow
-        cache_generator DisallowGenerator
+        cache_generator DisallowGenerator, context
 
       when DispatchAction
-        cache_generator DispatchActionGenerator
+        cache_generator DispatchActionGenerator, context
 
       when DirectAction
-        cache_generator DirectActionGenerator
+        cache_generator DirectActionGenerator, context
 
       when Token
-        cache_generator TokenGenerator
+        cache_generator TokenGenerator, context
 
       when Skip
-        cache_generator SkipGenerator
+        cache_generator SkipGenerator, context
 
       when Label
-        cache_generator LabelGenerator
+        cache_generator LabelGenerator, context
 
       when BackReference
-        cache_generator BackReferenceGenerator
+        cache_generator BackReferenceGenerator, context
 
       when Fail
-        cache_generator FailGenerator
+        cache_generator FailGenerator, context
 
       when GroupMatch
-        cache_generator GroupMatchGenerator
+        cache_generator GroupMatchGenerator, context
 
       end
     end
 
-    def cache_generator(factory, *args)
-      generator_cache.fetch factory do
-        generator_cache[factory] = new_generator factory, *args
+    def cache_generator(factory, context, *args)
+      generator_cache[context].fetch factory do
+        generator_cache[factory] = new_generator factory, context, *args
       end
     end
 
-    def new_generator(factory, opts = {})
-      factory.send factory_method, @g,
+    def new_generator(factory, context, opts = {})
+      factory.send context, @g,
         new_level(choice_level, opts[:new_choice_level]),
         new_level(sequence_level, opts[:new_sequence_level]),
         new_level(repeat_level, opts[:new_repeat_level])
@@ -108,7 +121,7 @@ module Rattler::BackEnd::ParserGenerator
     end
 
     def generator_cache
-      @generator_cache ||= {}
+      @generator_cache ||= Hash.new {|h, k| h[k] = {} }
     end
 
   end
@@ -117,18 +130,24 @@ module Rattler::BackEnd::ParserGenerator
     include SubGenerating
 
     protected
-    def factory_method
+
+    def default_context
       :nested
     end
+
+    alias_method :factory_method, :default_context
   end
 
   module TopLevelSubGenerating
     include SubGenerating
 
     protected
-    def factory_method
+
+    def default_context
       :top_level
     end
+
+    alias_method :factory_method, :default_context
   end
 
 end
