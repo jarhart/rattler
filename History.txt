@@ -1,3 +1,7 @@
+== 0.4.2 2011-03-17
+
+Refactoring, bugfixes and Rubinius compatibility
+
 == 0.4.1 2011-03-15
 
 GraphViz support improvements.
