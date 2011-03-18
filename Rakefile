@@ -41,7 +41,11 @@ end
 
 require 'cucumber/rake/task'
 Cucumber::Rake::Task.new :features do |t|
-  t.profile = 'jruby' if Cucumber::JRUBY
+  if Cucumber::JRUBY
+    t.profile = 'jruby'
+  elsif Cucumber::WINDOWS_MRI
+    t.profile = 'windows_mri'
+  end
 end
 
 task :default => :test
