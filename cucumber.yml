@@ -1,4 +1,5 @@
 <% std_opts = '--require features --format progress' %>
-default: <%= std_opts %>
-jruby: <%= std_opts %> --tags ~@command-line
-windows_mri: <%= std_opts %> --tags ~@command-line
+default: <%= std_opts %> --tags ~@wip
+jruby: <%= std_opts %> --tags ~@wip ~@command-line
+windows_mri: <%= std_opts %> --tags ~@wip ~@command-line
+wip: <%= std_opts %> --wip --tags @wip
