@@ -167,6 +167,50 @@ describe Rattler::Grammar::GrammarParser do
       end
     end
 
+    context 'given an optional expression' do
+      it 'parses as an Optional' do
+        matching(' expr? ').as(:expression).
+          should result_in(Optional[Apply[:expr]]).at(6)
+      end
+    end
+
+    context 'given a zero-or-more expression' do
+      it 'parses as a ZeroOrMore' do
+        matching(' expr* ').as(:expression).
+          should result_in(ZeroOrMore[Apply[:expr]]).at(6)
+      end
+    end
+
+    context 'given a one-or-more expression' do
+      it 'parses as a OneOrMore' do
+        matching(' expr+ ').as(:expression).
+          should result_in(OneOrMore[Apply[:expr]]).at(6)
+      end
+    end
+
+    context 'given a generalized repeat expression' do
+      context 'with a single count' do
+        it 'parses as a Repeat with the count as both lower and upper bounds' do
+          matching(' expr 2 ').as(:expression).
+            should result_in(Repeat[Apply[:expr], 2, 2]).at(7)
+        end
+      end
+
+      context 'with a range' do
+        it 'parses as a Repeat with lower and upper bounds' do
+          matching(' expr 2..4 ').as(:expression).
+            should result_in(Repeat[Apply[:expr], 2, 4]).at(10)
+        end
+
+        context 'with no upper bound' do
+          it 'parses as a Repeat with no upper bound' do
+            matching(' expr 2.. ').as(:expression).
+              should result_in(Repeat[Apply[:expr], 2, nil]).at(9)
+          end
+        end
+      end
+    end
+
     context 'given a dispatch-action-attributed expression' do
 
       context 'given an action with a class name' do
@@ -290,18 +334,6 @@ describe Rattler::Grammar::GrammarParser do
   end
 
   describe '#match(:term)' do
-    it 'recognizes optional terms' do
-      matching(' expr? ').as(:term).should result_in(Optional[Apply[:expr]]).at(6)
-    end
-
-    it 'recognizes zero-or-more terms' do
-      matching(' expr* ').as(:term).should result_in(ZeroOrMore[Apply[:expr]]).at(6)
-    end
-
-    it 'recognizes one-or-more terms' do
-      matching(' expr+ ').as(:term).should result_in(OneOrMore[Apply[:expr]]).at(6)
-    end
-
     it 'recognizes assert terms' do
       matching(' &expr ').as(:term).should result_in(Assert[Apply[:expr]]).at(6)
     end

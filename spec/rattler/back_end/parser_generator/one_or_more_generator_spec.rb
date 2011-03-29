@@ -60,7 +60,7 @@ a unless a.empty?
     end
 
     context 'when top-level' do
-      it 'generates nested one-or-more positive lookahead code' do
+      it 'generates top level one-or-more positive lookahead code' do
         top_level_code {|g| g.gen_assert one_or_more }.
           should == '@scanner.skip(/(?=w+)/) && true'
       end
@@ -77,7 +77,7 @@ a unless a.empty?
     end
 
     context 'when top-level' do
-      it 'generates nested one-or-more negative lookahead code' do
+      it 'generates top level one-or-more negative lookahead code' do
         top_level_code {|g| g.gen_disallow one_or_more }.
           should == '@scanner.skip(/(?!w+)/) && true'
       end

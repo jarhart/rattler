@@ -85,6 +85,11 @@ include Rattler::Parsers
   suffixed          <-  primary ~'?'                                            <Optional>
                       / primary ~'*' !','                                       <ZeroOrMore>
                       / primary ~'+' !','                                       <OneOrMore>
+                      / primary repeat_count !','                               <Repeat>
+
+  repeat_count      <-  @DIGIT+ ~'..' @DIGIT+                                   { _.map {|s| s.to_i } }
+                      / @DIGIT+ ~'..'                                           { [_.to_i, nil] }
+                      / @DIGIT+                                                 { [_.to_i] * 2 }
 
   primary           <-  ~'(' expression ~')'
                       / atom
@@ -132,7 +137,7 @@ include Rattler::Parsers
   name              <-  var_name
                       / constant
 
-  identifier        <-  !`EOF` @WORD+
+  identifier        <-  !`EOF` @(ALPHA WORD*)
 
   back_reference    <-  @('$' LOWER WORD*)
 
@@ -165,6 +170,6 @@ include Rattler::Parsers
                           / '\\' .
                           / [^\\\]] )
 
-  eol               <-  ~(BLANK* (EOF / ';' / ("\r"? "\n") / ('#' [^\n]*)))
+  eol               <-  ~(BLANK* (EOF / ';' / ("\r"? "\n") / comment))
 
   comment           <-  ~('#' [^\n]*)

@@ -21,10 +21,6 @@ module Rattler::Parsers
     # wrapped parser succeeds at least once return the results in an array,
     # or +true+ if the wrapped parser is not <tt>capturing?</tt>.  Return
     # +false+ if the wrapped parser does not succeed at least once.
-
-    # Parse using the decorated parser as many times as it succeeds. If it does
-    # not succeeds at least once return +false+, otherwise the results in an
-    # array, or +true+ if the decorated parser is not <tt>capturing?</tt>.
     #
     # @param (see Parser#parse_labeled)
     #

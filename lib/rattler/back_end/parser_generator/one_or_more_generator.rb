@@ -3,24 +3,24 @@ require 'rattler/back_end/parser_generator'
 module Rattler::BackEnd::ParserGenerator
 
   # @private
-  class OneOrMoreGenerator < ExprGenerator #:nodoc:
-    include RepeatGenerating
+  class OneOrMoreGenerator < RepeatGenerator #:nodoc:
     include NestedSubGenerating
-    include PredicatePropogating
 
     def gen_skip(one_or_more, scope={})
-      expr :block do
-        (@g << "#{result_name} = false").newline
-        @g << 'while '
-        generate one_or_more.child, :intermediate_skip, scope
-        @g.block('') { @g << "#{result_name} = true" }.newline
-        @g << result_name
-      end
+      gen_skip_one_or_more one_or_more.child, scope
     end
 
     protected
 
-    def gen_result(captures)
+    def setup_loop(repeat)
+      (@g << "#{accumulator_name} = []").newline
+    end
+
+    def gen_loop_body(repeat)
+      @g << "#{accumulator_name} << #{result_name}"
+    end
+
+    def gen_result(one_or_more, captures)
       @g << captures << " unless #{accumulator_name}.empty?"
     end
 
@@ -29,6 +29,7 @@ module Rattler::BackEnd::ParserGenerator
   # @private
   class NestedOneOrMoreGenerator < OneOrMoreGenerator #:nodoc:
     include Nested
+    include PredicatePropogating
   end
 
   def OneOrMoreGenerator.nested(*args)
@@ -40,11 +41,11 @@ module Rattler::BackEnd::ParserGenerator
     include TopLevel
 
     def gen_assert(parser, scope = {})
-      gen_top_level parser.child, :assert, scope
+      gen_assert_one_or_more parser.child, scope
     end
 
     def gen_disallow(parser, scope = {})
-      gen_top_level parser.child, :disallow, scope
+      gen_disallow_one_or_more parser.child, scope
     end
 
   end

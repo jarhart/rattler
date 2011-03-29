@@ -150,6 +150,10 @@ module Rattler
 
       alias_method :some, :one_or_more
 
+      def repeat(arg, min, max)
+        Repeat[to_parser(arg), min, max]
+      end
+
       # Create a new list parser.
       #
       # @overload list(term_parser, sep_parser)

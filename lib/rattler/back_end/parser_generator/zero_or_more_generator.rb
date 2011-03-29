@@ -3,30 +3,32 @@ require 'rattler/back_end/parser_generator'
 module Rattler::BackEnd::ParserGenerator
 
   # @private
-  class ZeroOrMoreGenerator < ExprGenerator #:nodoc:
-    include RepeatGenerating
+  class ZeroOrMoreGenerator < RepeatGenerator #:nodoc:
     include NestedSubGenerating
 
-    def gen_assert(optional, scope={})
-      @g << 'true'
+    def gen_assert(zero_or_more, scope={})
+      gen_assert_zero_or_more
     end
 
-    def gen_disallow(optional, scope={})
-      @g << 'false'
+    def gen_disallow(zero_or_more, scope={})
+      gen_disallow_zero_or_more
     end
 
-    def gen_skip(repeat, scope={})
-      expr :block do
-        @g << 'while '
-        generate repeat.child, :intermediate_skip, scope
-        (@g << '; end').newline
-        @g << 'true'
-      end
+    def gen_skip(zero_or_more, scope={})
+      gen_skip_zero_or_more zero_or_more.child, scope
     end
 
     protected
 
-    def gen_result(captures)
+    def setup_loop(repeat)
+      (@g << "#{accumulator_name} = []").newline
+    end
+
+    def gen_loop_body(repeat)
+      @g << "#{accumulator_name} << #{result_name}"
+    end
+
+    def gen_result(zero_or_more, captures)
       @g << captures
     end
 

@@ -131,7 +131,7 @@ module Rattler
                 begin
                   @scanner.skip(/(?!(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>(?>EOF)(?![[:alnum:]_])))/) &&
                   (r1_0 = begin
-                    @scanner.skip(/(?>(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)((?>[[:alnum:]_])+))(?>(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?><\-))/) &&
+                    @scanner.skip(/(?>(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)((?>[[:alpha:]])(?>(?>[[:alnum:]_])*)))(?>(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?><\-))/) &&
                     @scanner[1]
                   end) &&
                   (r1_1 = match(:expression)) &&
@@ -680,6 +680,31 @@ module Rattler
             @scanner.pos = p0
             false
           end
+        end ||
+        begin
+          p0 = @scanner.pos
+          begin
+            (r0_0 = match(:primary)) &&
+            (r0_1 = begin
+              begin
+                @scanner.skip(/(?>(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)((?>[[:digit:]])+))(?>(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>\.\.))(?>(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)((?>[[:digit:]])+))/) &&
+                ([@scanner[1], @scanner[2]].map {|s| s.to_i })
+              end ||
+              begin
+                @scanner.skip(/(?>(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)((?>[[:digit:]])+))(?>(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>\.\.))/) &&
+                ([@scanner[1].to_i, nil])
+              end ||
+              begin
+                @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)((?>[[:digit:]])+)/) &&
+                ([@scanner[1].to_i] * 2)
+              end
+            end) &&
+            @scanner.skip(/(?!(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>,))/) &&
+            Repeat.parsed(select_captures([r0_0, r0_1]))
+          end || begin
+            @scanner.pos = p0
+            false
+          end
         end
       end
       
@@ -772,7 +797,7 @@ module Rattler
           begin
             @scanner.skip(/(?!(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>(?>EOF)(?![[:alnum:]_])))/) &&
             (r0_0 = begin
-              @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)((?>[[:alnum:]_])+)/) &&
+              @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)((?>[[:alpha:]])(?>(?>[[:alnum:]_])*))/) &&
               @scanner[1]
             end) &&
             @scanner.skip(/(?!(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?><\-))/) &&

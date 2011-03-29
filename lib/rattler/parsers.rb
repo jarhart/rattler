@@ -25,6 +25,7 @@ module Rattler
     autoload :Optional, 'rattler/parsers/optional'
     autoload :ZeroOrMore, 'rattler/parsers/zero_or_more'
     autoload :OneOrMore, 'rattler/parsers/one_or_more'
+    autoload :Repeat, 'rattler/parsers/repeat'
     autoload :ListParser, 'rattler/parsers/list_parser'
     autoload :List0, 'rattler/parsers/list0'
     autoload :List1, 'rattler/parsers/list1'
