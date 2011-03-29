@@ -23,7 +23,7 @@ describe ReduceRepeatMatch do
 
       let(:repeat) { OneOrMore[Match[/a/]] }
 
-      it 'returns true' do
+      it 'converts it to an equivalent match' do
         subject.apply(repeat, matching).should == Match[/(?>a)+/]
       end
     end
@@ -32,8 +32,33 @@ describe ReduceRepeatMatch do
 
       let(:repeat) { Optional[Match[/a/]] }
 
-      it 'returns true' do
+      it 'converts it to an equivalent match' do
         subject.apply(repeat, matching).should == Match[/(?>a)?/]
+      end
+    end
+
+    context 'given a repeat match' do
+
+      let(:repeat) { Repeat[Match[/a/], 2, 4] }
+
+      it 'converts it to an equivalent match' do
+        subject.apply(repeat, matching).should == Match[/(?>a){2,4}/]
+      end
+
+      context 'with no upper bound' do
+        let(:repeat) { Repeat[Match[/a/], 2, nil] }
+
+        it 'converts it to an equivalent match' do
+          subject.apply(repeat, matching).should == Match[/(?>a){2,}/]
+        end
+      end
+
+      context 'with equal bounds' do
+        let(:repeat) { Repeat[Match[/a/], 3, 3] }
+
+        it 'converts it to an equivalent match' do
+          subject.apply(repeat, matching).should == Match[/(?>a){3}/]
+        end
       end
     end
   end
@@ -70,6 +95,15 @@ describe ReduceRepeatMatch do
     context 'given an optional match' do
 
       let(:repeat) { Optional[Match[/a/]] }
+
+      it 'returns true' do
+        subject.applies_to?(repeat, matching).should be_true
+      end
+    end
+
+    context 'given an optional match' do
+
+      let(:repeat) { Repeat[Match[/a/], 2, 4] }
 
       it 'returns true' do
         subject.applies_to?(repeat, matching).should be_true

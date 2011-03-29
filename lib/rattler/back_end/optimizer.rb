@@ -23,6 +23,7 @@ module Rattler::BackEnd
         @optimizations ||=
           OptimizeChildren >>
           InlineRegularRules >>
+          SpecializeRepeat >>
           SimplifyRedundantRepeat >>
           RemoveMeaninglessWrapper >>
           SimplifyTokenMatch >>
@@ -76,6 +77,7 @@ module Rattler::BackEnd
     autoload :OptimizationSequence, 'rattler/back_end/optimizer/optimization_sequence'
     autoload :OptimizeChildren, 'rattler/back_end/optimizer/optimize_children'
     autoload :InlineRegularRules, 'rattler/back_end/optimizer/inline_regular_rules'
+    autoload :SpecializeRepeat, 'rattler/back_end/optimizer/specialize_repeat'
     autoload :SimplifyRedundantRepeat, 'rattler/back_end/optimizer/simplify_redundant_repeat'
     autoload :RemoveMeaninglessWrapper, 'rattler/back_end/optimizer/remove_meaningless_wrapper'
     autoload :SimplifyTokenMatch, 'rattler/back_end/optimizer/simplify_token_match'
