@@ -2,10 +2,6 @@ Feature: Whitespace
   
   Comments start with "#" and continue to the end of the line.
   
-  In order to clarify my grammars
-  As a language designer
-  I want to use comments
-  
   Scenario: Entire line as a comment
     Given a grammar with:
       """

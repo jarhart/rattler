@@ -4,10 +4,6 @@ Feature: Ordered Choice Expressions
   and it means to try each sub-expression in order until one matches, and fail
   if none of the sub-expressions match.
   
-  In order to define multiple alternatives for an expression
-  As a language designer
-  I want to use ordered choice expressions in my grammar
-
   Scenario Outline: Parsing
     Given a grammar with:
       """

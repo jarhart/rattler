@@ -3,10 +3,6 @@ Feature: Zero-Or-More
   The "*" operator following an expression means to match zero or more times,
   i.e. match repeatedly and succeed even if no input was matched.
   
-  In order to define an expression that matches zero or more times
-  As a language designer
-  I want to use a "zero-or-more" postfix operator in my grammar
-  
   Scenario Outline: Capturing Expression
     Given a grammar with:
       """

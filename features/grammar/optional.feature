@@ -3,10 +3,6 @@ Feature: Optional Operator
   The "?" operator following an expression makes the it optional, meaning it
   succeeds even if no input is matched.
   
-  In order to define an expression that matches optionally
-  As a language designer
-  I want to use an "optional" postfix operator in my grammar
-  
   Scenario Outline: Capturing Expression
     Given a grammar with:
       """

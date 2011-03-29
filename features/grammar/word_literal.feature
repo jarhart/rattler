@@ -6,10 +6,6 @@ Feature: Word Literal Expressions
   word character can be defined using the %word_character directive. By default
   a word charactacter is an alphanumeric character or the underscore character.
   
-  In order to define keywords
-  As a language designer
-  I want to use word literals in my grammar
-  
   Scenario Outline: Default word character definition
     Given a grammar with:
       """

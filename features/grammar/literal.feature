@@ -3,10 +3,6 @@ Feature: Literal Expressions
   A string literal has the same syntax as a Ruby string literal and it means to
   match if that exact text is next in the input.
   
-  In order to define symbols and keywords
-  As a language designer
-  I want to use string literals in my grammar
-  
   Scenario Outline: Normal String
     Given a grammar with:
       """

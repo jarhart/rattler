@@ -8,10 +8,6 @@ Feature: Symantic Actions
   are simply ignored. Labeled parse results can be refered to as identifiers in
   the action. The special identifier "_" refers to the entire parse results.
   
-  In order to add simple symantics to parse results
-  As a language designer
-  I want to use symantic actions in my grammar
-  
   Scenario: Single token
     Given a grammar with:
       """

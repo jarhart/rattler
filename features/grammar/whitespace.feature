@@ -6,10 +6,6 @@ Feature: Whitespace
   form defines whitespace for expressions in the block, otherwise it is defined
   for the rest of the grammar.
   
-  In order to focus on the structure of my language
-  As a language designer
-  I want to specify whitespace in my grammar once and only once
-  
   Scenario: Block form
     Given a grammar with:
       """

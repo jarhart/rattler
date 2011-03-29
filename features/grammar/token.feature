@@ -5,10 +5,6 @@ Feature: Token Operator
   automatically skipped. The expression becomes atomic, so any defined
   whitespace will be automatically skipped before the token.
   
-  In order to match arbitrarily complex expressions as tokens
-  As a language designer
-  I want to use a "token" prefix operator in my grammar
-  
   Scenario: Nested sequences and repeats
     Given a grammar with:
       """

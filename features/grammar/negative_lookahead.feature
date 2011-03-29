@@ -4,10 +4,6 @@ Feature: Negative Lookahead Operator
   would not match here and never consume any input. This is known as zero-width
   negative lookahead.
   
-  In order to define zero-width negative lookahead expressions
-  As a language designer
-  I want to use the negative lookahead operator in my grammar
-  
   Scenario Outline: Parsing
     Given a grammar with:
       """

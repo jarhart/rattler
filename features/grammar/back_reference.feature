@@ -4,10 +4,6 @@ Feature: Back References
   The reference refers to the previous parse result and it means to match the
   same exact input again.
 
-  In order to reuse a previous parse result to match the same text again
-  As a language designer
-  I want to use back references in my grammar
-
   Scenario Outline: Parsing
     Given a grammar with:
       """

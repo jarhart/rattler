@@ -18,11 +18,7 @@ Feature: POSIX Character Classes
     SPACE - Whitespace characters
     UPPER - Uppercase characters
     XDIGIT - Hexadecimal digits
-    WORD - Alphanumeric characters plus "_" (Ruby 1.9 only)
-  
-  In order to write more consistent and readable grammars
-  As a language designer
-  I want to use POSIX character classes in my grammar
+    WORD - Alphanumeric characters plus "_"
   
   Scenario: ALNUM
     Given a grammar with:
@@ -71,3 +67,4 @@ Feature: POSIX Character Classes
       """
     When I parse "ABCdef"
     Then the parse result should be ["A", "B", "C"]
+    

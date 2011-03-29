@@ -7,10 +7,6 @@ Feature: Node Actions
   Array and any attributes are included in a Hash. The action can optionally
   include a name.
   
-  In order to create node objects as parse results
-  As a language designer
-  I want to use node actions in my grammar
-  
   Scenario: Explicit node class
     Given a grammar with:
       """

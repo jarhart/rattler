@@ -6,10 +6,6 @@ Feature: Fail Expressions
   as a string literal. Using "fail_rule" causes the entire rule to fail and
   "fail_parse" causes the entire parse to fail.
   
-  In order to define my own failure messages
-  As a language designer
-  I want to use fail expressions in my grammar
-  
   Scenario: Fail-expression
     Given a grammar with:
       """

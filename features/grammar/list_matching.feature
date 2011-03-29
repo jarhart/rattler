@@ -4,10 +4,6 @@ Feature: List Matching
   to match a list of terms with separators between them. "*," matches a list of
   zero or more terms, "+," matches a list of one or more term.
 
-  In order to clearly and easily match list expressions
-  As a language designer
-  I want to use a list-matching expression
-
   Scenario Outline: Zero or more terms
     Given a grammar with:
       """
