@@ -70,7 +70,7 @@ describe LabelGenerator do
           should == (<<-CODE).strip
 begin
   (r = @scanner.scan(/\\w+/)) &&
-  Word.parsed([r])
+  Word.parsed([r], :labeled => {:word => r})
 end
           CODE
       end
@@ -81,7 +81,7 @@ end
         top_level_code {|g| g.gen_dispatch_action label, code }.
           should == (<<-CODE).strip
 (r = @scanner.scan(/\\w+/)) &&
-Word.parsed([r])
+Word.parsed([r], :labeled => {:word => r})
           CODE
       end
     end
@@ -89,10 +89,10 @@ Word.parsed([r])
 
   describe '#gen_direct_action' do
 
-    let(:code) { ActionCode.new('|_| _.to_sym') }
+    let(:code) { ActionCode.new('word.to_sym') }
 
     context 'when nested' do
-      it 'generates nested matching code with a direct action' do
+      it 'generates nested matching code with a direct action using the label' do
         nested_code {|g| g.gen_direct_action label, code }.
           should == (<<-CODE).strip
 begin

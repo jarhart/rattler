@@ -110,7 +110,25 @@ describe DirectAction do
       end
     end
 
+    context 'with a list parser' do
+
+      subject { DirectAction[List1[Match[/[[:digit:]]+/], Match[/,/]], '_'] }
+
+      context 'when the nested parser matches' do
+        it 'applies the action to an array containing the matches' do
+          parsing('1,2,42').should result_in(['1', '2', '42']).at(6)
+        end
+      end
+
+      context 'when the nested parser fails' do
+        it 'fails' do
+          parsing('foo').should fail
+        end
+      end
+    end
+
     context 'with a token parser' do
+
       subject { DirectAction[Token[Match[/[[:digit:]]+/]], '|s| s.to_i'] }
 
       context 'when the parser matches' do

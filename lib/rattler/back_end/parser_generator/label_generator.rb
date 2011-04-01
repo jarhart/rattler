@@ -13,7 +13,10 @@ module Rattler::BackEnd::ParserGenerator
     end
 
     def gen_dispatch_action(label, code, scope={})
-      generate label.child, :dispatch_action, code, scope
+      expr :block do
+        scope = gen_capturing label.child, scope, label.label
+        (@g << ' &&').newline << code.bind(scope, dispatch_action_args)
+      end
     end
 
     def gen_direct_action(label, code, scope={})

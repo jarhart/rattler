@@ -584,6 +584,14 @@ shared_examples_for 'a compiled parser' do
       end }
       it { should parse('451a').succeeding.like reference_parser }
       it { should parse('    ').failing.like reference_parser }
+
+      context 'with a label' do
+        let(:grammar) { define_grammar do
+          rule(:digits) { dispatch_action(label(:num, /\d+/)) }
+        end }
+        it { should parse('451a').succeeding.like reference_parser }
+        it { should parse('    ').failing.like reference_parser }
+      end
     end
 
     context 'with a nested choice rule' do
@@ -696,6 +704,16 @@ shared_examples_for 'a compiled parser' do
       end
     end
 
+    context 'with a nested list rule' do
+      let(:grammar) { define_grammar do
+        rule :foo do
+          dispatch_action(list1(/\w+/, /,/))
+        end
+      end }
+      it { should parse('a,bc,d ').succeeding.like reference_parser }
+      it { should parse('  ').failing.like reference_parser }
+    end
+
     context 'with a nested apply rule' do
       let(:grammar) { define_grammar do
         rule(:digit) { match /\d/ }
@@ -735,6 +753,14 @@ shared_examples_for 'a compiled parser' do
       end }
       it { should parse('451a').succeeding.like reference_parser }
       it { should parse('    ').failing.like reference_parser }
+
+      context 'with a label' do
+        let(:grammar) { define_grammar do
+          rule(:digits) { direct_action(label(:num, /\d+/), 'num.to_i') }
+        end }
+        it { should parse('451a').succeeding.like reference_parser }
+        it { should parse('    ').failing.like reference_parser }
+      end
     end
 
     context 'with a nested choice rule' do
@@ -847,6 +873,16 @@ shared_examples_for 'a compiled parser' do
         it { should parse('foo ').succeeding.like reference_parser }
         it { should parse('    ').failing.like reference_parser }
       end
+    end
+
+    context 'with a nested list rule' do
+      let(:grammar) { define_grammar do
+        rule :foo do
+          direct_action(list1(/\w+/, /,/), '|_| _.reduce(:+)')
+        end
+      end }
+      it { should parse('a,bc,d ').succeeding.like reference_parser }
+      it { should parse('  ').failing.like reference_parser }
     end
 
     context 'with a nested apply rule' do
