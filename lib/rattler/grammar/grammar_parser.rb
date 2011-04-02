@@ -71,6 +71,14 @@ module Rattler::Grammar
       {:parser_name => name, :base_name => base.first}
     end
 
+    def list0(term_parser, sep_parser)
+      ListParser[term_parser, sep_parser, 0, nil]
+    end
+
+    def list1(term_parser, sep_parser)
+      ListParser[term_parser, sep_parser, 1, nil]
+    end
+
     def rule(name, parser)
       Rule[name, (@ws ? parser.with_ws(@ws) : parser), {:inline => @inline}]
     end

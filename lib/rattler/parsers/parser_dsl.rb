@@ -156,26 +156,13 @@ module Rattler
 
       # Create a new list parser.
       #
-      # @overload list(term_parser, sep_parser)
-      #   @return [List0] a new list parser
-      # @overload list(term_arg, sep_arg)
-      #   @return [List0] a new list parser using args to define a match parsers
+      # @overload list(term_parser, sep_parser, min, max)
+      #   @return [ListParser] a new list parser
+      # @overload list(term_arg, sep_arg, min, max)
+      #   @return [ListParser] a new list parser using args to define a match parsers
       #   @see #match
-      def list0(term_arg, sep_arg)
-        List0[to_parser(term_arg), to_parser(sep_arg)]
-      end
-
-      alias_method :list, :list0
-
-      # Create a new list1 parser.
-      #
-      # @overload list(term_parser, sep_parser)
-      #   @return [List1] a new list1 parser
-      # @overload list(term_arg, sep_arg)
-      #   @return [List1] a new list1 parser using args to define match parsers
-      #   @see #match
-      def list1(term_arg, sep_arg)
-        List1[to_parser(term_arg), to_parser(sep_arg)]
+      def list(term_arg, sep_arg, min, max)
+        ListParser[to_parser(term_arg), to_parser(sep_arg), min, max]
       end
 
       # Create a new assert parser.

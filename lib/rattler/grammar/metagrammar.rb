@@ -543,9 +543,9 @@ module Rattler
           p0 = @scanner.pos
           begin
             (r0_0 = match(:list_term)) &&
-            @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>\*,)/) &&
+            @scanner.skip(/(?>(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>\*))(?>(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>,))/) &&
             (r0_1 = match(:list_term)) &&
-            List0.parsed(select_captures([r0_0, r0_1]))
+            (list0 r0_0, r0_1)
           end || begin
             @scanner.pos = p0
             false
@@ -555,9 +555,35 @@ module Rattler
           p0 = @scanner.pos
           begin
             (r0_0 = match(:list_term)) &&
-            @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>\+,)/) &&
+            @scanner.skip(/(?>(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>\+))(?>(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>,))/) &&
             (r0_1 = match(:list_term)) &&
-            List1.parsed(select_captures([r0_0, r0_1]))
+            (list1 r0_0, r0_1)
+          end || begin
+            @scanner.pos = p0
+            false
+          end
+        end ||
+        begin
+          p0 = @scanner.pos
+          begin
+            (r0_0 = match(:list_term)) &&
+            (r0_1 = begin
+              begin
+                @scanner.skip(/(?>(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)((?>[[:digit:]])+))(?>(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>\.\.))(?>(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)((?>[[:digit:]])+))/) &&
+                ([@scanner[1], @scanner[2]].map {|s| s.to_i })
+              end ||
+              begin
+                @scanner.skip(/(?>(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)((?>[[:digit:]])+))(?>(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>\.\.))/) &&
+                ([@scanner[1].to_i, nil])
+              end ||
+              begin
+                @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)((?>[[:digit:]])+)/) &&
+                ([@scanner[1].to_i] * 2)
+              end
+            end) &&
+            @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>,)/) &&
+            (r0_2 = match(:list_term)) &&
+            ListParser.parsed(select_captures([r0_0, r0_1, r0_2]))
           end || begin
             @scanner.pos = p0
             false

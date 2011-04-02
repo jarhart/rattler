@@ -27,8 +27,6 @@ module Rattler
     autoload :OneOrMore, 'rattler/parsers/one_or_more'
     autoload :Repeat, 'rattler/parsers/repeat'
     autoload :ListParser, 'rattler/parsers/list_parser'
-    autoload :List0, 'rattler/parsers/list0'
-    autoload :List1, 'rattler/parsers/list1'
     autoload :Apply, 'rattler/parsers/apply'
     autoload :Assert, 'rattler/parsers/assert'
     autoload :Disallow, 'rattler/parsers/disallow'

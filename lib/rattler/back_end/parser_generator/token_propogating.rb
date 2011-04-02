@@ -4,7 +4,7 @@ module Rattler::BackEnd::ParserGenerator
   # @private
   module TokenPropogating #:nodoc:
     def gen_token(parser, scope={})
-      generate parser.child, :token, scope
+      propogate_gen parser.child, :token, scope
     end
   end
 end

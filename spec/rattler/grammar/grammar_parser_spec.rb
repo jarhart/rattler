@@ -211,6 +211,43 @@ describe Rattler::Grammar::GrammarParser do
       end
     end
 
+    context 'given a zero-or-more list expression' do
+      it 'parses as a ListParser with zero-or-more bounds' do
+        matching(' expr *, ";" ').as(:expression).
+          should result_in(ListParser[Apply[:expr], Match[/;/], 0, nil]).at(12)
+      end
+    end
+
+    context 'given a one-or-more list expression' do
+      it 'parses as a ListParser with one-or-more bounds' do
+        matching(' expr +, ";" ').as(:expression).
+          should result_in(ListParser[Apply[:expr], Match[/;/], 1, nil]).at(12)
+      end
+    end
+
+    context 'given a generalized list expression' do
+      context 'with a single count' do
+        it 'parses as a ListParser with the count as both lower and upper bounds' do
+          matching(' expr 2, ";" ').as(:expression).
+            should result_in(ListParser[Apply[:expr], Match[/;/], 2, 2]).at(12)
+        end
+      end
+
+      context 'with a range' do
+        it 'parses as a ListParser with lower and upper bounds' do
+          matching(' expr 2..4, ";" ').as(:expression).
+            should result_in(ListParser[Apply[:expr], Match[/;/], 2, 4]).at(15)
+        end
+
+        context 'with no upper bound' do
+          it 'parses as a Repeat with no upper bound' do
+            matching(' expr 2.., ";" ').as(:expression).
+              should result_in(ListParser[Apply[:expr], Match[/;/], 2, nil]).at(14)
+          end
+        end
+      end
+    end
+
     context 'given a dispatch-action-attributed expression' do
 
       context 'given an action with a class name' do

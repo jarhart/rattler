@@ -237,49 +237,46 @@ shared_examples_for 'a compiled parser' do
   context 'given a list rule' do
     let(:grammar) { define_grammar do
       rule :foo do
-        list(/\w+/, /[,;]/)
+        list(/\w+/, /[,;]/, 2, nil)
       end
     end }
-    it { should parse('  ').succeeding.like reference_parser }
-    it { should parse('foo  ').succeeding.like reference_parser }
+    it { should parse('foo  ').failing.like reference_parser }
     it { should parse('foo,bar;baz  ').succeeding.like reference_parser }
     it { should parse('foo,bar,  ').succeeding.like reference_parser }
 
-    context 'with a non-capturing parser' do
+    context 'with an upper bound' do
       let(:grammar) { define_grammar do
         rule :foo do
-          list(skip(/\w+/), /[,;]/)
+          list(/\w+/, /[,;]/, 2, 4)
         end
       end }
-      it { should parse('  ').succeeding.like reference_parser }
-      it { should parse('foo  ').succeeding.like reference_parser }
+      it { should parse('foo  ').failing.like reference_parser }
       it { should parse('foo,bar;baz  ').succeeding.like reference_parser }
+      it { should parse('a,b,c,d,e  ').succeeding.like reference_parser }
       it { should parse('foo,bar,  ').succeeding.like reference_parser }
     end
-  end
-
-  ########## list1 ##########
-  context 'given a list1 rule' do
-    let(:grammar) { define_grammar do
-      rule :foo do
-        list1(/\w+/, /[,;]/)
-      end
-    end }
-    it { should parse('  ').failing.like reference_parser }
-    it { should parse('foo  ').succeeding.like reference_parser }
-    it { should parse('foo,bar;baz  ').succeeding.like reference_parser }
-    it { should parse('foo,bar,  ').succeeding.like reference_parser }
 
     context 'with a non-capturing parser' do
       let(:grammar) { define_grammar do
         rule :foo do
-          list1(skip(/\w+/), /[,;]/)
+          list(skip(/\w+/), /[,;]/, 2, nil)
         end
       end }
-      it { should parse('  ').failing.like reference_parser }
-      it { should parse('foo  ').succeeding.like reference_parser }
+      it { should parse('foo  ').failing.like reference_parser }
       it { should parse('foo,bar;baz  ').succeeding.like reference_parser }
       it { should parse('foo,bar,  ').succeeding.like reference_parser }
+
+      context 'with an upper bound' do
+        let(:grammar) { define_grammar do
+          rule :foo do
+            list(skip(/\w+/), /[,;]/, 2, 4)
+          end
+        end }
+        it { should parse('foo  ').failing.like reference_parser }
+        it { should parse('foo,bar;baz  ').succeeding.like reference_parser }
+        it { should parse('a,b,c,d,e  ').succeeding.like reference_parser }
+        it { should parse('foo,bar,  ').succeeding.like reference_parser }
+      end
     end
   end
 
@@ -386,18 +383,42 @@ shared_examples_for 'a compiled parser' do
 
     context 'with a nested list rule' do
       let(:grammar) { define_grammar do
-        rule(:word) { assert(list(/\w+/, /,/)) }
+        rule :foo do
+          assert list(/\w+/, /[,;]/, 2, nil)
+        end
       end }
-      it { should parse('abc,123 ').succeeding.like reference_parser }
-      it { should parse('   ').succeeding.like reference_parser }
-    end
+      it { should parse('foo  ').failing.like reference_parser }
+      it { should parse('foo,bar;baz  ').succeeding.like reference_parser }
 
-    context 'with a nested list1 rule' do
-      let(:grammar) { define_grammar do
-        rule(:word) { assert(list1(/\w+/, /,/)) }
-      end }
-      it { should parse('abc,123 ').succeeding.like reference_parser }
-      it { should parse('   ').failing.like reference_parser }
+      context 'with an upper bound' do
+        let(:grammar) { define_grammar do
+          rule :foo do
+            assert list(/\w+/, /[,;]/, 2, 4)
+          end
+        end }
+        it { should parse('foo  ').failing.like reference_parser }
+        it { should parse('foo,bar;baz  ').succeeding.like reference_parser }
+      end
+
+      context 'with a non-capturing parser' do
+        let(:grammar) { define_grammar do
+          rule :foo do
+            assert list(skip(/\w+/), /[,;]/, 2, nil)
+          end
+        end }
+        it { should parse('foo  ').failing.like reference_parser }
+        it { should parse('foo,bar;baz  ').succeeding.like reference_parser }
+
+        context 'with an upper bound' do
+          let(:grammar) { define_grammar do
+            rule :foo do
+              assert list(skip(/\w+/), /[,;]/, 2, 4)
+            end
+          end }
+          it { should parse('foo  ').failing.like reference_parser }
+          it { should parse('foo,bar;baz  ').succeeding.like reference_parser }
+        end
+      end
     end
 
     context 'with a nested apply rule' do
@@ -527,18 +548,42 @@ shared_examples_for 'a compiled parser' do
 
     context 'with a nested list rule' do
       let(:grammar) { define_grammar do
-        rule(:word) { disallow(list(/\w+/, /,/)) }
+        rule :foo do
+          disallow list(/\w+/, /[,;]/, 2, nil)
+        end
       end }
-      it { should parse('   ').failing.like reference_parser }
-      it { should parse('abc,123 ').failing.like reference_parser }
-    end
+      it { should parse('foo  ').succeeding.like reference_parser }
+      it { should parse('foo,bar;baz  ').failing.like reference_parser }
 
-    context 'with a nested list1 rule' do
-      let(:grammar) { define_grammar do
-        rule(:word) { disallow(list1(/\w+/, /,/)) }
-      end }
-      it { should parse('   ').succeeding.like reference_parser }
-      it { should parse('abc,123 ').failing.like reference_parser }
+      context 'with an upper bound' do
+        let(:grammar) { define_grammar do
+          rule :foo do
+            disallow list(/\w+/, /[,;]/, 2, 4)
+          end
+        end }
+        it { should parse('foo  ').succeeding.like reference_parser }
+        it { should parse('foo,bar;baz  ').failing.like reference_parser }
+      end
+
+      context 'with a non-capturing parser' do
+        let(:grammar) { define_grammar do
+          rule :foo do
+            disallow list(skip(/\w+/), /[,;]/, 2, nil)
+          end
+        end }
+        it { should parse('foo  ').succeeding.like reference_parser }
+        it { should parse('foo,bar;baz  ').failing.like reference_parser }
+
+        context 'with an upper bound' do
+          let(:grammar) { define_grammar do
+            rule :foo do
+              disallow list(skip(/\w+/), /[,;]/, 2, 4)
+            end
+          end }
+          it { should parse('foo  ').succeeding.like reference_parser }
+          it { should parse('foo,bar;baz  ').failing.like reference_parser }
+        end
+      end
     end
 
     context 'with a nested apply rule' do
@@ -707,7 +752,7 @@ shared_examples_for 'a compiled parser' do
     context 'with a nested list rule' do
       let(:grammar) { define_grammar do
         rule :foo do
-          dispatch_action(list1(/\w+/, /,/))
+          dispatch_action(list(/\w+/, /,/, 1, nil))
         end
       end }
       it { should parse('a,bc,d ').succeeding.like reference_parser }
@@ -878,7 +923,7 @@ shared_examples_for 'a compiled parser' do
     context 'with a nested list rule' do
       let(:grammar) { define_grammar do
         rule :foo do
-          direct_action(list1(/\w+/, /,/), '|_| _.reduce(:+)')
+          direct_action(list(/\w+/, /,/, 1, nil), '|_| _.reduce(:+)')
         end
       end }
       it { should parse('a,bc,d ').succeeding.like reference_parser }

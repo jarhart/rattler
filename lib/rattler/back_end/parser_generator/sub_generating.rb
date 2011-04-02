@@ -25,6 +25,14 @@ module Rattler::BackEnd::ParserGenerator
       @g << '@scanner.eos?'
     end
 
+    def propogate_gen(parser, type, scope)
+      if nested?
+        gen_nested parser, type, scope
+      else
+        gen_top_level parser, type, scope
+      end
+    end
+
     private
 
     def gen_with(g, parser, as=:basic, *args)
@@ -60,11 +68,8 @@ module Rattler::BackEnd::ParserGenerator
       when Repeat
         cache_generator RepeatGenerator, context, :new_repeat_level => true
 
-      when List0
+      when ListParser
         cache_generator ListGenerator, context, :new_repeat_level => true
-
-      when List1
-        cache_generator List1Generator, context, :new_repeat_level => true
 
       when Apply
         cache_generator ApplyGenerator, context

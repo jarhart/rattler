@@ -5,11 +5,11 @@ module Rattler::BackEnd::ParserGenerator
   module SkipPropogating #:nodoc:
 
     def gen_skip(parser, scope={})
-      generate parser.child, :skip, scope
+      propogate_gen parser.child, :skip, scope
     end
 
     def gen_intermediate_skip(parser, scope={})
-      generate parser.child, :intermediate_skip, scope
+      propogate_gen parser.child, :intermediate_skip, scope
     end
 
   end

@@ -103,7 +103,7 @@ describe DispatchAction do
 
     context 'with a list parser' do
 
-      let(:nested_parser) { List1[Match[/[[:digit:]]+/], Match[/,/]] }
+      let(:nested_parser) { ListParser[Match[/[[:digit:]]+/], Match[/,/], 2, 4] }
 
       context 'when the nested parser matches' do
         it 'applies the action to an array containing the matches' do
