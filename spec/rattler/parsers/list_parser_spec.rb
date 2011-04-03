@@ -170,4 +170,18 @@ describe ListParser do
     end
   end
 
+  describe '#with_ws' do
+
+    let(:ws) { Match[/\s*/] }
+    let(:term_parser) { Match[/\w+/] }
+    let(:bounds) { [2, 4] }
+
+    it 'applies #with_ws to the term and separator parsers' do
+      subject.with_ws(ws).should == ListParser[
+        Sequence[Skip[ws], term_parser],
+        Sequence[Skip[ws], sep_parser],
+        *bounds]
+    end
+  end
+
 end

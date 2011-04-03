@@ -11,7 +11,7 @@ describe Repeat do
 
     context 'with a capturing parser' do
 
-      let(:child) { capturing_child }
+      let(:child) { Match[/\w/] }
 
       context 'with no upper bound' do
 
@@ -99,6 +99,17 @@ describe Repeat do
 
   end
 
+  describe '#with_ws' do
+
+    let(:ws) { Match[/\s*/] }
+    subject { Repeat[child, 2, 4] }
+
+    it 'applies #with_ws to the nested parser' do
+      subject.with_ws(ws).
+        should == Repeat[Sequence[Skip[ws], child], 2, 4]
+    end
+  end
+
   describe '#zero_or_more?' do
 
     context 'with zero-or-more bounds' do
@@ -159,7 +170,7 @@ describe Repeat do
     end
   end
 
-  describe '#one_or_more?' do
+  describe '#optional?' do
 
     context 'with optional bounds' do
 

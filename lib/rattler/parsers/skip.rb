@@ -13,6 +13,7 @@ module Rattler::Parsers
   # the results
   #
   class Skip < Parser
+    include Combining
 
     # @private
     def self.parsed(results, *_) #:nodoc:
@@ -34,15 +35,6 @@ module Rattler::Parsers
     # @return false
     def capturing?
       false
-    end
-
-    # Return a new parser that uses +ws+ to skip whitespace before matching
-    # tokens.
-    #
-    # @param (see Parser#with_ws)
-    # @return (see Parser#with_ws)
-    def with_ws(ws)
-      child.with_ws(ws).skip
     end
 
     # @return (see Parser#skip)

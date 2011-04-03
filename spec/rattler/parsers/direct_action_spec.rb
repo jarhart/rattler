@@ -3,13 +3,13 @@ require File.expand_path(File.dirname(__FILE__) + '/../../spec_helper')
 describe DirectAction do
   include CombinatorParserSpecHelper
 
-  subject { DirectAction[nested_parser, code] }
+  subject { DirectAction[nested, code] }
 
   describe '#parse' do
 
     context 'with a capturing parser' do
 
-      let(:nested_parser) { Match[/[[:digit:]]+/] }
+      let(:nested) { Match[/[[:digit:]]+/] }
       let(:code) { '|s| s * 2' }
 
       context 'when the parser matches' do
@@ -36,7 +36,7 @@ describe DirectAction do
 
     context 'with a sequence parser' do
 
-      let :nested_parser do
+      let :nested do
         Sequence[Match[/[[:alpha:]]+/], Skip[Match[/\=/]], Match[/[[:digit:]]+/]]
       end
 
@@ -60,7 +60,7 @@ describe DirectAction do
 
     context 'with an optional parser' do
 
-      let(:nested_parser) { Optional[Match[/\d+/]] }
+      let(:nested) { Optional[Match[/\d+/]] }
       let(:code) { '|s| s' }
 
       context 'when the nested parser matches' do
@@ -78,7 +78,7 @@ describe DirectAction do
 
     context 'with a zero-or-more parser' do
 
-      let(:nested_parser) { ZeroOrMore[Match[/\d/]] }
+      let(:nested) { ZeroOrMore[Match[/\d/]] }
       let(:code) { '|s| s * 2' }
 
       context 'when the nested parser matches' do
@@ -96,7 +96,7 @@ describe DirectAction do
 
     context 'with a one-or-more parser' do
 
-      let(:nested_parser) { OneOrMore[Match[/\d/]] }
+      let(:nested) { OneOrMore[Match[/\d/]] }
       let(:code) { '|s| s * 2' }
 
       context 'when the nested parser matches' do
@@ -114,7 +114,7 @@ describe DirectAction do
 
     context 'with a list parser' do
 
-      let(:nested_parser) { ListParser[Match[/[[:digit:]]+/], Match[/,/], 2, 4] }
+      let(:nested) { ListParser[Match[/[[:digit:]]+/], Match[/,/], 2, 4] }
       let(:code) { '_.map {|s| s.to_i }' }
 
       context 'when the nested parser matches' do
@@ -132,7 +132,7 @@ describe DirectAction do
 
     context 'with a token parser' do
 
-      let(:nested_parser) { Token[Match[/[[:digit:]]+/]] }
+      let(:nested) { Token[Match[/[[:digit:]]+/]] }
       let(:code) { '|s| s.to_i' }
 
       context 'when the parser matches' do
@@ -144,7 +144,7 @@ describe DirectAction do
 
     context 'with a non-capturing parser' do
 
-      let(:nested_parser) { Skip[Match[/\w+/]] }
+      let(:nested) { Skip[Match[/\w+/]] }
       let(:code) { '42' }
 
       context 'when the parser matches' do
@@ -156,7 +156,7 @@ describe DirectAction do
 
     context 'with a labeled parser' do
 
-      let(:nested_parser) { Label[:word, Match[/[[:alpha:]]+/]] }
+      let(:nested) { Label[:word, Match[/[[:alpha:]]+/]] }
       let(:code) { 'word * 2' }
 
       context 'when the parser matches' do
@@ -168,7 +168,7 @@ describe DirectAction do
 
     context 'with a sequence of labeled parsers' do
 
-      let :nested_parser do
+      let :nested do
         Sequence[
           Label[:left, Match[/[[:alpha:]]+/]],
           Match[/\=/],
@@ -192,7 +192,7 @@ describe DirectAction do
 
     context 'with a capturing parser' do
 
-      let(:nested_parser) { Match[/\w+/] }
+      let(:nested) { Match[/\w+/] }
 
       it 'is true' do
         subject.should be_capturing
@@ -201,11 +201,23 @@ describe DirectAction do
 
     context 'with a non-capturing parser' do
 
-      let(:nested_parser) { Skip[Match[/\s*/]] }
+      let(:nested) { Skip[Match[/\s*/]] }
 
       it 'is false' do
         subject.should_not be_capturing
       end
+    end
+  end
+
+  describe '#with_ws' do
+
+    let(:ws) { Match[/\s*/] }
+    let(:nested) { Match[/\w+/] }
+    let(:code) { '' }
+
+    it 'applies #with_ws to the nested parser' do
+      subject.with_ws(ws).
+        should == DirectAction[Sequence[Skip[ws], nested], code]
     end
   end
 

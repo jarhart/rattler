@@ -14,6 +14,7 @@ module Rattler::Parsers
   # @author Jason Arhart
   #
   class Token < Parser
+    include Atomic
 
     # If the decorated parser matches return the entire matched string,
     # otherwise return a false value.
@@ -24,12 +25,6 @@ module Rattler::Parsers
     def parse(scanner, rules, scope = {})
       p = scanner.pos
       child.parse(scanner, rules, scope) && scanner.string[p...(scanner.pos)]
-    end
-
-    # @param (see Parser#with_ws)
-    # @return (see Parser#with_ws)
-    def with_ws(ws)
-      ws.skip & self
     end
 
   end

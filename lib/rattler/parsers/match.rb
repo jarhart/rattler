@@ -16,6 +16,7 @@ module Rattler::Parsers
   # @author Jason Arhart
   #
   class Match < Parser
+    include Atomic
 
     # Create a new parser that matches with +re+.
     #
@@ -40,12 +41,6 @@ module Rattler::Parsers
     # @return the matched string, or +nil+
     def parse(scanner, rules, scope={})
       scanner.scan re
-    end
-
-    # @param (see Parser#with_ws)
-    # @return (see Parser#with_ws)
-    def with_ws(ws)
-      ws.skip & self
     end
 
   end

@@ -40,6 +40,7 @@ module Rattler
     autoload :Fail, 'rattler/parsers/fail'
     autoload :ParserDSL, 'rattler/parsers/parser_dsl'
     autoload :Predicate, 'rattler/parsers/predicate'
+    autoload :Atomic, 'rattler/parsers/atomic'
     autoload :Combining, 'rattler/parsers/combining'
     autoload :MatchJoining, 'rattler/parsers/match_joining'
     autoload :ActionCode, 'rattler/parsers/action_code'

@@ -10,6 +10,7 @@ require 'rattler/parsers'
 module Rattler::Parsers
   # @private
   class Predicate < Parser #:nodoc:
+    include Combining
 
     def self.parsed(results, *_)
       self[results.first]
@@ -17,10 +18,6 @@ module Rattler::Parsers
 
     def capturing?
       false
-    end
-
-    def with_ws(ws)
-      self.class.new(child.with_ws(ws), attrs)
     end
 
   end

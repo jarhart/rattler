@@ -3,7 +3,9 @@ require File.expand_path(File.dirname(__FILE__) + '/../../spec_helper')
 describe Label do
   include CombinatorParserSpecHelper
 
-  subject { Label[:name, [Match[/\w+/]]] }
+  subject { Label[:name, nested] }
+
+  let(:nested) { Match[/\w+/] }
 
   describe '#parse' do
 
@@ -28,12 +30,23 @@ describe Label do
     end
 
     context 'with a non-capturing parser' do
-      subject { Label[:name, [Skip[Match[/\s+/]]]] }
+
+      let(:nested) { Skip[Match[/\s+/]] }
+
       it 'is false' do
         subject.should_not be_capturing
       end
     end
 
+  end
+
+  describe '#with_ws' do
+
+    let(:ws) { Match[/\s*/] }
+
+    it 'applies #with_ws to the nested parser' do
+      subject.with_ws(ws).should == Label[:name, Sequence[Skip[ws], nested]]
+    end
   end
 
 end

@@ -3,11 +3,11 @@ require File.expand_path(File.dirname(__FILE__) + '/../../spec_helper')
 describe Sequence do
   include CombinatorParserSpecHelper
 
+  subject { Sequence[*nested] }
+
   describe '#parse' do
 
-    subject do
-      Sequence[Match[/[[:alpha:]]+/], Match[/\=/], Match[/[[:digit:]]+/]]
-    end
+    let(:nested) { [Match[/[[:alpha:]]+/], Match[/\=/], Match[/[[:digit:]]+/]] }
 
     context 'when all of the parsers match in sequence' do
       it 'matches returning the results in an array' do
@@ -22,9 +22,11 @@ describe Sequence do
     end
 
     context 'with non-capturing parsers' do
-      subject do
-        Sequence[Match[/[[:alpha:]]+/], Skip[Match[/\s+/]], Match[/[[:digit:]]+/]]
+
+      let :nested do
+        [Match[/[[:alpha:]]+/], Skip[Match[/\s+/]], Match[/[[:digit:]]+/]]
       end
+
       context 'when all of the parsers match in sequence' do
         it 'only includes results of its capturing parsers in the result array' do
           parsing('foo 42').should result_in ['foo', '42']
@@ -33,9 +35,9 @@ describe Sequence do
     end
 
     context 'with only one capturing parser' do
-      subject do
-        Sequence[Skip[Match[/\s+/]], Match[/\w+/]]
-      end
+
+      let(:nested) { [Skip[Match[/\s+/]], Match[/\w+/]] }
+
       context 'when all of the parsers match in sequence' do
         it 'returns the result of the capturing parser' do
           parsing('  abc123').should result_in 'abc123'
@@ -44,9 +46,9 @@ describe Sequence do
     end
 
     context 'with no capturing parsers' do
-      subject do
-        Sequence[Skip[Match[/\s*/]], Skip[Match[/#[^\n]+/]]]
-      end
+
+      let(:nested) { [Skip[Match[/\s*/]], Skip[Match[/#[^\n]+/]]] }
+
       context 'when all of the parsers match in sequence' do
         it 'returns true' do
           parsing(' # foo').should result_in true
@@ -55,9 +57,8 @@ describe Sequence do
     end
 
     context 'with an apply parser referencing a non-capturing rule' do
-      subject do
-        Sequence[Match[/[[:alpha:]]+/], Apply[:ws], Match[/[[:digit:]]+/]]
-      end
+
+      let(:nested) { [Match[/[[:alpha:]]+/], Apply[:ws], Match[/[[:digit:]]+/]] }
 
       let(:rules) { RuleSet[Rule[:ws, Skip[Match[/\s+/]]]] }
 
@@ -72,21 +73,34 @@ describe Sequence do
   describe '#capturing?' do
 
     context 'with any capturing parsers' do
-      subject do
-        Sequence[Skip[Match[/\s*/]], Match[/\w+/]]
-      end
+
+      let(:nested) { [Skip[Match[/\s*/]], Match[/\w+/]] }
+
       it 'is true' do
         subject.should be_capturing
       end
     end
 
     context 'with no capturing parsers' do
-      subject do
-        Sequence[Skip[Match[/\s*/]], Skip[Match[/#[^\n]+/]]]
-      end
+
+      let(:nested) { [Skip[Match[/\s*/]], Skip[Match[/#[^\n]+/]]] }
+
       it 'is false' do
         subject.should_not be_capturing
       end
+    end
+  end
+
+  describe '#with_ws' do
+
+    let(:ws) { Match[/\s*/] }
+    let(:nested) { [Match[/[[:alpha:]]+/], Match[/[[:digit:]]+/]] }
+
+    it 'applies #with_ws to the nested parsers' do
+      subject.with_ws(ws).should == Sequence[
+        Sequence[Skip[ws], nested[0]],
+        Sequence[Skip[ws], nested[1]]
+      ]
     end
   end
 

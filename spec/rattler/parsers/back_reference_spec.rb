@@ -35,4 +35,13 @@ describe Rattler::Parsers::BackReference do
     end
   end
 
+  describe '#with_ws' do
+
+    let(:ws) { Match[/\s*/] }
+
+    it 'returns a parser that skips whitespace before matching' do
+      subject.with_ws(ws).should == Sequence[Skip[ws], subject]
+    end
+  end
+
 end
