@@ -13,6 +13,10 @@ module CompilerSpecHelper
   RSpec::Matchers.define :parse do |source|
     match do |parser_class|
       parser = parser_class.new(source)
+      if @from
+        parser.pos = @from
+        @other_parser.pos = @from
+      end
       @repeat ||= 1
       actual_results = (1..@repeat).map { parser.parse or false }
       if @other_parser
@@ -28,6 +32,10 @@ module CompilerSpecHelper
       @wrong_fail = @should_succeed && actual_results.any? {|_| !_ }
       @wrong_success = @should_fail && actual_results.any? {|_| _ }
       not (@wrong_result or @wrong_fail or @wrong_success)
+    end
+
+    chain :from do |pos|
+      @from = pos
     end
 
     chain :succeeding do |*args|

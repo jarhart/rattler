@@ -168,23 +168,23 @@ describe Rattler::Grammar::GrammarParser do
     end
 
     context 'given an optional expression' do
-      it 'parses as an Optional' do
+      it 'parses as a Repeat with optional bounds' do
         matching(' expr? ').as(:expression).
-          should result_in(Optional[Apply[:expr]]).at(6)
+          should result_in(Repeat[Apply[:expr], 0, 1]).at(6)
       end
     end
 
     context 'given a zero-or-more expression' do
-      it 'parses as a ZeroOrMore' do
+      it 'parses as a Repeat with zero-or-more bounds' do
         matching(' expr* ').as(:expression).
-          should result_in(ZeroOrMore[Apply[:expr]]).at(6)
+          should result_in(Repeat[Apply[:expr], 0, nil]).at(6)
       end
     end
 
     context 'given a one-or-more expression' do
-      it 'parses as a OneOrMore' do
+      it 'parses as a Repeat with one-or-more bounds' do
         matching(' expr+ ').as(:expression).
-          should result_in(OneOrMore[Apply[:expr]]).at(6)
+          should result_in(Repeat[Apply[:expr], 1, nil]).at(6)
       end
     end
 

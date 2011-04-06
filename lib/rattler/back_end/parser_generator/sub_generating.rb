@@ -56,15 +56,6 @@ module Rattler::BackEnd::ParserGenerator
       when Sequence
         new_generator SequenceGenerator, context, :new_sequence_level => true
 
-      when Optional
-        cache_generator OptionalGenerator, context
-
-      when ZeroOrMore
-        cache_generator ZeroOrMoreGenerator, context, :new_repeat_level => true
-
-      when OneOrMore
-        cache_generator OneOrMoreGenerator, context, :new_repeat_level => true
-
       when Repeat
         cache_generator RepeatGenerator, context, :new_repeat_level => true
 

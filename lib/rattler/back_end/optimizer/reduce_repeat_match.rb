@@ -20,10 +20,8 @@ module Rattler::BackEnd::Optimizer
 
     def _applies_to?(parser, context)
       context.matching? and
-      case parser
-      when ZeroOrMore, OneOrMore, Optional, Repeat
-        parser.child.is_a?(Match)
-      end
+      parser.is_a? Repeat and
+      parser.child.is_a? Match
     end
 
     def _apply(parser, context)
@@ -33,11 +31,14 @@ module Rattler::BackEnd::Optimizer
     private
 
     def suffix(parser)
-      case parser
-      when ZeroOrMore then '*'
-      when OneOrMore then '+'
-      when Optional then '?'
-      when Repeat then general_suffix parser.lower_bound, parser.upper_bound
+      if parser.zero_or_more?
+        '*'
+      elsif parser.one_or_more?
+        '+'
+      elsif parser.optional?
+        '?'
+      else
+        general_suffix parser.lower_bound, parser.upper_bound
       end
     end
 

@@ -60,12 +60,12 @@ describe DirectAction do
 
     context 'with an optional parser' do
 
-      let(:nested) { Optional[Match[/\d+/]] }
+      let(:nested) { Repeat[Match[/\d/], 0, 1] }
       let(:code) { '|s| s' }
 
       context 'when the nested parser matches' do
         it 'applies the action to an array containing the match' do
-          parsing('451a').should result_in(['451']).at(3)
+          parsing('451a').should result_in(['4']).at(1)
         end
       end
 
@@ -78,7 +78,7 @@ describe DirectAction do
 
     context 'with a zero-or-more parser' do
 
-      let(:nested) { ZeroOrMore[Match[/\d/]] }
+      let(:nested) { Repeat[Match[/\d/], 0, nil] }
       let(:code) { '|s| s * 2' }
 
       context 'when the nested parser matches' do
@@ -96,7 +96,7 @@ describe DirectAction do
 
     context 'with a one-or-more parser' do
 
-      let(:nested) { OneOrMore[Match[/\d/]] }
+      let(:nested) { Repeat[Match[/\d/], 1, nil] }
       let(:code) { '|s| s * 2' }
 
       context 'when the nested parser matches' do

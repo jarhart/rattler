@@ -23,7 +23,6 @@ module Rattler::BackEnd
         @optimizations ||=
           OptimizeChildren >>
           InlineRegularRules >>
-          SpecializeRepeat >>
           SimplifyRedundantRepeat >>
           RemoveMeaninglessWrapper >>
           SimplifyTokenMatch >>

@@ -79,6 +79,18 @@ module Rattler::Grammar
       ListParser[term_parser, sep_parser, 1, nil]
     end
 
+    def optional(parser)
+      Repeat[parser, 0, 1]
+    end
+
+    def zero_or_more(parser)
+      Repeat[parser, 0, nil]
+    end
+
+    def one_or_more(parser)
+      Repeat[parser, 1, nil]
+    end
+
     def rule(name, parser)
       Rule[name, (@ws ? parser.with_ws(@ws) : parser), {:inline => @inline}]
     end

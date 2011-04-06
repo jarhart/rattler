@@ -47,12 +47,12 @@ describe DispatchAction do
 
     context 'with an optional parser' do
 
-      let(:nested) { Optional[Match[/\d+/]] }
+      let(:nested) { Repeat[Match[/\d/], 0, 1] }
 
       context 'when the nested parser matches' do
         it 'applies the action to an array containing the match' do
           parsing('451a').
-          should result_in(Rattler::Runtime::ParseNode.parsed(['451'])).at(3)
+          should result_in(Rattler::Runtime::ParseNode.parsed(['4'])).at(1)
         end
       end
 
@@ -66,7 +66,7 @@ describe DispatchAction do
 
     context 'with a zero-or-more parser' do
 
-      let(:nested) { ZeroOrMore[Match[/\d/]] }
+      let(:nested) { Repeat[Match[/\d/], 0, nil] }
 
       context 'when the nested parser matches' do
         it 'applies the action to an array containing the matches' do
@@ -85,7 +85,7 @@ describe DispatchAction do
 
     context 'with a one-or-more parser' do
 
-      let(:nested) { OneOrMore[Match[/\d/]] }
+      let(:nested) { Repeat[Match[/\d/], 1, nil] }
 
       context 'when the nested parser matches' do
         it 'applies the action to an array containing the matches' do

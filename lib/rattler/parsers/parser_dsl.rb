@@ -113,25 +113,25 @@ module Rattler
       # Create a new optional parser.
       #
       # @overload optional(parser)
-      #   @return [Optional] a new optional parser
+      #   @return [Repeat] a new optional parser
       # @overload optional(arg)
-      #   @return [Optional] a new optional parser using arg to define a match
+      #   @return [Repeat] a new optional parser using arg to define a match
       #     parser
       #   @see #match
       def optional(arg)
-        Optional[to_parser(arg)]
+        Repeat[to_parser(arg), 0, 1]
       end
 
       # Create a new zero-or-more parser.
       #
       # @overload zero_or_more(parser)
-      #   @return [ZeroOrMore] a new zero-or-more parser
+      #   @return [Repeat] a new zero-or-more parser
       # @overload zero_or_more(arg)
-      #   @return [ZeroOrMore] a new zero-or-more parser using arg to define a
+      #   @return [Repeat] a new zero-or-more parser using arg to define a
       #     match parser
       #   @see #match
       def zero_or_more(arg)
-        ZeroOrMore[to_parser(arg)]
+        Repeat[to_parser(arg), 0, nil]
       end
 
       alias_method :any, :zero_or_more
@@ -139,17 +139,25 @@ module Rattler
       # Create a new one-or-more parser.
       #
       # @overload one_or_more(parser)
-      #   @return [OneOrMore] a new one-or-more parser
+      #   @return [Repeat] a new one-or-more parser
       # @overload one_or_more(arg)
-      #   @return [OneOrMore] a new one-or-more parser using arg to define a
-      #     match parser
+      #   @return [Repeat] a new one-or-more parser using arg to define a match
+      #     parser
       #   @see #match
       def one_or_more(arg)
-        OneOrMore[to_parser(arg)]
+        Repeat[to_parser(arg), 1, nil]
       end
 
       alias_method :some, :one_or_more
 
+      # Create a generalized repeat parser.
+      #
+      # @overload one_or_more(parser, min, max)
+      #   @return [Repeat] a new repeat parser with the given bounds
+      # @overload one_or_more(arg, min, max)
+      #   @return [Repeat] a new repeat parser using arg to define a match
+      #     parser
+      #   @see #match
       def repeat(arg, min, max)
         Repeat[to_parser(arg), min, max]
       end

@@ -24,8 +24,6 @@ module Rattler::BackEnd::ParserGenerator
 
   # @private
   class NestedListGenerator < ListGenerator #:nodoc:
-    include Nested
-
     def default_impl(list, init_args)
       GeneralListGenerator.nested(*init_args)
     end
@@ -37,8 +35,6 @@ module Rattler::BackEnd::ParserGenerator
 
   # @private
   class TopLevelListGenerator < ListGenerator #:nodoc:
-    include TopLevel
-
     def default_impl(list, init_args)
       GeneralListGenerator.top_level(*init_args)
     end

@@ -10,215 +10,75 @@ describe SimplifyRedundantRepeat do
 
   describe '#apply' do
 
-    context 'given a zero-or-more' do
+    let(:outer) { Repeat[inner, *outer_bounds] }
+    let(:inner) { Repeat[match, *inner_bounds] }
+    let(:match) { Match[/a/]}
 
-      let(:parser) { ZeroOrMore[child] }
+    context 'given a repeat with one-or-more bounds of a repeat with one-or-more bounds' do
 
-      context 'with a zero-or-more' do
+      let(:outer_bounds) { [1, nil] }
+      let(:inner_bounds) { [1, nil] }
 
-        let(:child) { ZeroOrMore[Match[/a/]] }
-
-        it 'returns the inner ZeroOrMore' do
-          subject.apply(parser, matching).should == ZeroOrMore[Match[/a/]]
-        end
-      end
-
-      context 'with a one-or-more' do
-
-        let(:child) { OneOrMore[Match[/a/]] }
-
-        it 'returns a ZeroOrMore' do
-          subject.apply(parser, matching).should == ZeroOrMore[Match[/a/]]
-        end
-      end
-
-      context 'with an optional' do
-
-        let(:child) { Optional[Match[/a/]] }
-
-        it 'returns a ZeroOrMore' do
-          subject.apply(parser, matching).should == ZeroOrMore[Match[/a/]]
-        end
+      it 'returns a repeat with one-or-more bounds' do
+        subject.apply(outer, matching).should == Repeat[match, 1, nil]
       end
     end
 
-    context 'given a one-or-more' do
+    context 'given a repeat with optional bounds of a repeat with optional bounds' do
 
-      let(:parser) { OneOrMore[child] }
+      let(:outer_bounds) { [0, 1] }
+      let(:inner_bounds) { [0, 1] }
 
-      context 'with a zero-or-more' do
-
-        let(:child) { ZeroOrMore[Match[/a/]] }
-
-        it 'returns the inner ZeroOrMore' do
-          subject.apply(parser, matching).should == ZeroOrMore[Match[/a/]]
-        end
-      end
-
-      context 'with a one-or-more' do
-
-        let(:child) { OneOrMore[Match[/a/]] }
-
-        it 'returns the inner OneOrMore' do
-          subject.apply(parser, matching).should == OneOrMore[Match[/a/]]
-        end
-      end
-
-      context 'with an optional' do
-
-        let(:child) { Optional[Match[/a/]] }
-
-        it 'returns a ZeroOrMore' do
-          subject.apply(parser, matching).should == ZeroOrMore[Match[/a/]]
-        end
+      it 'returns a repeat with one-or-more bounds' do
+        subject.apply(outer, matching).should == Repeat[match, 0, 1]
       end
     end
 
-    context 'given an optional' do
+    context 'given a repeat with zero-or-more bounds of a repeat' do
 
-      let(:parser) { Optional[child] }
+      let(:outer_bounds) { [0, nil] }
+      let(:inner_bounds) { [1, nil] }
 
-      context 'with a zero-or-more' do
-
-        let(:child) { ZeroOrMore[Match[/a/]] }
-
-        it 'returns the inner ZeroOrMore' do
-          subject.apply(parser, matching).should == ZeroOrMore[Match[/a/]]
-        end
-      end
-
-      context 'with a one-or-more' do
-
-        let(:child) { OneOrMore[Match[/a/]] }
-
-        it 'returns a ZeroOrMore' do
-          subject.apply(parser, matching).should == ZeroOrMore[Match[/a/]]
-        end
-      end
-
-      context 'with an optional' do
-
-        let(:child) { Optional[Match[/a/]] }
-
-        it 'returns the inner Optional' do
-          subject.apply(parser, matching).should == Optional[Match[/a/]]
-        end
+      it 'returns a repeat with zero-or-more bounds' do
+        subject.apply(outer, matching).should == Repeat[match, 0, nil]
       end
     end
   end
 
   describe '#applies_to?' do
 
-    context 'given a zero-or-more' do
+    context 'given a repeat of a repeat' do
 
-      let(:parser) { ZeroOrMore[child] }
+      let(:parser) { Repeat[Repeat[Match[/a/], 1, nil], 0, nil] }
 
-      context 'with a zero-or-more' do
-
-        let(:child) { ZeroOrMore[Match[/a/]] }
-
-        context 'in the :matching context' do
-          it 'returns true' do
-            subject.applies_to?(parser, matching).should be_true
-          end
-        end
-
-        context 'in the :capturing context' do
-          it 'returns false' do
-            subject.applies_to?(parser, capturing).should be_false
-          end
+      context 'in the :matching context' do
+        it 'returns true' do
+          subject.applies_to?(parser, matching).should be_true
         end
       end
 
-      context 'with something other than a repeat' do
-
-        let(:child) { Match[/a/] }
-
+      context 'in the :capturing context' do
         it 'returns false' do
-          subject.applies_to?(parser, matching).should be_false
-        end
-      end
-
-      context 'with a one-or-more' do
-
-        let(:child) { OneOrMore[Match[/a/]] }
-
-        it 'returns true' do
-          subject.applies_to?(parser, matching).should be_true
-        end
-      end
-
-      context 'with an optional' do
-
-        let(:child) { Optional[Match[/a/]] }
-
-        it 'returns true' do
-          subject.applies_to?(parser, matching).should be_true
+          subject.applies_to?(parser, capturing).should be_false
         end
       end
     end
 
-    context 'given a one-or-more' do
+    context 'given a repeat of something other than a repeat' do
 
-      let(:parser) { OneOrMore[child] }
+      let(:parser) { Repeat[Match[/a/], 2, 4] }
 
-      context 'with a zero-or-more' do
-
-        let(:child) { ZeroOrMore[Match[/a/]] }
-
-        it 'returns true' do
-          subject.applies_to?(parser, matching).should be_true
-        end
-      end
-
-      context 'with a one-or-more' do
-
-        let(:child) { OneOrMore[Match[/a/]] }
-
-        it 'returns true' do
-          subject.applies_to?(parser, matching).should be_true
-        end
-      end
-
-      context 'with an optional' do
-
-        let(:child) { Optional[Match[/a/]] }
-
-        it 'returns true' do
-          subject.applies_to?(parser, matching).should be_true
-        end
+      it 'returns false' do
+        subject.applies_to?(parser, capturing).should be_false
       end
     end
 
-    context 'given an optional' do
+    context 'given something other than a repeat' do
 
-      let(:parser) { Optional[child] }
+      let(:parser) { Match[/a/] }
 
-      context 'with a zero-or-more' do
-
-        let(:child) { ZeroOrMore[Match[/a/]] }
-
-        it 'returns true' do
-          subject.applies_to?(parser, matching).should be_true
-        end
-      end
-
-      context 'with a one-or-more' do
-
-        let(:child) { OneOrMore[Match[/a/]] }
-
-        it 'returns true' do
-          subject.applies_to?(parser, matching).should be_true
-        end
-      end
-
-      context 'with an optional' do
-
-        let(:child) { Optional[Match[/a/]] }
-
-        it 'returns true' do
-          subject.applies_to?(parser, matching).should be_true
-        end
+      it 'returns false' do
+        subject.applies_to?(parser, capturing).should be_false
       end
     end
   end

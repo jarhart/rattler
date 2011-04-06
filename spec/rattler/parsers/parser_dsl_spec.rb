@@ -37,39 +37,56 @@ describe ParserDSL do
 
   describe '#optional' do
     context 'given a parser' do
-      it 'creates an optional parser' do
-        subject.optional(subject.match(/\w+/)).should == Optional[Match[/\w+/]]
+      it 'creates a repeat parser with optional bounds' do
+        subject.optional(subject.match(/\w+/)).
+          should == Repeat[Match[/\w+/], 0, 1]
       end
     end
     context 'given a match argument' do
-      it 'creates an optional match parser' do
-        subject.optional(/\w+/).should == Optional[Match[/\w+/]]
+      it 'creates a repeat parser with optional bounds' do
+        subject.optional(/\w+/).should == Repeat[Match[/\w+/], 0, 1]
       end
     end
   end
 
   describe '#zero_or_more' do
     context 'given a parser' do
-      it 'creates a zero-or-more parser' do
-        subject.zero_or_more(subject.match(/\w+/)).should == ZeroOrMore[Match[/\w+/]]
+      it 'creates a repeat parser with zero-or-more bounds' do
+        subject.zero_or_more(subject.match(/\w+/)).
+          should == Repeat[Match[/\w+/], 0, nil]
       end
     end
     context 'given a match argument' do
-      it 'creates a zero-or-more match parser' do
-        subject.zero_or_more(/\w+/).should == ZeroOrMore[Match[/\w+/]]
+      it 'creates a repeat parser with zero-or-more bounds' do
+        subject.zero_or_more(/\w+/).should == Repeat[Match[/\w+/], 0, nil]
       end
     end
   end
 
   describe '#one_or_more' do
     context 'given a parser' do
-      it 'creates a one-or-more parser' do
-        subject.one_or_more(subject.match(/\w+/)).should == OneOrMore[Match[/\w+/]]
+      it 'creates a repeat parser with one-or-more bounds' do
+        subject.one_or_more(subject.match(/\w+/)).
+          should == Repeat[Match[/\w+/], 1, nil]
       end
     end
     context 'given a match argument' do
-      it 'creates a one-or-more match parser' do
-        subject.one_or_more(/\w+/).should == OneOrMore[Match[/\w+/]]
+      it 'creates a repeat parser with one-or-more bounds' do
+        subject.one_or_more(/\w+/).should == Repeat[Match[/\w+/], 1, nil]
+      end
+    end
+  end
+
+  describe '#repeat' do
+    context 'given parsers' do
+      it 'creates a repeat parser' do
+        subject.repeat(subject.match(/\w+/), 2, 4).
+          should == Repeat[Match[/\w+/], 2, 4]
+      end
+    end
+    context 'given match arguments' do
+      it 'creates a repeat parser' do
+        subject.repeat(/\w+/, 2, 4).should == Repeat[Match[/\w+/], 2, 4]
       end
     end
   end

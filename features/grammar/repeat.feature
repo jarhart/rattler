@@ -1,7 +1,7 @@
 Feature: Generalized Repeat
 
   Repetition counts or ranges can be used for generalized repeat expressions.
-  A number by itself means to match the preceding expression exactly that many
+  A count by itself means to match the preceding expression exactly that many
   times. A range can be written with ".." between the lower and upper bounds.
   The upper bound is optional.
 

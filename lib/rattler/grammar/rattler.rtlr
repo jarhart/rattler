@@ -50,8 +50,8 @@ include Rattler::Parsers
 
   node_action       <-  @(name (~'.' var_name)?)
 
-  action            <-  @(  ('{' [^}]* '}'
-                          / [^{}])* )
+  action            <-  @(( '{' [^}]* '}'
+                          / [^{}]         )*)
 
   terms             <-  terms term                                              <Sequence>
                       / term
@@ -83,9 +83,9 @@ include Rattler::Parsers
 
   prefixable        <-  suffixed / primary
 
-  suffixed          <-  primary ~'?'                                            <Optional>
-                      / primary ~'*' !','                                       <ZeroOrMore>
-                      / primary ~'+' !','                                       <OneOrMore>
+  suffixed          <-  primary ~'?'                                            { optional _ }
+                      / primary ~'*' !','                                       { zero_or_more _ }
+                      / primary ~'+' !','                                       { one_or_more _ }
                       / primary repeat_count !','                               <Repeat>
 
   repeat_count      <-  @DIGIT+ ~'..' @DIGIT+                                   { _.map {|s| s.to_i } }

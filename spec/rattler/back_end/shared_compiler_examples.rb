@@ -23,6 +23,16 @@ shared_examples_for 'a compiled parser' do
     it { should parse('abc123').succeeding.twice.like reference_parser }
     it { should parse('==').failing.like reference_parser }
 
+    context 'with non-capturing parsers' do
+      let(:grammar) { define_grammar do
+        rule :foo do
+          skip(/\s+/) | skip(/\{[^\}]*\}/)
+        end
+      end }
+      it { should parse('   foo').succeeding.like reference_parser }
+      it { should parse('{foo}').succeeding.like reference_parser }
+    end
+
     context 'with nested choices' do
       let(:grammar) { define_grammar do
         rule(:foo) do
@@ -201,36 +211,6 @@ shared_examples_for 'a compiled parser' do
       it { should parse('abcde ').succeeding.like reference_parser }
       it { should parse('a ').failing.like reference_parser }
     end
-
-    context 'with optional bounds' do
-      let(:grammar) { define_grammar do
-        rule :foo do
-          repeat(/\w+/, 0, 1)
-        end
-      end }
-      it { should parse('foo ').succeeding.like reference_parser }
-      it { should parse('    ').succeeding.like reference_parser }
-    end
-
-    context 'with zero-or-more bounds' do
-      let(:grammar) { define_grammar do
-        rule :foo do
-          repeat(/\w/, 0, nil)
-        end
-      end }
-      it { should parse('foo ').succeeding.like reference_parser }
-      it { should parse('    ').succeeding.like reference_parser }
-    end
-
-    context 'with one-or-more bounds' do
-      let(:grammar) { define_grammar do
-        rule :foo do
-          repeat(/\w/, 1, nil)
-        end
-      end }
-      it { should parse('foo ').succeeding.like reference_parser }
-      it { should parse('    ').failing.like reference_parser }
-    end
   end
 
   ########## list ##########
@@ -276,6 +256,28 @@ shared_examples_for 'a compiled parser' do
         it { should parse('foo,bar;baz  ').succeeding.like reference_parser }
         it { should parse('a,b,c,d,e  ').succeeding.like reference_parser }
         it { should parse('foo,bar,  ').succeeding.like reference_parser }
+      end
+
+      context 'with "zero-or-more" bounds' do
+        let(:grammar) { define_grammar do
+          rule :foo do
+            list(skip(/\w+/), /[,;]/, 0, nil)
+          end
+        end }
+        it { should parse('  ').succeeding.like reference_parser }
+        it { should parse('foo  ').succeeding.like reference_parser }
+        it { should parse('foo,bar;baz  ').succeeding.like reference_parser }
+      end
+
+      context 'with "one-or-more" bounds' do
+        let(:grammar) { define_grammar do
+          rule :foo do
+            list(skip(/\w+/), /[,;]/, 1, nil)
+          end
+        end }
+        it { should parse('  ').failing.like reference_parser }
+        it { should parse('foo  ').succeeding.like reference_parser }
+        it { should parse('foo,bar;baz  ').succeeding.like reference_parser }
       end
     end
   end
@@ -325,7 +327,7 @@ shared_examples_for 'a compiled parser' do
       it { should parse('   ').succeeding.like reference_parser }
     end
 
-    context 'with a nested zero_or_more rule' do
+    context 'with a nested zero-or-more rule' do
       let(:grammar) { define_grammar do
         rule(:word) { assert(zero_or_more(/\w/)) }
       end }
@@ -333,7 +335,7 @@ shared_examples_for 'a compiled parser' do
       it { should parse('   ').succeeding.like reference_parser }
     end
 
-    context 'with a nested one_or_more rule' do
+    context 'with a nested one-or-more rule' do
       let(:grammar) { define_grammar do
         rule(:word) { assert(one_or_more(/\w/)) }
       end }
@@ -620,6 +622,16 @@ shared_examples_for 'a compiled parser' do
     end
   end
 
+  ########## eof ##########
+  context 'given eof' do
+    let(:grammar) { define_grammar do
+      rule(:foo) { eof }
+    end }
+    it { should parse('').succeeding.like reference_parser }
+    it { should parse('foo').from(3).succeeding.like reference_parser }
+    it { should parse('foo').failing.like reference_parser }
+  end
+
   ########## dispatch_action ##########
   context 'given a dispatch-action rule' do
 
@@ -637,6 +649,40 @@ shared_examples_for 'a compiled parser' do
         it { should parse('451a').succeeding.like reference_parser }
         it { should parse('    ').failing.like reference_parser }
       end
+    end
+
+    context 'with a nested apply rule' do
+      let(:grammar) { define_grammar do
+        rule(:digit) { match(/\d/) }
+        rule(:foo) { dispatch_action :digit }
+      end }
+      it { should parse('451 ').twice.succeeding.like reference_parser }
+      it { should parse('hi').failing.like reference_parser }
+
+      context 'with a label' do
+        let(:grammar) { define_grammar do
+          rule(:digits) { match(/\d+/) }
+          rule(:num) { dispatch_action(label(:num, :digits)) }
+        end }
+        it { should parse('451a').succeeding.like reference_parser }
+        it { should parse('    ').failing.like reference_parser }
+      end
+    end
+
+    context 'with a nested assert rule' do
+      let(:grammar) { define_grammar do
+        rule(:foo) { dispatch_action(assert(/\d/)) }
+      end }
+      it { should parse('451a').succeeding.like reference_parser }
+      it { should parse('    ').failing.like reference_parser }
+    end
+
+    context 'with a nested disallow rule' do
+      let(:grammar) { define_grammar do
+        rule(:foo) { dispatch_action(disallow(/\d/)) }
+      end }
+      it { should parse('    ').succeeding.like reference_parser }
+      it { should parse('451a').failing.like reference_parser }
     end
 
     context 'with a nested choice rule' do
@@ -808,6 +854,40 @@ shared_examples_for 'a compiled parser' do
       end
     end
 
+    context 'with a nested apply rule' do
+      let(:grammar) { define_grammar do
+        rule(:digit) { match(/\d/) }
+        rule(:foo) { direct_action :digit, '|_| _.to_i' }
+      end }
+      it { should parse('451 ').twice.succeeding.like reference_parser }
+      it { should parse('hi').failing.like reference_parser }
+
+      context 'with a label' do
+        let(:grammar) { define_grammar do
+          rule(:digits) { match(/\d+/) }
+          rule(:num) { direct_action(label(:num, :digits), '|_| _.to_i') }
+        end }
+        it { should parse('451a').succeeding.like reference_parser }
+        it { should parse('    ').failing.like reference_parser }
+      end
+    end
+
+    context 'with a nested assert rule' do
+      let(:grammar) { define_grammar do
+        rule(:foo) { direct_action(assert(/\d/), ':digit') }
+      end }
+      it { should parse('451a').succeeding.like reference_parser }
+      it { should parse('    ').failing.like reference_parser }
+    end
+
+    context 'with a nested disallow rule' do
+      let(:grammar) { define_grammar do
+        rule(:foo) { direct_action(disallow(/\d/), ':nondigit') }
+      end }
+      it { should parse('    ').succeeding.like reference_parser }
+      it { should parse('451a').failing.like reference_parser }
+    end
+
     context 'with a nested choice rule' do
       let(:grammar) { define_grammar do
         rule :foo do
@@ -969,6 +1049,40 @@ shared_examples_for 'a compiled parser' do
       end }
       it { should parse('451a').succeeding.like reference_parser }
       it { should parse('hi').failing.like reference_parser }
+    end
+
+    context 'with a nested apply rule' do
+      let(:grammar) { define_grammar do
+        rule(:digit) { match(/\d/) }
+        rule(:foo) { token :digit }
+      end }
+      it { should parse('451 ').twice.succeeding.like reference_parser }
+      it { should parse('hi').failing.like reference_parser }
+
+      context 'with a label' do
+        let(:grammar) { define_grammar do
+          rule(:digits) { match(/\d+/) }
+          rule(:num) { token(label(:num, :digits)) }
+        end }
+        it { should parse('451a').succeeding.like reference_parser }
+        it { should parse('    ').failing.like reference_parser }
+      end
+    end
+
+    context 'with a nested assert rule' do
+      let(:grammar) { define_grammar do
+        rule(:foo) { token(assert(/\d/)) }
+      end }
+      it { should parse('451a').succeeding.like reference_parser }
+      it { should parse('    ').failing.like reference_parser }
+    end
+
+    context 'with a nested disallow rule' do
+      let(:grammar) { define_grammar do
+        rule(:foo) { token(disallow(/\d/)) }
+      end }
+      it { should parse('    ').succeeding.like reference_parser }
+      it { should parse('451a').failing.like reference_parser }
     end
 
     context 'with a nested choice rule' do

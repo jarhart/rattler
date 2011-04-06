@@ -679,7 +679,7 @@ module Rattler
           begin
             (r0_0 = match(:primary)) &&
             @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>\?)/) &&
-            Optional.parsed(select_captures([r0_0]))
+            (optional r0_0)
           end || begin
             @scanner.pos = p0
             false
@@ -690,7 +690,7 @@ module Rattler
           begin
             (r0_0 = match(:primary)) &&
             @scanner.skip(/(?>(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>\*))(?!(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>,))/) &&
-            ZeroOrMore.parsed(select_captures([r0_0]))
+            (zero_or_more r0_0)
           end || begin
             @scanner.pos = p0
             false
@@ -701,7 +701,7 @@ module Rattler
           begin
             (r0_0 = match(:primary)) &&
             @scanner.skip(/(?>(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>\+))(?!(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>,))/) &&
-            OneOrMore.parsed(select_captures([r0_0]))
+            (one_or_more r0_0)
           end || begin
             @scanner.pos = p0
             false

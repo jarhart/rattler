@@ -16,27 +16,30 @@ module Rattler::BackEnd::Optimizer
 
     include Rattler::Parsers
 
-    @@repeat_types = [ZeroOrMore, OneOrMore, Optional]
-
     protected
 
     def _applies_to?(parser, context)
       context.matching? and
-      [parser, parser.child].all? {|_| repeat? _ }
+      [parser, parser.child].all? {|_| simple_repeat? _ }
     end
 
     def _apply(parser, context)
-      if @@repeat_types.any? {|_| parser.is_a?(_) and parser.child.is_a?(_) }
+      if (parser.zero_or_more? and parser.child.zero_or_more?) or
+          (parser.one_or_more? and parser.child.one_or_more?) or
+          (parser.optional? and parser.child.optional?)
         parser.child
       else
-        ZeroOrMore[parser.child.child]
+        Repeat[parser.child.child, 0, nil]
       end
     end
 
     private
 
-    def repeat?(parser)
-      @@repeat_types.any? {|_| parser.is_a? _ }
+    def simple_repeat?(parser)
+      parser.is_a? Repeat and
+      ( parser.zero_or_more? or
+        parser.one_or_more? or
+        parser.optional? )
     end
 
   end

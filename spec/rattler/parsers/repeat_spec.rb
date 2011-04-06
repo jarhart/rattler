@@ -40,6 +40,17 @@ describe Repeat do
           end
         end
       end
+
+      context 'with a zero lower bound' do
+
+        subject { Repeat[child, 0, nil] }
+
+        context 'when the parser never matches' do
+          it 'matches returning an empty array' do
+            parsing('   ').should result_in([]).at(0)
+          end
+        end
+      end
     end
 
     context 'with a non-capturing parser' do
@@ -70,6 +81,17 @@ describe Repeat do
         context 'when the parser would match more times than the upper bound' do
           it 'stops matching at the upper bound' do
             parsing('abcde').should result_in(true).at(4)
+          end
+        end
+      end
+
+      context 'with a zero lower bound' do
+
+        subject { Repeat[child, 0, nil] }
+
+        context 'when the parser never matches' do
+          it 'matches returning true' do
+            parsing('   ').should result_in(true).at(0)
           end
         end
       end
