@@ -21,10 +21,6 @@ module Rattler::BackEnd::ParserGenerator
       gen_with generator(parser, :top_level), parser, as, *args
     end
 
-    def gen_eof
-      @g << '@scanner.eos?'
-    end
-
     def propogate_gen(parser, type, scope)
       if nested?
         gen_nested parser, type, scope
@@ -36,10 +32,7 @@ module Rattler::BackEnd::ParserGenerator
     private
 
     def gen_with(g, parser, as=:basic, *args)
-      case parser
-      when Eof then gen_eof
-      else g.send(:"gen_#{as}", parser, *args)
-      end
+      g.send(:"gen_#{as}", parser, *args)
     end
 
     def generator(parser, context=nil)
@@ -70,6 +63,9 @@ module Rattler::BackEnd::ParserGenerator
 
       when Disallow
         cache_generator DisallowGenerator, context
+
+      when Eof
+        cache_generator EofGenerator, context
 
       when DispatchAction
         cache_generator DispatchActionGenerator, context

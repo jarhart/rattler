@@ -303,6 +303,15 @@ shared_examples_for 'a compiled parser' do
       it { should parse('   ').failing.like reference_parser }
     end
 
+    context 'with a nested eof rule' do
+      let(:grammar) { define_grammar do
+        rule(:foo) { assert(eof) }
+      end }
+      it { should parse('').succeeding.like reference_parser }
+      it { should parse('foo').from(3).succeeding.like reference_parser }
+      it { should parse('foo').failing.like reference_parser }
+    end
+
     context 'with a nested choice rule' do
       let(:grammar) { define_grammar do
         rule(:word) { assert(match(/[[:alpha:]]+/) | match(/[[:digit:]]+/)) }
@@ -466,6 +475,15 @@ shared_examples_for 'a compiled parser' do
       end }
       it { should parse('   ').succeeding.like reference_parser }
       it { should parse('abc123  ').failing.like reference_parser }
+    end
+
+    context 'with a nested eof rule' do
+      let(:grammar) { define_grammar do
+        rule(:foo) { disallow(eof) }
+      end }
+      it { should parse('foo').succeeding.like reference_parser }
+      it { should parse('').failing.like reference_parser }
+      it { should parse('foo').from(3).failing.like reference_parser }
     end
 
     context 'with a nested choice rule' do
@@ -685,6 +703,15 @@ shared_examples_for 'a compiled parser' do
       it { should parse('451a').failing.like reference_parser }
     end
 
+    context 'with a nested eof rule' do
+      let(:grammar) { define_grammar do
+        rule(:foo) { dispatch_action(eof) }
+      end }
+      it { should parse('').succeeding.like reference_parser }
+      it { should parse('foo').from(3).succeeding.like reference_parser }
+      it { should parse('foo').failing.like reference_parser }
+    end
+
     context 'with a nested choice rule' do
       let(:grammar) { define_grammar do
         rule :atom do
@@ -888,6 +915,15 @@ shared_examples_for 'a compiled parser' do
       it { should parse('451a').failing.like reference_parser }
     end
 
+    context 'with a nested EOF rule' do
+      let(:grammar) { define_grammar do
+        rule(:foo) { direct_action(eof, ':eof') }
+      end }
+      it { should parse('foo').failing.like reference_parser }
+      it { should parse('').succeeding.like reference_parser }
+      it { should parse('foo').from(3).succeeding.like reference_parser }
+    end
+
     context 'with a nested choice rule' do
       let(:grammar) { define_grammar do
         rule :foo do
@@ -1083,6 +1119,15 @@ shared_examples_for 'a compiled parser' do
       end }
       it { should parse('    ').succeeding.like reference_parser }
       it { should parse('451a').failing.like reference_parser }
+    end
+
+    context 'with a nested EOF rule' do
+      let(:grammar) { define_grammar do
+        rule(:foo) { token(eof) }
+      end }
+      it { should parse('foo').failing.like reference_parser }
+      it { should parse('').succeeding.like reference_parser }
+      it { should parse('foo').from(3).succeeding.like reference_parser }
     end
 
     context 'with a nested choice rule' do
@@ -1289,6 +1334,40 @@ shared_examples_for 'a compiled parser' do
       end }
       it { should parse('   foo').succeeding.like reference_parser }
       it { should parse('hi').failing.like reference_parser }
+    end
+
+    context 'with a nested apply rule' do
+      let(:grammar) { define_grammar do
+        rule(:spaces) { match(/\s+/) }
+        rule(:ws) { skip(:spaces) }
+      end }
+      it { should parse('   foo').succeeding.like reference_parser }
+      it { should parse('hi').failing.like reference_parser }
+    end
+
+    context 'with a nested assert rule' do
+      let(:grammar) { define_grammar do
+        rule(:foo) { skip(assert(/\d/)) }
+      end }
+      it { should parse('451a').succeeding.like reference_parser }
+      it { should parse('    ').failing.like reference_parser }
+    end
+
+    context 'with a nested disallow rule' do
+      let(:grammar) { define_grammar do
+        rule(:foo) { skip(disallow(/\d/)) }
+      end }
+      it { should parse('    ').succeeding.like reference_parser }
+      it { should parse('451a').failing.like reference_parser }
+    end
+
+    context 'with a nested EOF rule' do
+      let(:grammar) { define_grammar do
+        rule(:foo) { skip(eof) }
+      end }
+      it { should parse('foo').failing.like reference_parser }
+      it { should parse('').succeeding.like reference_parser }
+      it { should parse('foo').from(3).succeeding.like reference_parser }
     end
 
     context 'with a nested choice rule' do

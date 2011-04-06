@@ -34,6 +34,7 @@ module Rattler::BackEnd
     autoload :ApplyGenerator, 'rattler/back_end/parser_generator/apply_generator'
     autoload :AssertGenerator, 'rattler/back_end/parser_generator/assert_generator'
     autoload :DisallowGenerator, 'rattler/back_end/parser_generator/disallow_generator'
+    autoload :EofGenerator, 'rattler/back_end/parser_generator/eof_generator'
     autoload :DispatchActionGenerator, 'rattler/back_end/parser_generator/dispatch_action_generator'
     autoload :DirectActionGenerator, 'rattler/back_end/parser_generator/direct_action_generator'
     autoload :TokenGenerator, 'rattler/back_end/parser_generator/token_generator'
