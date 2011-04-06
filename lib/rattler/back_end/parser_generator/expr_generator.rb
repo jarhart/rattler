@@ -30,10 +30,10 @@ module Rattler::BackEnd::ParserGenerator
 
     def gen_token(parser, scope={})
       expr :block do
-        (@g << "tp = @scanner.pos").newline
+        (@g << "#{token_pos_name} = @scanner.pos").newline
         gen_intermediate_skip parser, scope
         (@g << ' &&').newline
-        @g << "@scanner.string[tp...(@scanner.pos)]"
+        @g << "@scanner.string[#{token_pos_name}...(@scanner.pos)]"
       end
     end
 
@@ -63,6 +63,10 @@ module Rattler::BackEnd::ParserGenerator
 
     def saved_pos_name
       "p#{sequence_level}"
+    end
+
+    def token_pos_name
+      "tp#{sequence_level}"
     end
 
     def lookahead
