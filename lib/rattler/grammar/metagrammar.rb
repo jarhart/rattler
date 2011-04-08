@@ -758,6 +758,10 @@ module Rattler
           Eof.parsed([])
         end ||
         begin
+          @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>(?>E)(?![[:alnum:]_]))/) &&
+          ESymbol.parsed([])
+        end ||
+        begin
           (r = begin
             begin
               @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)((?>ALNUM)(?![[:alnum:]_]))/) &&

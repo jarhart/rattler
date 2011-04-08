@@ -33,6 +33,11 @@ describe ParserDSL do
         subject.match(:EOF).should == Eof[]
       end
     end
+    context 'given :E' do
+      it 'creates the "E" symbol parser' do
+        subject.match(:E).should == ESymbol[]
+      end
+    end
   end
 
   describe '#optional' do
@@ -135,6 +140,12 @@ describe ParserDSL do
   describe '#eof' do
     it 'creates the eof parser' do
       subject.eof.should == Eof[]
+    end
+  end
+
+  describe '#e' do
+    it 'creates the "E" symbol parser' do
+      subject.e.should == ESymbol[]
     end
   end
 

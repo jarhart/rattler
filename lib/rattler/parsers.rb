@@ -28,6 +28,7 @@ module Rattler
     autoload :Assert, 'rattler/parsers/assert'
     autoload :Disallow, 'rattler/parsers/disallow'
     autoload :Eof, 'rattler/parsers/eof'
+    autoload :ESymbol, 'rattler/parsers/e_symbol'
     autoload :DispatchAction, 'rattler/parsers/dispatch_action'
     autoload :DirectAction, 'rattler/parsers/direct_action'
     autoload :Token, 'rattler/parsers/token'

@@ -64,6 +64,14 @@ shared_examples_for 'a compiled parser with a direct action' do
     it { should parse('foo').from(3).succeeding.like reference_parser }
   end
 
+  context 'with a nested "E" symbol rule' do
+    let(:grammar) { define_grammar do
+      rule(:foo) { direct_action(e, ':e') }
+    end }
+    it { should parse('').succeeding.like reference_parser }
+    it { should parse('foo').succeeding.like reference_parser }
+  end
+
   context 'with a nested choice rule' do
     let(:grammar) { define_grammar do
       rule :foo do

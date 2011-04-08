@@ -150,6 +150,12 @@ describe Rattler::Grammar::GrammarParser do
       end
     end
 
+    context 'given the E symbol' do
+      it 'parses as ESymbol[]' do
+        matching(' E ').as(:expression).should result_in(ESymbol[]).at(2)
+      end
+    end
+
     context 'given an upper-case POSIX class name' do
       it 'parses as a Match of a POSIX character class' do
         for name in posix_names

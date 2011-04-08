@@ -96,6 +96,7 @@ include Rattler::Parsers
                       / atom
 
   atom              <-  ~`EOF`                                                  <Eof>
+                      / ~`E`                                                    <ESymbol>
                       / posix_class                                             { posix_class _ }
                       / identifier !'<-'                                        <Apply>
                       / literal                                                 { literal _ }

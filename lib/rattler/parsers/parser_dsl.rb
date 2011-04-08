@@ -66,7 +66,7 @@ module Rattler
       end
 
       # Create a new parser to match a pattern, literal, referenced parse rule,
-      # posix character class, or EOF.
+      # posix character class, EOF, or E.
       #
       # @overload match(pattern)
       #   @param [Regexp] pattern the pattern to match
@@ -88,10 +88,15 @@ module Rattler
       #   @param :EOF
       #   @return [Eof] the {Eof} singleton
       #
+      # @overload match(:E)
+      #   @param :E
+      #   @return [ESymbol] the {ESymbol} singleton
+      #
       def match(arg)
         case arg
         when Regexp   then Match[arg]
         when :EOF     then eof
+        when :E       then e
         when :ALNUM   then match /[[:alnum:]]/
         when :ALPHA   then match /[[:alpha:]]/
         when :BLANK   then match /[[:blank:]]/
@@ -200,6 +205,11 @@ module Rattler
       # @return the eof parser
       def eof
         Eof[]
+      end
+
+      # @return the "E" symbol parser
+      def e
+        ESymbol[]
       end
 
       # Create a new symantic action that dispatches to a method.

@@ -64,6 +64,14 @@ shared_examples_for 'a compiled parser with a dispatch action' do
     it { should parse('foo').failing.like reference_parser }
   end
 
+  context 'with a nested "E" symbol rule' do
+    let(:grammar) { define_grammar do
+      rule(:foo) { dispatch_action(e) }
+    end }
+    it { should parse('').succeeding.like reference_parser }
+    it { should parse('foo').succeeding.like reference_parser }
+  end
+
   context 'with a nested choice rule' do
     let(:grammar) { define_grammar do
       rule :atom do

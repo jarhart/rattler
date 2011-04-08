@@ -315,4 +315,13 @@ shared_examples_for 'a compiled parser' do
     it { should parse('foo').from(3).succeeding.like reference_parser }
     it { should parse('foo').failing.like reference_parser }
   end
+
+  ########## E ##########
+  context 'given "E" symbol' do
+    let(:grammar) { define_grammar do
+      rule(:foo) { e }
+    end }
+    it { should parse('').succeeding.like reference_parser }
+    it { should parse('foo').succeeding.like reference_parser }
+  end
 end

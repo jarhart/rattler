@@ -22,6 +22,14 @@ shared_examples_for 'a compiled parser with a disallow' do
     it { should parse('foo').from(3).failing.like reference_parser }
   end
 
+  context 'with a nested "E" symbol rule' do
+    let(:grammar) { define_grammar do
+      rule(:foo) { disallow(e) }
+    end }
+    it { should parse('').failing.like reference_parser }
+    it { should parse('foo').failing.like reference_parser }
+  end
+
   context 'with a nested choice rule' do
     let(:grammar) { define_grammar do
       rule(:word) { disallow(match(/[[:alpha:]]/) | match(/[[:digit:]]/)) }
