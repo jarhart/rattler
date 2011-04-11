@@ -8,6 +8,8 @@ include JsonHelper
 
 %whitespace (SPACE+ / comment)* {
 
+  json_text <-  (object / array) EOF
+
   object    <-  ~'{' members ~'}'                                   { object _ }
 
   members   <-  pair *, ','
@@ -18,10 +20,10 @@ include JsonHelper
 
   elements  <-  value *, ','
 
-  value     <-  string
-              / number
-              / object
+  value     <-  object
               / array
+              / number
+              / string
               / `true`                                              { :true }
               / `false`                                             { :false }
               / `null`                                              { :null }

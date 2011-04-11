@@ -50,6 +50,8 @@ dynamically from strings.
 
   %whitespace (SPACE+ / comment)* {
 
+    json_text <-  (object / array) EOF
+
     object    <-  ~'{' members ~'}'                                   { object _ }
 
     members   <-  pair *, ','

@@ -7,7 +7,23 @@ class JsonParser < Rattler::Runtime::PackratParser #:nodoc:
   
   # @private
   def start_rule #:nodoc:
-    :object
+    :json_text
+  end
+  
+  # @private
+  def match_json_text #:nodoc:
+    p0 = @scanner.pos
+    begin
+      (r0_0 = begin
+        match(:object) ||
+        match(:array)
+      end) &&
+      @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\/\*)(?>(?>(?!\*\/)(?>.))*)(?>\*\/)|(?>\/\/)(?>(?>[^\n])*))*)\z/) &&
+      r0_0
+    end || begin
+      @scanner.pos = p0
+      false
+    end
   end
   
   # @private
@@ -37,13 +53,13 @@ class JsonParser < Rattler::Runtime::PackratParser #:nodoc:
   # @private
   def match_members! #:nodoc:
     a0 = []
-    lp0 = nil
+    ep0 = nil
     while r = match(:pair)
-      lp0 = @scanner.pos
+      ep0 = @scanner.pos
       a0 << r
       break unless @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\/\*)(?>(?>(?!\*\/)(?>.))*)(?>\*\/)|(?>\/\/)(?>(?>[^\n])*))*)(?>,)/)
     end
-    @scanner.pos = lp0 unless lp0.nil?
+    @scanner.pos = ep0 unless ep0.nil?
     a0
   end
   
@@ -96,13 +112,13 @@ class JsonParser < Rattler::Runtime::PackratParser #:nodoc:
   # @private
   def match_elements! #:nodoc:
     a0 = []
-    lp0 = nil
+    ep0 = nil
     while r = match(:value)
-      lp0 = @scanner.pos
+      ep0 = @scanner.pos
       a0 << r
       break unless @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\/\*)(?>(?>(?!\*\/)(?>.))*)(?>\*\/)|(?>\/\/)(?>(?>[^\n])*))*)(?>,)/)
     end
-    @scanner.pos = lp0 unless lp0.nil?
+    @scanner.pos = ep0 unless ep0.nil?
     a0
   end
   
@@ -113,16 +129,16 @@ class JsonParser < Rattler::Runtime::PackratParser #:nodoc:
   
   # @private
   def match_value! #:nodoc:
-    begin
-      @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\/\*)(?>(?>(?!\*\/)(?>.))*)(?>\*\/)|(?>\/\/)(?>(?>[^\n])*))*)((?>")(?>(?>(?!"|\\|[[:cntrl:]])(?>.)|(?>\\)(?>["\\\/bfnrt]|(?>u)(?>[[:xdigit:]])(?>[[:xdigit:]])(?>[[:xdigit:]])(?>[[:xdigit:]])))*)(?>"))/) &&
-      (string @scanner[1])
-    end ||
+    match(:object) ||
+    match(:array) ||
     begin
       @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\/\*)(?>(?>(?!\*\/)(?>.))*)(?>\*\/)|(?>\/\/)(?>(?>[^\n])*))*)((?>(?>(?>\-)?)(?>(?>0)(?![[:digit:]])|(?>[1-9])(?>(?>[[:digit:]])*)))(?>(?>(?>\.)(?>(?>[[:digit:]])+))?)(?>(?>(?>[eE])(?>(?>[+-])?)(?>(?>[[:digit:]])+))?))/) &&
       (number @scanner[1])
     end ||
-    match(:object) ||
-    match(:array) ||
+    begin
+      @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\/\*)(?>(?>(?!\*\/)(?>.))*)(?>\*\/)|(?>\/\/)(?>(?>[^\n])*))*)((?>")(?>(?>(?!"|\\|[[:cntrl:]])(?>.)|(?>\\)(?>["\\\/bfnrt]|(?>u)(?>[[:xdigit:]])(?>[[:xdigit:]])(?>[[:xdigit:]])(?>[[:xdigit:]])))*)(?>"))/) &&
+      (string @scanner[1])
+    end ||
     begin
       @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\/\*)(?>(?>(?!\*\/)(?>.))*)(?>\*\/)|(?>\/\/)(?>(?>[^\n])*))*)((?>true)(?![[:alnum:]_]))/) &&
       (:true)
