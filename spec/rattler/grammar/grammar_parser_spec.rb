@@ -303,7 +303,7 @@ describe Rattler::Grammar::GrammarParser do
         end
       end
 
-      context 'given just a literal' do
+      context 'given an action with just a literal' do
         it 'parses as a default node with the literal as the name' do
           matching(' expr <"expression"> ').as(:expression).
             should result_in(DispatchAction[Apply[:expr],
@@ -315,10 +315,26 @@ describe Rattler::Grammar::GrammarParser do
       end
     end
 
+    context 'given a lone dispatch action' do
+      it 'parses as a DispatchAction on ESymbol[]' do
+        matching(' <Foo> ').as(:expression).
+          should result_in(DispatchAction[ESymbol[],
+            {:target => 'Foo', :method => 'parsed'}]).
+          at(6)
+      end
+    end
+
     context 'given direct-action-attributed expression' do
       it 'parses as a DirectAction' do
         matching(' digits {|_| _.to_i} ').as(:expression).
           should result_in(DirectAction[Apply[:digits], '|_| _.to_i']).at(20)
+      end
+    end
+
+    context 'given a lone direct action' do
+      it 'parses as a DirectAction on ESymbol[]' do
+        matching(' { :foo } ').as(:expression).
+          should result_in(DirectAction[ESymbol[], ':foo']).at(9)
       end
     end
 

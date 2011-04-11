@@ -44,8 +44,8 @@ include Rattler::Parsers
   expression        <-  expression ~'/' attributed                              <Choice>
                       / attributed
 
-  attributed        <-  attributed ~'<' node_action? literal? ~'>'              <DispatchAction>
-                      / attributed ~'{' action ~'}'                             <DirectAction>
+  attributed        <-  attributed? ~'<' node_action? literal? ~'>'             <DispatchAction>
+                      / attributed? ~'{' action ~'}'                            <DirectAction>
                       / terms
 
   node_action       <-  @(name (~'.' var_name)?)

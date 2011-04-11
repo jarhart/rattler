@@ -18,12 +18,14 @@ module Rattler::Parsers
     include Combining
 
     def self.[](child, code)
-      self.new(child, :code => code)
+      self.new(child, :code => code.strip)
     end
 
     # @private
     def self.parsed(results, *_) #:nodoc:
-      self[*results]
+      optional_expr, code = results
+      expr = optional_expr.first || ESymbol[]
+      self[expr, code]
     end
 
     # If the wrapped parser matches at the parse position, return the result

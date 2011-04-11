@@ -38,3 +38,20 @@ Feature: Node Actions
         """
     When I parse "42+23"
     Then the parse result should be Expr[["42", "23"], {:name => "sum"}] 
+
+  Scenario: Just a node name
+    Given a grammar with:
+      """
+      integer <- @DIGIT+ <"num">
+      """
+    When I parse "42"
+    Then the parse result should be Rattler::Runtime::ParseNode["42", {:name => "num"}]
+
+  Scenario: Lone action
+    Given a grammar with:
+      """
+      default <- <>
+      """
+    When I parse "anything"
+    Then the parse result should be Rattler::Runtime::ParseNode[]
+      And the parse position should be 0

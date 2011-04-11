@@ -25,8 +25,9 @@ module Rattler::Parsers
 
     # @private
     def self.parsed(results, *_) #:nodoc:
-      attributed, optional_attribute, optional_name = results
-      a = self[attributed, optional_attribute.first || @@node_defaults[:target]]
+      optional_expr, optional_attribute, optional_name = results
+      expr = optional_expr.first || ESymbol[]
+      a = self[expr, optional_attribute.first || @@node_defaults[:target]]
       unless optional_name.empty?
         a.with_attrs(:target_attrs => {:name => eval(optional_name.first, TOPLEVEL_BINDING)})
       else

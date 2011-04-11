@@ -66,3 +66,12 @@ Feature: Symantic Actions
       """
     When I parse "3 16"
     Then the parse result should be 3
+
+  Scenario: Lone action
+    Given a grammar with:
+      """
+      default <- { 42 }
+      """
+    When I parse "anything"
+    Then the parse result should be 42
+      And the parse position should be 0
