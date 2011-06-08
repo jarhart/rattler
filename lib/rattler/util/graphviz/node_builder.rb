@@ -50,7 +50,7 @@ module Rattler::Util::GraphViz
     # @return the label option for a node representing +o+.
     def node_label(o)
       if o.is_a? ::Rattler::Util::Node
-        record_label(o, o.attrs)
+        record_label(o, parse_node_fields(o.attrs))
       elsif record_like? o
         record_label(o, o)
       elsif array_like? o
@@ -81,13 +81,16 @@ module Rattler::Util::GraphViz
       o.none? {|k, v| array_like? v or record_like? v }
     end
 
-    def record_label(o, h)
-      fields = h.reject {|k,v| k == :name }
+    def record_label(o, fields)
       '{' + ([type_label(o)] + hash_content_labels(fields)).join('|') + '}'
     end
 
     def hash_content_labels(h)
       h.map {|pair| '{' + pair.map {|_| _.inspect }.join('|') + '}' }
+    end
+
+    def parse_node_fields(attrs)
+      attrs.reject {|k,| k == :name || k == :labeled }
     end
 
     # @private
