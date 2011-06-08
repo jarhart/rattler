@@ -14,7 +14,7 @@ Feature: --lib option
       expr <- [01]*
       """
       And a directory named "lib"
-    When I run "rtlr --lib lib binary.rtlr"
+    When I run `rtlr --lib lib binary.rtlr`
     Then the output should contain "binary.rtlr -> lib/binary_grammar.rb"
       And the file "lib/binary_grammar.rb" should contain:
         """
@@ -29,7 +29,7 @@ Feature: --lib option
       expr <- [01]*
       """
       And a directory named "lib/examples"
-    When I run "rtlr --lib lib binary.rtlr"
+    When I run `rtlr --lib lib binary.rtlr`
     Then the output should contain "binary.rtlr -> lib/examples/binary_grammar.rb"
       And the file "lib/examples/binary_grammar.rb" should contain:
         """

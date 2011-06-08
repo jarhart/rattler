@@ -5,7 +5,7 @@ Feature: Parser Generator
   
   @command-line
   Scenario: Getting help
-    When I run "rtlr --help"
+    When I run `rtlr --help`
     Then the output should contain:
       """
       Usage: rtlr FILENAME [options]
@@ -27,7 +27,7 @@ Feature: Parser Generator
       grammar BinaryGrammar
       expr <- [01]*
       """
-    When I run "rtlr binary.rtlr --standalone"
+    When I run `rtlr binary.rtlr --standalone`
     Then the output should contain "binary.rtlr -> binary_grammar.rb"
       And the file "binary_grammar.rb" should contain:
         """
@@ -59,7 +59,7 @@ Feature: Parser Generator
       parser BinaryParser < Rattler::Runtime::PackratParser
       expr <- [01]*
       """
-    When I run "rtlr binary.rtlr --standalone"
+    When I run `rtlr binary.rtlr --standalone`
     Then the output should contain "binary.rtlr -> binary_parser.rb"
       And the file "binary_parser.rb" should contain:
         """

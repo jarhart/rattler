@@ -12,7 +12,7 @@ Feature: --dest option
       expr <- [01]*
       """
       And a directory named "lib/my_examples"
-    When I run "rtlr --dest lib/my_examples binary.rtlr"
+    When I run `rtlr --dest lib/my_examples binary.rtlr`
     Then the output should contain "binary.rtlr -> lib/my_examples/binary_grammar.rb"
       And the file "lib/my_examples/binary_grammar.rb" should contain:
         """

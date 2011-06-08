@@ -1,3 +1,4 @@
+require File.expand_path(File.dirname(__FILE__) + '/../../spec_helper')
 require File.expand_path('assert_compiler_examples', File.dirname(__FILE__))
 require File.expand_path('disallow_compiler_examples', File.dirname(__FILE__))
 require File.expand_path('dispatch_action_compiler_examples', File.dirname(__FILE__))

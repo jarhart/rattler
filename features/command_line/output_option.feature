@@ -11,7 +11,7 @@ Feature: --output option
       expr <- [01]*
       """
       And a directory named "lib"
-    When I run "rtlr --output my_grammar.rb binary.rtlr"
+    When I run `rtlr --output my_grammar.rb binary.rtlr`
     Then the output should contain "binary.rtlr -> my_grammar.rb"
       And the file "my_grammar.rb" should contain:
         """
@@ -26,7 +26,7 @@ Feature: --output option
       expr <- [01]*
       """
       And a directory named "lib"
-    When I run "rtlr --output - binary.rtlr"
+    When I run `rtlr --output - binary.rtlr`
     Then the output should contain:
       """
       module BinaryGrammar

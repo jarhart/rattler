@@ -1,3 +1,5 @@
+require File.expand_path(File.dirname(__FILE__) + '/../../spec_helper')
+
 shared_examples_for 'a compiled parser with a direct action' do
   include CompilerSpecHelper
 
