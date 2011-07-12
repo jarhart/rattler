@@ -303,6 +303,48 @@ module Rattler
             false
           end
         end ||
+        begin
+          p0 = @scanner.pos
+          begin
+            (r0_0 = ((r = match(:attributed)) ? [r] : [])) &&
+            (r0_1 = begin
+              @scanner.skip(/(?>(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>~))(?>(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>\{))(?>(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)((?>(?>\{)(?>(?>[^}])*)(?>\})|[^{}])*))(?>(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>\}))/) &&
+              @scanner[1]
+            end) &&
+            SideEffect.parsed([r0_0, r0_1])
+          end || begin
+            @scanner.pos = p0
+            false
+          end
+        end ||
+        begin
+          p0 = @scanner.pos
+          begin
+            (r0_0 = ((r = match(:attributed)) ? [r] : [])) &&
+            (r0_1 = begin
+              @scanner.skip(/(?>(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>&))(?>(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>\{))(?>(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)((?>(?>\{)(?>(?>[^}])*)(?>\})|[^{}])*))(?>(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>\}))/) &&
+              @scanner[1]
+            end) &&
+            SemanticAssert.parsed([r0_0, r0_1])
+          end || begin
+            @scanner.pos = p0
+            false
+          end
+        end ||
+        begin
+          p0 = @scanner.pos
+          begin
+            (r0_0 = ((r = match(:attributed)) ? [r] : [])) &&
+            (r0_1 = begin
+              @scanner.skip(/(?>(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>!))(?>(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>\{))(?>(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)((?>(?>\{)(?>(?>[^}])*)(?>\})|[^{}])*))(?>(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>\}))/) &&
+              @scanner[1]
+            end) &&
+            SemanticDisallow.parsed([r0_0, r0_1])
+          end || begin
+            @scanner.pos = p0
+            false
+          end
+        end ||
         match(:terms)
       end
       

@@ -338,6 +338,48 @@ describe Rattler::Grammar::GrammarParser do
       end
     end
 
+    context 'given side-effect-attributed expression' do
+      it 'parses as a SideEffect' do
+        matching(' digits ~{|_| _.to_i} ').as(:expression).
+          should result_in(SideEffect[Apply[:digits], '|_| _.to_i']).at(21)
+      end
+    end
+
+    context 'given a lone side effect' do
+      it 'parses as a SideEffect on ESymbol[]' do
+        matching(' ~{ :foo } ').as(:expression).
+          should result_in(SideEffect[ESymbol[], ':foo']).at(10)
+      end
+    end
+
+    context 'given positive semantic-predicate-attributed expression' do
+      it 'parses as a SemanticAssert' do
+        matching(' digits &{|_| _.to_i} ').as(:expression).
+          should result_in(SemanticAssert[Apply[:digits], '|_| _.to_i']).at(21)
+      end
+    end
+
+    context 'given a lone positive semantic predicate' do
+      it 'parses as a SemanticAssert on ESymbol[]' do
+        matching(' &{ @foo } ').as(:expression).
+          should result_in(SemanticAssert[ESymbol[], '@foo']).at(10)
+      end
+    end
+
+    context 'given negative semantic-predicate-attributed expression' do
+      it 'parses as a SemanticDisallow' do
+        matching(' digits !{|_| _.to_i} ').as(:expression).
+          should result_in(SemanticDisallow[Apply[:digits], '|_| _.to_i']).at(21)
+      end
+    end
+
+    context 'given a lone negative semantic predicate' do
+      it 'parses as a SemanticDisallow on ESymbol[]' do
+        matching(' !{ @foo } ').as(:expression).
+          should result_in(SemanticDisallow[ESymbol[], '@foo']).at(10)
+      end
+    end
+
     context 'given a sequence expression' do
       it 'parses as a Sequence' do
         matching(' name "=" value ').as(:expression).

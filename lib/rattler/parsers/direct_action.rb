@@ -37,7 +37,7 @@ module Rattler::Parsers
     #   the parse failed.
     def parse(scanner, rules, scope = {})
       if result = parse_child(child, scanner, rules, scope) {|_| scope = _ }
-        if not capturing?
+        if not child.capturing?
           apply([])
         elsif result.respond_to?(:to_ary)
           apply(result, scope)
@@ -48,11 +48,17 @@ module Rattler::Parsers
     end
 
     def bindable_code
-      @bindable_code ||= ActionCode.new(code)
+      @bindable_code ||= create_bindable_code
     end
 
     def bind(scope, bind_args)
       bindable_code.bind(scope, bind_args)
+    end
+
+    protected
+
+    def create_bindable_code
+      ActionCode.new(code)
     end
 
     private

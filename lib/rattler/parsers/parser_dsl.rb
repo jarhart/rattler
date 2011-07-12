@@ -212,30 +212,64 @@ module Rattler
         ESymbol[]
       end
 
-      # Create a new symantic action that dispatches to a method.
+      # Create a new semantic action that dispatches to a method.
       #
       # @overload dispatch_action(parser)
-      #   @return [DispatchAction] a new symantic action
+      #   @return [DispatchAction] a new semantic action
       # @overload dispatch_action(arg)
-      #   @return [DispatchAction] a new symantic action using arg to define a
+      #   @return [DispatchAction] a new semantic action using arg to define a
       #     match parser
       #   @see #match
       def dispatch_action(arg, attrs={})
         DispatchAction[to_parser(arg), attrs]
       end
 
-      # alias action dispatch_action
-
-      # Create a new symantic action that evaluates ruby code.
+      # Create a new semantic action that evaluates ruby code.
       #
       # @overload direct_action(parser, code)
-      #   @return [DirectAction] a new symantic action
+      #   @return [DirectAction] a new semantic action
       # @overload direct_action(arg, code)
-      #   @return [DirectAction] a new symantic action using arg to define a
+      #   @return [DirectAction] a new semantic action using arg to define a
       #     match parser
       #   @see #match
       def direct_action(arg, code)
         DirectAction[to_parser(arg), code]
+      end
+
+      # Create a new semantic action that evaluates ruby code for effect.
+      #
+      # @overload side_effect(parser, code)
+      #   @return [SideEffect] a new semantic action
+      # @overload side_effect(arg, code)
+      #   @return [SideEffect] a new semantic action using arg to define a
+      #     match parser
+      #   @see #match
+      def side_effect(arg, code)
+        SideEffect[to_parser(arg), code]
+      end
+
+      # Create a new positive semantic predicate.
+      #
+      # @overload semantic_assert(parser, code)
+      #   @return [SemanticAssert] a new positive Semantic predicate
+      # @overload semantic_assert(arg, code)
+      #   @return [SemanticAssert] a new positive Semantic predicate using arg
+      #     to define a match parser
+      #   @see #match
+      def semantic_assert(arg, code)
+        SemanticAssert[to_parser(arg), code]
+      end
+
+      # Create a new negative semantic predicate.
+      #
+      # @overload semantic_disallow(parser, code)
+      #   @return [SemanticDisallow] a new negative Semantic predicate
+      # @overload semantic_disallow(arg, code)
+      #   @return [SemanticDisallow] a new negative Semantic predicate using
+      #     arg to define a match parser
+      #   @see #match
+      def semantic_disallow(arg, code)
+        SemanticDisallow[to_parser(arg), code]
       end
 
       # Create a new token parser or token rule.

@@ -46,6 +46,9 @@ include Rattler::Parsers
 
   attributed        <-  attributed? ~'<' node_action? literal? ~'>'             <DispatchAction>
                       / attributed? ~'{' action ~'}'                            <DirectAction>
+                      / attributed? ~'~' ~'{' action ~'}'                       <SideEffect>
+                      / attributed? ~'&' ~'{' action ~'}'                       <SemanticAssert>
+                      / attributed? ~'!' ~'{' action ~'}'                       <SemanticDisallow>
                       / terms
 
   node_action       <-  @(name (~'.' var_name)?)

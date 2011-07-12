@@ -3,6 +3,9 @@ require File.expand_path('assert_compiler_examples', File.dirname(__FILE__))
 require File.expand_path('disallow_compiler_examples', File.dirname(__FILE__))
 require File.expand_path('dispatch_action_compiler_examples', File.dirname(__FILE__))
 require File.expand_path('direct_action_compiler_examples', File.dirname(__FILE__))
+require File.expand_path('side_effect_compiler_examples', File.dirname(__FILE__))
+require File.expand_path('semantic_assert_compiler_examples', File.dirname(__FILE__))
+require File.expand_path('semantic_disallow_compiler_examples', File.dirname(__FILE__))
 require File.expand_path('token_compiler_examples', File.dirname(__FILE__))
 require File.expand_path('skip_compiler_examples', File.dirname(__FILE__))
 
@@ -13,6 +16,9 @@ shared_examples_for 'a compiled parser' do
   it_behaves_like 'a compiled parser with a disallow'
   it_behaves_like 'a compiled parser with a dispatch action'
   it_behaves_like 'a compiled parser with a direct action'
+  it_behaves_like 'a compiled parser with a side effect'
+  it_behaves_like 'a compiled parser with a positive semantic predicate'
+  it_behaves_like 'a compiled parser with a negative semantic predicate'
   it_behaves_like 'a compiled parser with a token'
   it_behaves_like 'a compiled parser with a skip'
 
