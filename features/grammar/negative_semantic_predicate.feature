@@ -16,4 +16,4 @@ Feature: Negative Symantic Predicates
   
   Scenario: false
     When I parse "17"
-    Then the parse result should be true
+    Then the parse result should be "17"

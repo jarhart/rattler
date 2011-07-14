@@ -1,8 +1,8 @@
 Feature: Positive Semantic Predicates
 
   A positive semantic predicate can be defined by placing a "&" in front of a
-  semantic action. If the action results in a true value the parse succeeds
-  with no parse result, otherwise the parse fails.
+  semantic action. If the action results in a true value the parse succeeds,
+  otherwise the parse fails.
 
   Background: Positive symantic predicate
     Given a grammar with:
@@ -12,7 +12,7 @@ Feature: Positive Semantic Predicates
 
   Scenario: true
     When I parse "42"
-    Then the parse result should be true
+    Then the parse result should be "42"
   
   Scenario: false
     When I parse "17"

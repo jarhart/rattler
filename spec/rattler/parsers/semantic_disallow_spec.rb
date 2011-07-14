@@ -22,7 +22,7 @@ describe SemanticDisallow do
 
         context 'if the semantic action results in a false value' do
           it 'succeeds' do
-            parsing('321a').should result_in(true).at(3)
+            parsing('321a').should result_in('321').at(3)
           end
         end
       end
@@ -39,7 +39,7 @@ describe SemanticDisallow do
 
         it 'evaluates the predicate binding the captured result as "_"' do
           parsing('451a').should fail
-          parsing('321a').should result_in(true).at(3)
+          parsing('321a').should result_in('321').at(3)
         end
       end
     end
@@ -53,8 +53,8 @@ describe SemanticDisallow do
 
       let(:nested) { Match[/\w+/] }
 
-      it 'is false' do
-        subject.should_not be_capturing
+      it 'is true' do
+        subject.should be_capturing
       end
     end
 

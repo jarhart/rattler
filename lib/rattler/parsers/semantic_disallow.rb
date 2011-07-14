@@ -9,10 +9,6 @@ module Rattler::Parsers
   #
   class SemanticDisallow < DirectAction
 
-    def capturing?
-      false
-    end
-
     protected
 
     def create_bindable_code

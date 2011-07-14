@@ -45,8 +45,8 @@ describe SideEffect do
 
       let(:nested) { Match[/\w+/] }
 
-      it 'is false' do
-        subject.should_not be_capturing
+      it 'is true' do
+        subject.should be_capturing
       end
     end
 

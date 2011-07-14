@@ -9,10 +9,6 @@ module Rattler::Parsers
   #
   class SemanticAssert < DirectAction
 
-    def capturing?
-      false
-    end
-
     protected
 
     def create_bindable_code

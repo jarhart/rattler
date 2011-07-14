@@ -16,7 +16,7 @@ describe SemanticAssert do
 
         context 'if the semantic action results in a true value' do
           it 'succeeds' do
-            parsing('451a').should result_in(true).at(3)
+            parsing('451a').should result_in('451').at(3)
           end
         end
 
@@ -38,7 +38,7 @@ describe SemanticAssert do
         let(:code) { '_ == "451"' }
 
         it 'evaluates the predicate binding the captured result as "_"' do
-          parsing('451a').should result_in(true).at(3)
+          parsing('451a').should result_in('451').at(3)
           parsing('321a').should fail
         end
       end
@@ -53,8 +53,8 @@ describe SemanticAssert do
 
       let(:nested) { Match[/\w+/] }
 
-      it 'is false' do
-        subject.should_not be_capturing
+      it 'is true' do
+        subject.should be_capturing
       end
     end
 
