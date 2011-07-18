@@ -37,3 +37,7 @@ end
 Then /failure position should be (.+)$/ do |expr|
   @parser.failure.pos.should == eval(expr, TOPLEVEL_BINDING)
 end
+
+Then /^\$x should be (.+)$/ do |expr|
+  $x.should == eval(expr, TOPLEVEL_BINDING)
+end
