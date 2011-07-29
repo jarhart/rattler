@@ -345,6 +345,27 @@ module Rattler
             false
           end
         end ||
+        match(:attributed_terms)
+      end
+      
+      # @private
+      def match_attributed_terms #:nodoc:
+        memoize_lr :match_attributed_terms!
+      end
+      
+      # @private
+      def match_attributed_terms! #:nodoc:
+        begin
+          p0 = @scanner.pos
+          begin
+            (r0_0 = match(:attributed)) &&
+            (r0_1 = match(:term)) &&
+            Sequence.parsed(select_captures([r0_0, r0_1]))
+          end || begin
+            @scanner.pos = p0
+            false
+          end
+        end ||
         match(:terms)
       end
       

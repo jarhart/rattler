@@ -49,12 +49,15 @@ include Rattler::Parsers
                       / attributed? ~'~' ~'{' action ~'}'                       <SideEffect>
                       / attributed? ~'&' ~'{' action ~'}'                       <SemanticAssert>
                       / attributed? ~'!' ~'{' action ~'}'                       <SemanticDisallow>
-                      / terms
+                      / attributed_terms
 
   node_action       <-  @(name (~'.' var_name)?)
 
   action            <-  @(( '{' [^}]* '}'
                           / [^{}]         )*)
+
+  attributed_terms  <-  attributed term                                         <Sequence>
+                      / terms
 
   terms             <-  terms term                                              <Sequence>
                       / term

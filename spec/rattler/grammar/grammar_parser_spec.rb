@@ -324,7 +324,7 @@ describe Rattler::Grammar::GrammarParser do
       end
     end
 
-    context 'given direct-action-attributed expression' do
+    context 'given a direct-action-attributed expression' do
       it 'parses as a DirectAction' do
         matching(' digits {|_| _.to_i} ').as(:expression).
           should result_in(DirectAction[Apply[:digits], '|_| _.to_i']).at(20)
@@ -338,21 +338,21 @@ describe Rattler::Grammar::GrammarParser do
       end
     end
 
-    context 'given side-effect-attributed expression' do
+    context 'given a side-effect-attributed expression' do
       it 'parses as a SideEffect' do
-        matching(' digits ~{|_| _.to_i} ').as(:expression).
-          should result_in(SideEffect[Apply[:digits], '|_| _.to_i']).at(21)
+        matching(' digits ~{|_| @i = _.to_i} ').as(:expression).
+          should result_in(SideEffect[Apply[:digits], '|_| @i = _.to_i']).at(26)
       end
     end
 
     context 'given a lone side effect' do
       it 'parses as a SideEffect on ESymbol[]' do
-        matching(' ~{ :foo } ').as(:expression).
-          should result_in(SideEffect[ESymbol[], ':foo']).at(10)
+        matching(' ~{ @i = :foo } ').as(:expression).
+          should result_in(SideEffect[ESymbol[], '@i = :foo']).at(15)
       end
     end
 
-    context 'given positive semantic-predicate-attributed expression' do
+    context 'given a positive semantic-predicate-attributed expression' do
       it 'parses as a SemanticAssert' do
         matching(' digits &{|_| _.to_i} ').as(:expression).
           should result_in(SemanticAssert[Apply[:digits], '|_| _.to_i']).at(21)
@@ -366,7 +366,7 @@ describe Rattler::Grammar::GrammarParser do
       end
     end
 
-    context 'given negative semantic-predicate-attributed expression' do
+    context 'given a negative semantic-predicate-attributed expression' do
       it 'parses as a SemanticDisallow' do
         matching(' digits !{|_| _.to_i} ').as(:expression).
           should result_in(SemanticDisallow[Apply[:digits], '|_| _.to_i']).at(21)
@@ -398,17 +398,163 @@ describe Rattler::Grammar::GrammarParser do
       end
     end
 
-    it 'parses attributed sequence expressions' do
-      matching(' name "=" value <Assign>').as(:expression).
-        should result_in(DispatchAction[
-                          Sequence[Apply[:name], Match[%r{=}], Apply[:value]],
-                          {:target => 'Assign', :method => 'parsed'}]).
-                at(24)
+    context 'given a dispatch-attributed sequence expression' do
+      it 'parses as a DispatchAction with a nested Sequence' do
+        matching(' name "=" value <Assign>').as(:expression).
+          should result_in(DispatchAction[
+            Sequence[Apply[:name], Match[%r{=}], Apply[:value]],
+            {:target => 'Assign', :method => 'parsed'}
+          ]).at(24)
+      end
     end
 
-    it 'parses ordered choice expressions' do
-      matching(' string / number ').as(:expression).
-        should result_in(Choice[Apply[:string], Apply[:number]]).at(16)
+    context 'given a multiple-dispatch-attributed expression' do
+      it 'parses as nested DispatchActions' do
+        matching(' digits <Int> <Foo> ').as(:expression).
+          should result_in(DispatchAction[
+            DispatchAction[Apply[:digits], {:target => 'Int', :method => 'parsed'}],
+            {:target => 'Foo', :method => 'parsed'}
+          ]).at(19)
+      end
+    end
+
+    context 'given consecutive dispatch-attributed expressions' do
+      it 'parses as nested DispatchActions' do
+        matching(' digits <Int> foo <Foo> ').as(:expression).
+          should result_in(DispatchAction[
+            Sequence[
+              DispatchAction[Apply[:digits], {:target => 'Int', :method => 'parsed'}],
+              Apply[:foo]
+            ],
+            {:target => 'Foo', :method => 'parsed'}
+          ]).at(23)
+      end
+    end
+
+    context 'given a direct-attributed sequence expression' do
+      it 'parses as a DirectAction with a nested Sequence' do
+        matching(' name "=" value {|_| _.size }').as(:expression).
+          should result_in(DirectAction[
+            Sequence[Apply[:name], Match[%r{=}], Apply[:value]],
+            '|_| _.size'
+          ]).at(29)
+      end
+    end
+
+    context 'given a multiple-direct-attirbuted expression' do
+      it 'parses as nested DirectActions' do
+        matching(' digits {|_| _.to_i } {|_| _ * 2 } ').as(:expression).
+          should result_in(DirectAction[
+            DirectAction[Apply[:digits], '|_| _.to_i'],
+            '|_| _ * 2'
+          ]).at(34)
+      end
+    end
+
+    context 'given consecutive direct-attributed expressions' do
+      it 'parses as nested DirectActions' do
+        matching(' digits {|_| _.to_i } foo {|_| _ * 2 } ').as(:expression).
+          should result_in(DirectAction[
+            Sequence[
+              DirectAction[Apply[:digits], '|_| _.to_i'],
+              Apply[:foo]
+            ],
+            '|_| _ * 2'
+          ]).at(38)
+      end
+    end
+
+    context 'given a side-effect-attributed sequence expression' do
+      it 'parses as a SideEffect with a nested Sequence' do
+        matching(' name "=" value ~{|_| @n = _.size }').as(:expression).
+          should result_in(SideEffect[
+            Sequence[Apply[:name], Match[%r{=}], Apply[:value]],
+            '|_| @n = _.size'
+          ]).at(35)
+      end
+    end
+
+    context 'given a multiple-effect-attirbuted expression' do
+      it 'parses as nested SideEffects' do
+        matching(' digits ~{|_| @i = _.to_i } ~{|_| @j = _ * 2 } ').as(:expression).
+          should result_in(SideEffect[
+            SideEffect[Apply[:digits], '|_| @i = _.to_i'],
+            '|_| @j = _ * 2'
+          ]).at(46)
+      end
+    end
+
+    context 'given consecutive side-effect-attributed expressions' do
+      it 'parses as nested SideEffects' do
+        matching(' digits ~{|_| @i = _.to_i } foo ~{|_| @j = _ * 2 } ').as(:expression).
+          should result_in(SideEffect[
+            Sequence[
+              SideEffect[Apply[:digits], '|_| @i = _.to_i'],
+              Apply[:foo]
+            ],
+            '|_| @j = _ * 2'
+          ]).at(50)
+      end
+    end
+
+    context 'given a positive predicate-attributed sequence expression' do
+      it 'parses as a SemanticAssert with a nested Sequence' do
+        matching(' digits digits &{|a, b| a.to_i > b.to_i } ').as(:expression).
+          should result_in(SemanticAssert[
+            Sequence[Apply[:digits], Apply[:digits]],
+            '|a, b| a.to_i > b.to_i'
+          ]).at(41)
+      end
+    end
+
+    context 'given a multiple-predicate-attirbuted expression' do
+      it 'parses as nested SemanticAsserts' do
+        matching(' digits &{|_| _.to_i > 1 } &{|_| _.to_i < 7 } ').as(:expression).
+          should result_in(SemanticAssert[
+            SemanticAssert[Apply[:digits], '|_| _.to_i > 1'],
+            '|_| _.to_i < 7'
+          ]).at(45)
+      end
+    end
+
+    context 'given consecutive predicate-attributed expressions' do
+      it 'parses as nested SemanticAsserts' do
+        matching(' digits &{|_| _.to_i > 1 } foo &{|_| _.empty? } ').as(:expression).
+          should result_in(SemanticAssert[
+            Sequence[
+              SemanticAssert[Apply[:digits], '|_| _.to_i > 1'],
+              Apply[:foo]
+            ],
+            '|_| _.empty?'
+          ]).at(47)
+      end
+    end
+
+    context 'given a negative predicate-attributed sequence expression' do
+      it 'parses as a SemanticAssert with a nested Sequence' do
+        matching(' digits digits !{|a, b| a.to_i > b.to_i } ').as(:expression).
+          should result_in(SemanticDisallow[
+            Sequence[Apply[:digits], Apply[:digits]],
+            '|a, b| a.to_i > b.to_i'
+          ]).at(41)
+      end
+    end
+
+    context 'given an ordered choice expression' do
+      it 'parses as a Choice' do
+        matching(' string / number ').as(:expression).
+          should result_in(Choice[Apply[:string], Apply[:number]]).at(16)
+      end
+    end
+
+    context 'given an ordered choice with sequences' do
+      it 'parses as a Choice of Sequences' do
+        matching(' foo bar / boo far ').as(:expression).
+          should result_in(Choice[
+            Sequence[Apply[:foo], Apply[:bar]],
+            Sequence[Apply[:boo], Apply[:far]]
+          ]).at(18)
+      end
     end
 
     it 'skips normal whitespace' do
