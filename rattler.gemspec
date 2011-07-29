@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{rattler}
-  s.version = "0.4.2"
+  s.version = "0.5.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Jason Arhart"]
-  s.date = %q{2011-06-11}
+  s.date = %q{2011-07-29}
   s.default_executable = %q{rtlr}
   s.description = %q{Simple language recognition tool for Ruby based on packrat parsing}
   s.email = %q{jarhart@gmail.com}
@@ -99,6 +99,7 @@ Gem::Specification.new do |s|
     "lib/rattler/parsers/action_code.rb",
     "lib/rattler/parsers/apply.rb",
     "lib/rattler/parsers/assert.rb",
+    "lib/rattler/parsers/assert_code.rb",
     "lib/rattler/parsers/atomic.rb",
     "lib/rattler/parsers/back_reference.rb",
     "lib/rattler/parsers/choice.rb",
@@ -106,8 +107,10 @@ Gem::Specification.new do |s|
     "lib/rattler/parsers/combining.rb",
     "lib/rattler/parsers/direct_action.rb",
     "lib/rattler/parsers/disallow.rb",
+    "lib/rattler/parsers/disallow_code.rb",
     "lib/rattler/parsers/dispatch_action.rb",
     "lib/rattler/parsers/e_symbol.rb",
+    "lib/rattler/parsers/effect_code.rb",
     "lib/rattler/parsers/eof.rb",
     "lib/rattler/parsers/fail.rb",
     "lib/rattler/parsers/label.rb",
@@ -120,7 +123,10 @@ Gem::Specification.new do |s|
     "lib/rattler/parsers/repeat.rb",
     "lib/rattler/parsers/rule.rb",
     "lib/rattler/parsers/rule_set.rb",
+    "lib/rattler/parsers/semantic_assert.rb",
+    "lib/rattler/parsers/semantic_disallow.rb",
     "lib/rattler/parsers/sequence.rb",
+    "lib/rattler/parsers/side_effect.rb",
     "lib/rattler/parsers/skip.rb",
     "lib/rattler/parsers/token.rb",
     "lib/rattler/runner.rb",
@@ -162,15 +168,18 @@ Gem::Specification.new do |s|
     "features/grammar/list_matching.feature",
     "features/grammar/literal.feature",
     "features/grammar/negative_lookahead.feature",
+    "features/grammar/negative_semantic_predicate.feature",
     "features/grammar/node_action.feature",
     "features/grammar/nonterminal.feature",
     "features/grammar/one_or_more.feature",
     "features/grammar/optional.feature",
     "features/grammar/ordered_choice.feature",
     "features/grammar/positive_lookahead.feature",
+    "features/grammar/positive_semantic_predicate.feature",
     "features/grammar/posix_class.feature",
     "features/grammar/repeat.feature",
     "features/grammar/sequence.feature",
+    "features/grammar/side_effect.feature",
     "features/grammar/skip_operator.feature",
     "features/grammar/start_rule.feature",
     "features/grammar/symantic_action.feature",
@@ -227,7 +236,10 @@ Gem::Specification.new do |s|
     "spec/rattler/back_end/parser_generator/token_generator_spec.rb",
     "spec/rattler/back_end/parser_generator/zero_or_more_generator_examples.rb",
     "spec/rattler/back_end/ruby_generator_spec.rb",
+    "spec/rattler/back_end/semantic_assert_compiler_examples.rb",
+    "spec/rattler/back_end/semantic_disallow_compiler_examples.rb",
     "spec/rattler/back_end/shared_compiler_examples.rb",
+    "spec/rattler/back_end/side_effect_compiler_examples.rb",
     "spec/rattler/back_end/skip_compiler_examples.rb",
     "spec/rattler/back_end/token_compiler_examples.rb",
     "spec/rattler/grammar/analysis_spec.rb",
@@ -252,7 +264,10 @@ Gem::Specification.new do |s|
     "spec/rattler/parsers/parser_dsl_spec.rb",
     "spec/rattler/parsers/repeat_spec.rb",
     "spec/rattler/parsers/rule_set_spec.rb",
+    "spec/rattler/parsers/semantic_assert_spec.rb",
+    "spec/rattler/parsers/semantic_disallow_spec.rb",
     "spec/rattler/parsers/sequence_spec.rb",
+    "spec/rattler/parsers/side_effect_spec.rb",
     "spec/rattler/parsers/skip_spec.rb",
     "spec/rattler/parsers/token_spec.rb",
     "spec/rattler/runtime/extended_packrat_parser_spec.rb",
