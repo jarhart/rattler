@@ -1,29 +1,15 @@
-def rspec(arg='.', opts={})
-  cmd = "rspec #{arg}"
-  if opts[:multiruby]
-    run cmd, opts
-  else
-    run(cmd, opts) ? tests_passed : tests_failed
-  end
+def rspec(arg='.')
+  run("rspec #{arg}") ? tests_passed : tests_failed
 end
 
-def cucumber(opts={})
-  run 'rake features', opts
+def cucumber
+  run 'rake features'
 end
 
-def rspec_multi(arg)
-  rspec arg, :multiruby => true
-end
-
-def cucumber_multi
-  cucumber :multiruby => true
-end
-
-def run(cmd, opts={})
-  cmdline = opts[:multiruby] ? multiruby(cmd) : cmd
-  puts cmdline
-  result = system cmdline 
-  raise "command #{cmdline.inspect} failed" if result.nil?
+def run(cmd)
+  puts cmd
+  result = system cmd
+  raise "command #{cmd.inspect} failed" if result.nil?
   result
 end
 
@@ -55,24 +41,4 @@ def trap_signals
   end
   Signal.trap('QUIT') { reload }
 rescue
-end
-
-def multiruby(cmd)
-  if command_works? 'rvm --version'
-    "rvm exec #{cmd}"
-  elsif command_works? 'pik --version'
-    "pik run #{cmd}"
-  else
-    raise 'I need rvm or pik to test with multiple rubies'
-  end
-end
-
-def command_works?(cmd)
-  @__command_works_cache__ ||= Hash.new {|h, cmd| begin
-    `#{cmd}`
-    h[cmd] = true
-  rescue
-    h[cmd] = false
-  end }
-  @__command_works_cache__[cmd]
 end
