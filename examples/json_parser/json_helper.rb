@@ -1,7 +1,7 @@
 module JsonHelper
 
   def object(members)
-    Hash[*members.map {|_| [_[0], decode(_[1])] }.flatten(1)]
+    Hash[*members.map {|k, v| [k, decode(v)] }.flatten(1)]
   end
 
   def string(expr)
@@ -10,10 +10,6 @@ module JsonHelper
 
   def number(expr)
     eval expr, TOPLEVEL_BINDING
-  end
-
-  def decode_member(key, value)
-    [key, decode(value)]
   end
 
   def decode(v)
