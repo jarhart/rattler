@@ -1,3 +1,16 @@
+== 0.5.0 2011-07-29
+
+=== New Features
+* Generalized list parsing
+* E symbol in grammar
+* standalone symantic actions
+* semantic predicates and side-effects
+* improved GraphViz output
+
+=== Bugfixes
+* Node actions using labels
+* EOF
+
 == 0.4.2 2011-03-17
 
 Refactoring, bugfixes and Rubinius compatibility
@@ -13,8 +26,6 @@ GraphViz support improvements.
 * Handling of strings by graphviz builder
 
 == 0.4.0 2011-03-13
-
-Rattler is nearly complete. Composable grammars and polish are left.
 
 === New Features
 * Back references

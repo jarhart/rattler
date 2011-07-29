@@ -4,6 +4,8 @@
 
 === Rattler - Ruby Tool for Language Recognition
 
+Parsing for Ruby that's so easy it feels like cheating.
+
 Rattler is a parser generator for Ruby based on parsing expression grammars.
 Rattler's purpose is to make language design and recognition as simple and fun
 as possible. To that end, the normal parsing expression grammar syntax is
@@ -14,7 +16,9 @@ A language syntax is specified in a grammar using the Rattler syntax. Parser
 classes and modules can be generated statically using the "rtlr" command or
 dynamically from strings.
 
-{RDoc}[http://rubydoc.info/gems/rattler/0.4.2/frames]
+The cucumber features are currently the best documentation.
+
+{RDoc}[http://rubydoc.info/gems/rattler/0.5.0/frames]
 
 == FEATURES:
 
@@ -30,9 +34,9 @@ dynamically from strings.
 
 * Only strings can be parsed, so files have to be read completely before parsing
 * There are many holes in the tests so there are undoubtedly many bugs
-* Optimzations are not complete
 * Support for composable grammars is not yet implemented
-* Symantics of automatic whitespace skipping could be refined
+* Semantics of automatic whitespace skipping could be refined
+* Incomplete documentation
 
 == EXAMPLES:
 
