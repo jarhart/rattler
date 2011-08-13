@@ -30,10 +30,6 @@ module Rattler::Parsers
     # @return an array of captured results of each parser in sequence, or
     #   +false+
     def parse(scanner, rules, scope = {})
-      parse_and_yield_scope scanner, rules, scope
-    end
-
-    def parse_and_yield_scope(scanner, rules, scope = {})
       pos = scanner.pos
       results = []
       for child in children

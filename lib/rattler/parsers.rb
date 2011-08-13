@@ -34,6 +34,8 @@ module Rattler
     autoload :SemanticAssert, 'rattler/parsers/semantic_assert'
     autoload :SemanticDisallow, 'rattler/parsers/semantic_disallow'
     autoload :SideEffect, 'rattler/parsers/side_effect'
+    autoload :SemanticAttribute, 'rattler/parsers/semantic_attribute'
+    autoload :Semantic, 'rattler/parsers/semantic'
     autoload :Token, 'rattler/parsers/token'
     autoload :Skip, 'rattler/parsers/skip'
     autoload :Label, 'rattler/parsers/label'

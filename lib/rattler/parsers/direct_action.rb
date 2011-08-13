@@ -14,8 +14,7 @@ module Rattler::Parsers
   #
   # @author Jason Arhart
   #
-  class DirectAction < Parser
-    include Combining
+  class DirectAction < SemanticAttribute
 
     def self.[](child, code)
       self.new(child, :code => code.strip)
@@ -28,33 +27,6 @@ module Rattler::Parsers
       self[expr, code]
     end
 
-    # If the wrapped parser matches at the parse position, return the result
-    # of applying the symantic action, otherwise return a false value.
-    #
-    # @param (see Parser#parse_labeled)
-    #
-    # @return the result of applying the symantic action, or a false value if
-    #   the parse failed.
-    def parse(scanner, rules, scope = {})
-      if result = parse_child(child, scanner, rules, scope) {|_| scope = _ }
-        if not child.capturing?
-          apply([])
-        elsif result.respond_to?(:to_ary)
-          apply(result, scope)
-        else
-          apply([result], scope)
-        end
-      end
-    end
-
-    def bindable_code
-      @bindable_code ||= create_bindable_code
-    end
-
-    def bind(scope, bind_args)
-      bindable_code.bind(scope, bind_args)
-    end
-
     protected
 
     def create_bindable_code
@@ -62,14 +34,6 @@ module Rattler::Parsers
     end
 
     private
-
-    def parse_child(child, scanner, rules, scope)
-      if child.is_a? Sequence
-        child.parse_and_yield_scope(scanner, rules, scope) {|_| yield _ }
-      else
-        child.parse(scanner, rules, scope) {|_| yield _ }
-      end
-    end
 
     def apply(results, scope={})
       code_scope = {}
