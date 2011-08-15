@@ -1,8 +1,8 @@
-Feature: EOF Symbol
+Feature: E Symbol
   
   The symbol "E" always matches without consuming any input.
   
-  Background: A grammar with the EOF symbol
+  Background: A grammar with the E symbol
     Given a grammar with:
       """
       foo <- E
