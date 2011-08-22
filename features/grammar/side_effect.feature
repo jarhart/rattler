@@ -1,6 +1,6 @@
 Feature: Semantic side-effects
 
-  A semantic side-effect can be defined by placing a "~" in front of a symantic
+  A semantic side-effect can be defined by placing a "~" in front of a semantic
   action. The expression is evaulated for effect and always succeeds with no
   parse result.
 

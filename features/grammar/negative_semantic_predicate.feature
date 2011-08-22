@@ -1,7 +1,7 @@
-Feature: Negative Symantic Predicates
+Feature: Negative Semantic Predicates
 
-  A negative symantic predicate can be defined by placing a "!" in front of a
-  symantic action. If the action results in a false value the parse succeeds
+  A negative semantic predicate can be defined by placing a "!" in front of a
+  semantic action. If the action results in a false value the parse succeeds
   with no parse result, otherwise the parse fails.
 
   Scenario Outline: Single token

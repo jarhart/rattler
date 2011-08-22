@@ -1,6 +1,6 @@
-Feature: Symantic Actions
+Feature: Semantic Actions
   
-  A symantic action can be added between "{" and "}" following an expression.
+  A semantic action can be added between "{" and "}" following an expression.
   It means to evaluate the action as a Ruby expression if the match succeeds
   and use the result of the action as the final parse result. Parameters can be
   specified like Ruby block parameters and are bound to the parse results from
