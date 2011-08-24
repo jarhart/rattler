@@ -27,8 +27,8 @@ module Rattler::Parsers
     #
     # @return [Boolean] +true+ if the decorated parser matches at the parse
     #   position
-    def parse(scanner, rules, scope = {})
-      child.parse(scanner, rules, scope) && true
+    def parse(*args)
+      child.parse(*args) && true
     end
 
     # Always +false+

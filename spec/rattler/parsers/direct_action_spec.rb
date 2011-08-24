@@ -184,6 +184,21 @@ describe DirectAction do
         end
       end
     end
+
+    context 'nested in a sequence with a label' do
+
+      subject { Sequence[
+        Label[:word, Match[/[[:alpha:]]+/]],
+        DirectAction[
+          Match[/[[:digit:]]+/],
+          '|num| "#{num} #{word}"'
+        ]
+      ]}
+
+      it 'inherits the label from the outer scope' do
+        parsing('abc123').should result_in(['abc', '123 abc'])
+      end
+    end
   end
 
   describe '#capturing?' do

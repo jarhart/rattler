@@ -33,7 +33,7 @@ module Rattler::Parsers
     #   results, or +true+ if the decorated parser is not <tt>capturing?</tt>,
     #   or +false+ if the decorated parser does not succeed up to the lower
     #   bound.
-    def parse(scanner, rules, scope = {})
+    def parse(scanner, rules, scope = ParserScope.empty)
       a = []
       start_pos = scanner.pos
       while result = child.parse(scanner, rules, scope)

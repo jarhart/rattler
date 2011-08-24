@@ -35,7 +35,7 @@ module Rattler::Parsers
     # @param rules (see Parser#parse_labeled)
     #
     # @return (see Parser#parse_labeled)
-    def parse(scanner, rules, scope = {})
+    def parse(scanner, rules, scope = ParserScope.empty)
       catch(:rule_failed) do
         return expr.parse(scanner, rules, scope)
       end

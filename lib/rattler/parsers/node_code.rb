@@ -23,23 +23,15 @@ module Rattler::Parsers
 
     attr_reader :target_name, :method_name, :target_attrs
 
-    def bind(scope, bind_args)
-      args = [array_expr(bind_args)]
-      if not scope.empty?
-        labeled = '{' + scope.map {|k, v| ":#{k} => #{v}"}.join(', ') + '}'
+    def bind(scope, array_expr)
+      args = [array_expr]
+      if not scope.bindings.empty?
+        labeled = '{' + scope.bindings.map {|k, v| ":#{k} => #{v}"}.join(', ') + '}'
         args << ":labeled => #{labeled}"
       end
       target_attrs.each {|k, v| args << ":#{k} => #{v.inspect}" }
       t = target_name == 'self' ? '' : "#{target_name}."
       "#{t}#{method_name}(#{args.join ', '})"
-    end
-
-    def array_expr(bind_args)
-      if bind_args.respond_to? :to_str
-        bind_args
-      else
-        '[' + bind_args.join(', ') + ']'
-      end
     end
 
   end

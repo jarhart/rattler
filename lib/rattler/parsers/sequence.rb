@@ -29,12 +29,12 @@ module Rattler::Parsers
     #
     # @return an array of captured results of each parser in sequence, or
     #   +false+
-    def parse(scanner, rules, scope = {})
+    def parse(scanner, rules, scope = ParserScope.empty)
+      scope = scope.nest
       pos = scanner.pos
-      results = []
       for child in children
-        if r = child.parse(scanner, rules, scope) {|_| scope = _ }
-          results << r unless r == true
+        if r = child.parse(scanner, rules, scope) {|_| scope = scope.merge _ }
+          scope = scope.capture(r) unless r == true
         else
           scanner.pos = pos
           return false
@@ -43,8 +43,8 @@ module Rattler::Parsers
       yield scope if block_given?
       case capture_count
       when 0 then true
-      when 1 then results[0]
-      else results
+      when 1 then scope.captures[0]
+      else scope.captures
       end
     end
 

@@ -33,17 +33,5 @@ module Rattler::Parsers
       ActionCode.new(code)
     end
 
-    private
-
-    def apply(results, scope={})
-      code_scope = {}
-      scope.each {|k, v| code_scope[k] = v.inspect }
-      if child.variable_capture_count?
-        eval(bind(code_scope, [results.inspect]))
-      else
-        eval(bind(code_scope, results.map {|_| _.inspect }))
-      end
-    end
-
   end
 end

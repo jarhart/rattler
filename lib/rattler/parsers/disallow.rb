@@ -20,7 +20,7 @@ module Rattler::Parsers
     # @param (see Parser#parse_labeled)
     #
     # @return [Boolean] +true+ if the decorated parser fails
-    def parse(scanner, rules, scope = {})
+    def parse(scanner, rules, scope = ParserScope.empty)
       pos = scanner.pos
       result = !child.parse(scanner, rules, scope)
       scanner.pos = pos

@@ -15,12 +15,12 @@ module Rattler::BackEnd::ParserGenerator
       expr { @g << '!@scanner.eos?' }
     end
 
-    def gen_dispatch_action(eof, code, scope={})
+    def gen_dispatch_action(eof, code, scope = ParserScope.empty)
       gen_symantic code.bind(scope, '[]')
     end
 
-    def gen_direct_action(eof, code, scope={})
-      gen_symantic '(' + code.bind(scope, []) + ')'
+    def gen_direct_action(eof, code, scope = ParserScope.empty)
+      gen_symantic '(' + code.bind(scope) + ')'
     end
 
     def gen_token(*_)

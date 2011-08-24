@@ -8,7 +8,7 @@ module Rattler::BackEnd::ParserGenerator
     include TokenPropogating
     include SkipPropogating
 
-    def gen_basic(token, scope={})
+    def gen_basic(token, scope = ParserScope.empty)
       generate token.child, :token, scope
     end
   end

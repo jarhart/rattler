@@ -5,7 +5,7 @@ module Rattler::BackEnd::ParserGenerator
   # @private
   class FailGenerator < ExprGenerator #:nodoc:
 
-    def gen_basic(fail, scope={})
+    def gen_basic(fail, scope = ParserScope.empty)
       case fail.attrs[:type]
       when :expr  then gen_fail_expr fail.message
       when :rule  then gen_fail_rule fail.message

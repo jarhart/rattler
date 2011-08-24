@@ -9,7 +9,8 @@ describe BackReferenceGenerator do
 
   let(:ref) { BackReference[:a] }
 
-  let(:scope) { {:a => 'r0_2'} }
+  let(:scope) { ParserScope.new(bindings) }
+  let(:bindings) { {:a => 'r0_2'} }
 
   describe '#gen_basic' do
 

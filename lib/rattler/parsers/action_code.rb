@@ -23,12 +23,12 @@ module Rattler::Parsers
 
     attr_reader :param_names, :body
 
-    def bind(scope, bind_args)
-      bind_in body, scope, bind_args
+    def bind(scope)
+      bind_in body, scope
     end
 
-    def scoped_bindings(scope, bind_args)
-      to_bindings(scope).merge(arg_bindings(bind_args))
+    def scoped_bindings(scope)
+      to_bindings(scope.bindings).merge(arg_bindings(scope.captures))
     end
 
     def arg_bindings(args)
@@ -46,12 +46,12 @@ module Rattler::Parsers
       bindings
     end
 
-    def bind_in(code, scope, bind_args)
+    def bind_in(code, scope)
       new_code = code.dup
-      unless param_names.include? '_' or scope.has_key? '_'
-        bind_blanks!(new_code, bind_args)
+      unless param_names.include? '_' or scope.has_name? '_'
+        bind_blanks!(new_code, scope.captures)
       end
-      scoped_bindings(scope, bind_args).each do |k, v|
+      scoped_bindings(scope).each do |k, v|
         next unless k and v
         new_code.gsub!(k, v.to_s)
       end

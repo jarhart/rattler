@@ -10,27 +10,11 @@ describe Rattler::Parsers::NodeCode do
 
   describe '#bind' do
 
-    let(:scope) { {} }
+    let(:scope) { ParserScope.new(bindings) }
 
-    context 'given empty bind args' do
-      it 'binds "[]"' do
-        subject.bind(scope, []).should == 'Expr.parsed([])'
-      end
-    end
+    let(:bindings) { {} }
 
-    context 'given a single bind arg' do
-      it 'binds the an array with the arg' do
-        subject.bind(scope, ['a']).should == 'Expr.parsed([a])'
-      end
-    end
-
-    context 'given a multiple bind args' do
-      it 'binds the an array with the arg' do
-        subject.bind(scope, ['a', 'b', 'c']).should == 'Expr.parsed([a, b, c])'
-      end
-    end
-
-    context 'given a string as bind args' do
+    context 'given a bind arg' do
       it 'binds the exact string' do
         subject.bind(scope, 'a').should == 'Expr.parsed(a)'
       end
@@ -38,11 +22,11 @@ describe Rattler::Parsers::NodeCode do
 
     context 'with scope' do
 
-      let(:scope) { {:word => 'w'} }
+      let(:bindings) { {:word => 'w'} }
 
       it 'binds the scope as labeled results' do
-        subject.bind(scope, ['a', 'b']).
-          should == 'Expr.parsed([a, b], :labeled => {:word => w})'
+        subject.bind(scope, 'a').
+          should == 'Expr.parsed(a, :labeled => {:word => w})'
       end
     end
 
@@ -51,8 +35,8 @@ describe Rattler::Parsers::NodeCode do
       let(:target_attrs) { {:name => 'expression'} }
 
       it '' do
-        subject.bind(scope, ['a', 'b']).
-          should == 'Expr.parsed([a, b], :name => "expression")'
+        subject.bind(scope, 'a').
+          should == 'Expr.parsed(a, :name => "expression")'
       end
     end
   end

@@ -2,8 +2,8 @@ require 'rattler/parsers'
 
 module Rattler::Parsers
   #
-  # +SemanticAssert+ decorates a parser to peform a symantic action on success
-  # by evaluating ruby code and succeed if the result is a true value.
+  # +SemanticAssert+ peforms a symantic action by evaluating ruby code and
+  # succeeds with no parse result if the code evaluates to a true value.
   #
   # @author Jason Arhart
   #
@@ -13,6 +13,12 @@ module Rattler::Parsers
 
     def create_bindable_code
       AssertCode.new(code)
+    end
+
+    class MyCode < ActionCode
+      def bind(scope, bind_args)
+        "(#{super}) && true"
+      end
     end
 
   end

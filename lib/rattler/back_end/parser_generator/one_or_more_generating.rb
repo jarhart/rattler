@@ -5,7 +5,7 @@ module Rattler::BackEnd::ParserGenerator
   module OneOrMoreGenerating #:nodoc:
     include PredicatePropogating
 
-    def gen_skip(one_or_more, scope={})
+    def gen_skip(one_or_more, scope = ParserScope.empty)
       expr :block do
         (@g << "#{result_name} = false").newline
         @g << 'while '

@@ -16,10 +16,10 @@ module Rattler::Parsers
     #
     # @return the result of applying the semantic action, or a false value if
     #   the parse failed.
-    def parse(scanner, rules, scope = {})
+    def parse(scanner, rules, scope = ParserScope.empty)
       if result = child.parse(scanner, rules, scope) {|_| scope = _ }
-        if not capturing?
-          apply([])
+        if not child.capturing?
+          apply([], scope)
         elsif result.respond_to?(:to_ary)
           apply(result, scope)
         else

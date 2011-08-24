@@ -8,15 +8,16 @@ module Rattler::BackEnd::ParserGenerator
     include TokenPropogating
     include SkipPropogating
 
-    def gen_basic(action, scope={})
+    def gen_basic(action, scope = ParserScope.empty)
+      scope = scope.nest
       generate action.child, :direct_action, action.bindable_code, scope
     end
 
-    def gen_dispatch_action(inner, code, scope={})
+    def gen_dispatch_action(inner, code, scope = ParserScope.empty)
       super { gen_nested inner, :basic, scope }
     end
 
-    def gen_direct_action(inner, code, scope={})
+    def gen_direct_action(inner, code, scope = ParserScope.empty)
       super { gen_nested inner, :basic, scope }
     end
 

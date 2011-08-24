@@ -12,7 +12,7 @@ module CombinatorParserSpecHelper
   end
 
   def scope
-    {}
+    ParserScope.empty
   end
 
   def parser(&block)

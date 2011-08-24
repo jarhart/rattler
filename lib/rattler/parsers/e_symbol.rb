@@ -35,7 +35,7 @@ module Rattler::Parsers
     # @param (see Parser#parse)
     #
     # @return true
-    def parse(scanner, rules, scope = {})
+    def parse(*_)
       true
     end
 

@@ -5,44 +5,44 @@ module Rattler::BackEnd::ParserGenerator
   # @private
   class MatchGenerator < ExprGenerator #:nodoc:
 
-    def gen_basic(match, scope={})
+    def gen_basic(match, scope = ParserScope.empty)
       @g << "@scanner.scan(#{match.re.inspect})"
     end
 
-    def gen_assert(match, scope={})
+    def gen_assert(match, scope = ParserScope.empty)
       expr do
         gen_intermediate_assert match, scope
         @g << ' && true'
       end
     end
 
-    def gen_disallow(match, scope={})
+    def gen_disallow(match, scope = ParserScope.empty)
       expr do
         gen_intermediate_disallow match, scope
         @g << ' && true'
       end
     end
 
-    def gen_token(match, scope={})
+    def gen_token(match, scope = ParserScope.empty)
       gen_basic match, scope
     end
 
-    def gen_skip(match, scope={})
+    def gen_skip(match, scope = ParserScope.empty)
       expr do
         gen_intermediate_skip match, scope
         @g << ' && true'
       end
     end
 
-    def gen_intermediate_assert(match, scope={})
+    def gen_intermediate_assert(match, scope = ParserScope.empty)
       @g << "@scanner.skip(#{/(?=#{match.re.source})/.inspect})"
     end
 
-    def gen_intermediate_disallow(match, scope={})
+    def gen_intermediate_disallow(match, scope = ParserScope.empty)
       @g << "@scanner.skip(#{/(?!#{match.re.source})/.inspect})"
     end
 
-    def gen_intermediate_skip(match, scope={})
+    def gen_intermediate_skip(match, scope = ParserScope.empty)
       @g << "@scanner.skip(#{match.re.inspect})"
     end
 

@@ -22,7 +22,7 @@ module Rattler::Parsers
     # @param (see Parser#parse_labeled)
     #
     # @return (see Match#parse)
-    def parse(scanner, rules, scope = {})
+    def parse(scanner, rules, scope = ParserScope.empty)
       p = scanner.pos
       child.parse(scanner, rules, scope) && scanner.string[p...(scanner.pos)]
     end

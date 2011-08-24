@@ -39,7 +39,7 @@ module Rattler::Parsers
     # @param (see Parser#parse_labeled)
     #
     # @return the matched string, or +nil+
-    def parse(scanner, rules, scope={})
+    def parse(scanner, *_)
       scanner.scan re
     end
 

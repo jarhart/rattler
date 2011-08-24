@@ -5,7 +5,7 @@ module Rattler::BackEnd::ParserGenerator
   module List1Generating #:nodoc:
     include PredicatePropogating
 
-    def gen_skip(list, scope={})
+    def gen_skip(list, scope = ParserScope.empty)
       expr :block do
         (@g << "#{result_name} = false").newline
         gen_skipping(list, scope) { (@g << "#{result_name} = true").newline }

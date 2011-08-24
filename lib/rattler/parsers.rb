@@ -46,6 +46,7 @@ module Rattler
     autoload :Atomic, 'rattler/parsers/atomic'
     autoload :Combining, 'rattler/parsers/combining'
     autoload :MatchJoining, 'rattler/parsers/match_joining'
+    autoload :ParserScope, 'rattler/parsers/parser_scope'
     autoload :ActionCode, 'rattler/parsers/action_code'
     autoload :EffectCode, 'rattler/parsers/effect_code'
     autoload :AssertCode, 'rattler/parsers/assert_code'

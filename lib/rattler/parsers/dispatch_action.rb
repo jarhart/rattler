@@ -77,8 +77,8 @@ module Rattler::Parsers
 
     private
 
-    def apply(results, scope={})
-      attrs = scope.empty? ? {} : {:labeled => scope}
+    def apply(results, scope)
+      attrs = scope.bindings.empty? ? {} : {:labeled => scope.bindings}
       target_class.send method_name, results, attrs
     end
 

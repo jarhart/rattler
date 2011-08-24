@@ -35,7 +35,7 @@ module Rattler::Parsers
     # @param (see Parser#parse_labeled)
     #
     # @return true if there is no more input to parse
-    def parse(scanner, rules, scope = {})
+    def parse(scanner, *_)
       scanner.eos?
     end
 

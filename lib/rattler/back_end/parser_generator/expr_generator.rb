@@ -14,21 +14,22 @@ module Rattler::BackEnd::ParserGenerator
       @repeat_level = repeat_level
     end
 
-    def gen_dispatch_action(parser, code, scope={})
+    def gen_dispatch_action(parser, code, scope = ParserScope.empty)
       expr :block do
         gen_capture { block_given? ? yield : gen_basic(parser, scope) }
         (@g << ' &&').newline << code.bind(scope, dispatch_action_args)
       end
     end
 
-    def gen_direct_action(parser, code, scope={})
+    def gen_direct_action(parser, code, scope = ParserScope.empty)
       expr :block do
         gen_capture { block_given? ? yield : gen_basic(parser, scope) }
-        (@g << ' &&').newline << '(' << code.bind(scope, direct_action_args) << ')'
+        (@g << ' &&').newline <<
+          '(' << code.bind(scope.capture(*direct_action_args)) << ')'
       end
     end
 
-    def gen_token(parser, scope={})
+    def gen_token(parser, scope = ParserScope.empty)
       expr :block do
         (@g << "#{token_pos_name} = @scanner.pos").newline
         gen_intermediate_skip parser, scope
@@ -37,19 +38,19 @@ module Rattler::BackEnd::ParserGenerator
       end
     end
 
-    def gen_intermediate(parser, scope={})
+    def gen_intermediate(parser, scope = ParserScope.empty)
       gen_basic parser, scope
     end
 
-    def gen_intermediate_assert(parser, scope={})
+    def gen_intermediate_assert(parser, scope = ParserScope.empty)
       gen_assert parser, scope
     end
 
-    def gen_intermediate_disallow(parser, scope={})
+    def gen_intermediate_disallow(parser, scope = ParserScope.empty)
       gen_disallow parser, scope
     end
 
-    def gen_intermediate_skip(parser, scope={})
+    def gen_intermediate_skip(parser, scope = ParserScope.empty)
       gen_skip parser, scope
     end
 

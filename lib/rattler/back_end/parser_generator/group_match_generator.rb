@@ -8,20 +8,21 @@ module Rattler::BackEnd::ParserGenerator
     include TokenPropogating
     include SkipPropogating
 
-    def gen_basic(group_match, scope={})
+    def gen_basic(group_match, scope = ParserScope.empty)
       expr(:block) { gen_capture group_match, result_expr(group_match) }
     end
 
-    def gen_dispatch_action(group_match, code, scope={})
+    def gen_dispatch_action(group_match, code, scope = ParserScope.empty)
       expr :block do
         gen_capture group_match,
           code.bind(scope, "[#{group_exprs(group_match).join ', '}]")
       end
     end
 
-    def gen_direct_action(group_match, code, scope={})
+    def gen_direct_action(group_match, code, scope = ParserScope.empty)
       expr :block do
-        gen_capture group_match, "(#{code.bind(scope, group_exprs(group_match))})"
+        expr = code.bind(scope.capture(*group_exprs(group_match)))
+        gen_capture group_match, "(#{expr})"
       end
     end
 

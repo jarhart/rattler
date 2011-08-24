@@ -23,7 +23,7 @@ module Rattler::Parsers
       self[results.first[1..-1]]
     end
 
-    def parse(scanner, rules, scope={})
+    def parse(scanner, rules, scope = ParserScope.empty)
       scanner.scan Regexp.compile(Regexp.escape scope[ref_label])
     end
 

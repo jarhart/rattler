@@ -47,7 +47,7 @@ module Rattler::BackEnd::ParserGenerator
         cache_generator ChoiceGenerator, context, :new_choice_level => true
 
       when Sequence
-        new_generator SequenceGenerator, context, :new_sequence_level => true
+        cache_generator SequenceGenerator, context, :new_sequence_level => true
 
       when Repeat
         cache_generator RepeatGenerator, context, :new_repeat_level => true

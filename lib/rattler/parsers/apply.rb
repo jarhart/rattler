@@ -36,8 +36,8 @@ module Rattler::Parsers
     # @param (see Parser#parse_labeled)
     #
     # @return the result of applying the referenced parse rule
-    def parse(scanner, rules, scope = {})
-      (rule = rules[rule_name]) && rule.parse(scanner, rules)
+    def parse(scanner, rules, scope = ParserScope.empty)
+      (rule = rules[rule_name]) && rule.parse(scanner, rules, scope)
     end
 
   end

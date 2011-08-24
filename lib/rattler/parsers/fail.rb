@@ -15,7 +15,7 @@ module Rattler::Parsers
   # @author Jason Arhart
   #
   class Fail < Parser
-    
+
     # @private
     def self.parsed(results, *_) #:nodoc:
       keyword, message_expr = results
@@ -26,7 +26,7 @@ module Rattler::Parsers
       when 'fail_parse' then self[:parse, message]
       end
     end
-    
+
     # Create a new parser that always fails with +message+. The +type+ should
     # be one of <tt>:expr</tt>, <tt>:rule</tt> or <tt>:parse</tt>, indicating
     # to simply fail, to cause its parse rule to fail, or to cause the entire
@@ -38,7 +38,7 @@ module Rattler::Parsers
     def self.[](type, message)
       self.new(:type => type, :message => message)
     end
-    
+
     # Always return +false+. The parser code generated for this parser should
     # use +message+ as the failure message, and should cause its parse rule
     # to fail if +type+ is <tt>:rule</tt> or cause the entire parse to fail
@@ -47,15 +47,15 @@ module Rattler::Parsers
     # @param (see Parser#parse_labeled)
     #
     # @return false
-    def parse(scanner, rules, labeled = {})
+    def parse(*_)
       false
     end
-    
+
     # Always +false+
     # @return false
     def capturing?
       false
     end
-    
+
   end
 end

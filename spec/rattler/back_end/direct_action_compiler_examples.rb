@@ -224,4 +224,14 @@ shared_examples_for 'a compiled parser with a direct action' do
     it { should parse('abc123').succeeding.like reference_parser }
     it { should parse('    ').failing.like reference_parser }
   end
+
+  context 'nested in a sequence with a label' do
+    let(:grammar) { define_grammar do
+      rule :foo do
+        label(:word, /[[:alpha:]]+/) &
+          direct_action(/\d+/, '|num| "#{num} #{word}"')
+      end
+    end }
+    it { should parse('abc123').succeeding.like reference_parser }
+  end
 end

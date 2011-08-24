@@ -5,11 +5,11 @@ module Rattler::BackEnd::ParserGenerator
   # @private
   class ApplyGenerator < ExprGenerator #:nodoc:
 
-    def gen_basic(apply, scope={})
+    def gen_basic(apply, scope = ParserScope.empty)
       @g << "match(:#{apply.rule_name})"
     end
 
-    def gen_assert(apply, scope={})
+    def gen_assert(apply, scope = ParserScope.empty)
       expr :block do
         lookahead do
           @g.surround("#{result_name} = (", ')') { gen_bare_skip apply }
@@ -19,7 +19,7 @@ module Rattler::BackEnd::ParserGenerator
       end
     end
 
-    def gen_disallow(apply, scope={})
+    def gen_disallow(apply, scope = ParserScope.empty)
       expr :block do
         lookahead do
           @g.surround("#{result_name} = !", '') { gen_basic apply }
@@ -29,25 +29,25 @@ module Rattler::BackEnd::ParserGenerator
       end
     end
 
-    def gen_dispatch_action(apply, code, scope={})
+    def gen_dispatch_action(apply, code, scope = ParserScope.empty)
       expr do
         gen_capture { gen_basic apply }
         @g << ' && ' << code.bind(scope, dispatch_action_args)
       end
     end
 
-    def gen_direct_action(apply, code, scope={})
+    def gen_direct_action(apply, code, scope = ParserScope.empty)
       expr do
         gen_capture { gen_basic apply }
-        @g << ' && (' << code.bind(scope, direct_action_args) << ')'
+        @g << ' && (' << code.bind(scope.capture(*direct_action_args)) << ')'
       end
     end
 
-    def gen_skip(apply, scope={})
+    def gen_skip(apply, scope = ParserScope.empty)
       expr { gen_bare_skip apply }
     end
 
-    def gen_intermediate_skip(apply, scope={})
+    def gen_intermediate_skip(apply, scope = ParserScope.empty)
       gen_basic apply
     end
 

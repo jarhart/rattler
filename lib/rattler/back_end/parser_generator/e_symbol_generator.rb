@@ -15,12 +15,12 @@ module Rattler::BackEnd::ParserGenerator
       @g << 'false'
     end
 
-    def gen_dispatch_action(eof, code, scope={})
+    def gen_dispatch_action(eof, code, scope = ParserScope.empty)
       @g << code.bind(scope, '[]')
     end
 
-    def gen_direct_action(eof, code, scope={})
-      expr { @g <<  code.bind(scope, []) }
+    def gen_direct_action(eof, code, scope = ParserScope.empty)
+      expr { @g <<  code.bind(scope) }
     end
 
     def gen_token(*_)

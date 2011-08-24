@@ -6,50 +6,51 @@ module Rattler::BackEnd::ParserGenerator
   class ChoiceGenerator < ExprGenerator #:nodoc:
     include NestedSubGenerating
 
-    def gen_basic(choice, scope={})
+    def gen_basic(choice, scope = ParserScope.empty)
       expr :block do
         @g.intersperse_nl(choice, ' ||') {|_| generate _, :basic, scope }
       end
     end
 
-    def gen_assert(choice, scope={})
+    def gen_assert(choice, scope = ParserScope.empty)
       expr do
         gen_intermediate_assert choice, scope
         @g << ' && true'
       end
     end
 
-    def gen_disallow(choice, scope={})
+    def gen_disallow(choice, scope = ParserScope.empty)
       @g << '!'
       gen_intermediate_assert choice, scope
     end
 
-    def gen_dispatch_action(choice, code, scope={})
+    def gen_dispatch_action(choice, code, scope = ParserScope.empty)
       expr :block do
         gen_action_code(choice) { code.bind scope, "[#{result_name}]" }
       end
     end
 
-    def gen_direct_action(choice, code, scope={})
+    def gen_direct_action(choice, code, scope = ParserScope.empty)
       expr :block do
-        gen_action_code(choice) { "(#{code.bind scope, [result_name]})" }
+        action = code.bind(scope.capture(result_name))
+        gen_action_code(choice) { "(#{action})" }
       end
     end
 
-    def gen_token(choice, scope={})
+    def gen_token(choice, scope = ParserScope.empty)
       expr :block do
         @g.intersperse_nl(choice, ' ||') {|_| generate _, :token, scope }
       end
     end
 
-    def gen_skip(choice, scope={})
+    def gen_skip(choice, scope = ParserScope.empty)
       expr do
         gen_intermediate_skip choice, scope
         @g << ' && true'
       end
     end
 
-    def gen_intermediate_assert(choice, scope={})
+    def gen_intermediate_assert(choice, scope = ParserScope.empty)
       @g.block 'begin' do
         @g.intersperse_nl(choice, ' ||') do |_|
           generate _, :intermediate_assert, scope
@@ -57,7 +58,7 @@ module Rattler::BackEnd::ParserGenerator
       end
     end
 
-    def gen_intermediate_skip(choice, scope={})
+    def gen_intermediate_skip(choice, scope = ParserScope.empty)
       @g.block 'begin' do
         @g.intersperse_nl(choice, ' ||') do |_|
           generate _, :intermediate_skip, scope
@@ -67,7 +68,7 @@ module Rattler::BackEnd::ParserGenerator
 
     private
 
-    def gen_action_code(choice, scope={})
+    def gen_action_code(choice, scope = ParserScope.empty)
       @g.block("(#{result_name} = begin", 'end)') do
         @g.intersperse_nl(choice, ' ||') {|child| generate child }
       end << ' && '

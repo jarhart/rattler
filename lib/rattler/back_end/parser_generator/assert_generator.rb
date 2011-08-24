@@ -5,49 +5,49 @@ module Rattler::BackEnd::ParserGenerator
   # @private
   class AssertGenerator < ExprGenerator #:nodoc:
 
-    def gen_basic(assert, scope={})
+    def gen_basic(assert, scope = ParserScope.empty)
       generate assert.child, :assert, scope
     end
 
-    def gen_assert(assert, scope={})
+    def gen_assert(assert, scope = ParserScope.empty)
       gen_basic assert, scope
     end
 
-    def gen_disallow(assert, scope={})
+    def gen_disallow(assert, scope = ParserScope.empty)
       @g << 'false'
     end
 
-    def gen_skip(assert, scope={})
+    def gen_skip(assert, scope = ParserScope.empty)
       gen_basic assert, scope
     end
 
-    def gen_dispatch_action(assert, code, scope={})
+    def gen_dispatch_action(assert, code, scope = ParserScope.empty)
       expr(:block) { gen_action assert, code.bind(scope, '[]'), scope }
     end
 
-    def gen_direct_action(assert, code, scope={})
-      expr(:block) { gen_action assert, "(#{code.bind scope, []})", scope }
+    def gen_direct_action(assert, code, scope = ParserScope.empty)
+      expr(:block) { gen_action assert, "(#{code.bind scope})", scope }
     end
 
-    def gen_token(assert, scope={})
+    def gen_token(assert, scope = ParserScope.empty)
       expr(:block) { gen_action assert, "''", scope }
     end
 
-    def gen_intermediate(assert, scope={})
+    def gen_intermediate(assert, scope = ParserScope.empty)
       generate assert.child, :intermediate_assert, scope
     end
 
-    def gen_intermediate_assert(assert, scope={})
+    def gen_intermediate_assert(assert, scope = ParserScope.empty)
       gen_intermediate assert, scope
     end
 
-    def gen_intermediate_skip(assert, scope={})
+    def gen_intermediate_skip(assert, scope = ParserScope.empty)
       gen_intermediate assert, scope
     end
 
     private
 
-    def gen_action(assert, result_code, scope={})
+    def gen_action(assert, result_code, scope = ParserScope.empty)
       gen_intermediate assert, scope
       (@g << ' &&').newline << result_code
     end

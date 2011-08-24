@@ -11,8 +11,8 @@ module Rattler::Parsers
   # @private
   class EffectCode < ActionCode #:nodoc:
 
-    def bind(scope, bind_args)
-      "#{super}; #{result_code bind_args}"
+    def bind(scope)
+      "#{super}; #{result_code scope.captures}"
     end
 
     private

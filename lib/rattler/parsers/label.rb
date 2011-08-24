@@ -41,9 +41,9 @@ module Rattler::Parsers
     # @param (see Parser#parse_labeled)
     #
     # @return the decorated parser's parse result
-    def parse(scanner, rules, scope = {})
+    def parse(scanner, rules, scope = ParserScope.empty)
       if result = child.parse(scanner, rules, scope) {|_| scope = _ }
-        yield scope.merge(label => result) if block_given?
+        yield scope.bind(label => result) if block_given?
         result
       end
     end

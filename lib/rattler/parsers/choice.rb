@@ -27,7 +27,7 @@ module Rattler::Parsers
     # @param (see Parser#parse_labeled)
     #
     # @return the result of the first parser that matches, or +false+
-    def parse(scanner, rules, scope = {})
+    def parse(scanner, rules, scope = ParserScope.empty)
       for child in children
         if r = child.parse(scanner, rules, scope)
           return r

@@ -72,49 +72,53 @@ describe Rattler::Parsers::ActionCode do
 
   describe '#bind' do
 
-    let(:scope) { {} }
+    let(:scope) { ParserScope.new(bindings, captures) }
+    let(:bindings) { {} }
+    let(:captures) { [] }
 
     context 'when the code uses block parameters' do
 
+      let(:captures) { ['r0_0', 'r0_1'] }
+
       let(:code) { '|a, b| a + b' }
 
-      it 'replaces block parameter names with corresponding arguments' do
-        subject.bind(scope, ['r0_0', 'r0_1']).should == 'r0_0 + r0_1'
+      it 'replaces block parameter names with corresponding captures' do
+        subject.bind(scope).should == 'r0_0 + r0_1'
       end
     end
 
     context 'when the code refers to labels' do
 
-      let(:scope) { {:l => 'r0_3', :r => 'r0_5'} }
+      let(:bindings) { {:l => 'r0_3', :r => 'r0_5'} }
 
       let(:code) { 'l + r' }
 
       it 'replaces label names with associated arguments' do
-        subject.bind(scope, []).should == 'r0_3 + r0_5'
+        subject.bind(scope).should == 'r0_3 + r0_5'
       end
     end
 
     context 'when the code uses block parameters and label names' do
 
-      let(:scope) { {:c => 'r0_3', :d => 'r0_5'} }
+      let(:bindings) { {:c => 'r0_3', :d => 'r0_5'} }
+      let(:captures) { ['r0_0', 'r0_1'] }
 
       let(:code) { '|a, b| a * c + b * d' }
 
       it 'replaces both block parameter names and label names' do
-        subject.bind(scope, ['r0_0', 'r0_1']).
-          should == 'r0_0 * r0_3 + r0_1 * r0_5'
+        subject.bind(scope).should == 'r0_0 * r0_3 + r0_1 * r0_5'
       end
     end
 
     context 'when the code uses block parameters that are label names' do
 
-      let(:scope) { {:b => 'r0_3', :c => 'r0_5'} }
+      let(:bindings) { {:b => 'r0_3', :c => 'r0_5'} }
+      let(:captures) { ['r0_0', 'r0_1'] }
 
       let(:code) { '|a, b| a * c + b' }
 
       it 'the block parameters shadow the label names' do
-        subject.bind(scope, ['r0_0', 'r0_1']).
-          should == 'r0_0 * r0_5 + r0_1'
+        subject.bind(scope).should == 'r0_0 * r0_5 + r0_1'
       end
     end
 
@@ -123,25 +127,32 @@ describe Rattler::Parsers::ActionCode do
       let(:code) { '_.to_s' }
 
       context 'given one argument' do
+
+        let(:captures) { ['r0'] }
+
         it 'replaces "_" with the argument' do
-          subject.bind(scope, ['r0']).should == 'r0.to_s'
+          subject.bind(scope).should == 'r0.to_s'
         end
       end
 
       context 'given multiple arguments' do
+
+        let(:captures) { ['r0_0', 'r0_1'] }
+
         it 'replaces "_" with the array of arguments' do
-          subject.bind(scope, ['r0_0', 'r0_1']).
-            should == '[r0_0, r0_1].to_s'
+          subject.bind(scope).should == '[r0_0, r0_1].to_s'
         end
       end
     end
 
     context 'when the code uses "_" as a block parameter' do
 
+      let(:captures) { ['r0_0', 'r0_1'] }
+
       let(:code) { '|_| _.to_f' }
 
       it 'the block parameter shadows the default "_" binding' do
-        subject.bind(scope, ['r0_0', 'r0_1']).should == 'r0_0.to_f'
+        subject.bind(scope).should == 'r0_0.to_f'
       end
     end
 
@@ -150,15 +161,20 @@ describe Rattler::Parsers::ActionCode do
       let(:code) { 'do_stuff *_' }
 
       context 'given one argument' do
+
+        let(:captures) { ['r0'] }
+
         it 'replaces "*_" with the argument' do
-          subject.bind(scope, ['r0']).should == 'do_stuff r0'
+          subject.bind(scope).should == 'do_stuff r0'
         end
       end
 
       context 'given multiple arguments' do
+
+        let(:captures) { ['r0_0', 'r0_1'] }
+
         it 'replaces "*_" with the arguments' do
-          subject.bind(scope, ['r0_0', 'r0_1']).
-            should == 'do_stuff r0_0, r0_1'
+          subject.bind(scope).should == 'do_stuff r0_0, r0_1'
         end
       end
     end

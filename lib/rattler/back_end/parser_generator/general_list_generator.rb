@@ -11,7 +11,7 @@ module Rattler::BackEnd::ParserGenerator
       super
     end
 
-    def gen_basic(list, scope={})
+    def gen_basic(list, scope = ParserScope.empty)
       if list.capturing?
         gen_capturing list, scope
       else
@@ -19,31 +19,31 @@ module Rattler::BackEnd::ParserGenerator
       end
     end
 
-    def gen_dispatch_action(list, code, scope={})
+    def gen_dispatch_action(list, code, scope = ParserScope.empty)
       gen_capturing list, scope do |a|
         code.bind scope, "select_captures(#{a})"
       end
     end
 
-    def gen_direct_action(list, code, scope={})
+    def gen_direct_action(list, code, scope = ParserScope.empty)
       gen_capturing list, scope do |a|
-        '(' + code.bind(scope, ["select_captures(#{a})"]) + ')'
+        '(' + code.bind(scope.capture("select_captures(#{a})")) + ')'
       end
     end
 
-    def gen_assert(list, scope={})
+    def gen_assert(list, scope = ParserScope.empty)
       gen_predicate(list, scope) do
         @g.newline << "#{count_name} >= #{list.lower_bound}"
       end
     end
 
-    def gen_disallow(list, scope={})
+    def gen_disallow(list, scope = ParserScope.empty)
       gen_predicate(list, scope) do
         @g.newline << "#{count_name} < #{list.lower_bound}"
       end
     end
 
-    def gen_skip(list, scope={})
+    def gen_skip(list, scope = ParserScope.empty)
       expr :block do
         (@g << "#{count_name} = 0").newline
         (@g << "#{start_pos_name} = @scanner.pos").newline

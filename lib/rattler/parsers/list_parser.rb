@@ -49,7 +49,7 @@ module Rattler::Parsers
     # @return [Array, Boolean] an array containing the term parser's parse
     #   results, or +true+ if the term parser is not <tt>capturing?</tt> or
     #   +false+ if the parse fails.
-    def parse(scanner, rules, scope = {})
+    def parse(scanner, rules, scope = ParserScope.empty)
       a = []
       p = start_pos = scanner.pos
       while result = term_parser.parse(scanner, rules, scope) and

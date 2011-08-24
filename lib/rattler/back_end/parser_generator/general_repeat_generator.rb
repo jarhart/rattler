@@ -6,7 +6,7 @@ module Rattler::BackEnd::ParserGenerator
   class GeneralRepeatGenerator < ExprGenerator #:nodoc:
     include NestedSubGenerating
 
-    def gen_basic(repeat, scope={})
+    def gen_basic(repeat, scope = ParserScope.empty)
       if repeat.capturing?
         gen_capturing repeat, scope
       else
@@ -14,36 +14,36 @@ module Rattler::BackEnd::ParserGenerator
       end
     end
 
-    def gen_assert(repeat, scope={})
+    def gen_assert(repeat, scope = ParserScope.empty)
       gen_predicate(repeat, scope) { gen_assert_result repeat }
     end
 
-    def gen_disallow(repeat, scope={})
+    def gen_disallow(repeat, scope = ParserScope.empty)
       gen_predicate(repeat, scope) { gen_disallow_result repeat }
     end
 
-    def gen_dispatch_action(repeat, code, scope={})
+    def gen_dispatch_action(repeat, code, scope = ParserScope.empty)
       expr :block do
         gen_loop repeat, scope
         gen_result repeat, code.bind(scope, "select_captures(#{accumulator_name})")
       end
     end
 
-    def gen_direct_action(repeat, code, scope={})
+    def gen_direct_action(repeat, code, scope = ParserScope.empty)
       expr :block do
         gen_loop repeat, scope
-        gen_result(repeat, '(' + code.bind(scope, ["select_captures(#{accumulator_name})"]) + ')')
+        gen_result(repeat, '(' + code.bind(scope.capture("select_captures(#{accumulator_name})")) + ')')
       end
     end
 
-    def gen_token(repeat, scope={})
+    def gen_token(repeat, scope = ParserScope.empty)
       expr :block do
         gen_loop(repeat, scope) { |child| generate child, :token, scope }
         gen_result repeat, "#{accumulator_name}.join"
       end
     end
 
-    def gen_skip(repeat, scope={})
+    def gen_skip(repeat, scope = ParserScope.empty)
       expr :block do
         setup_skip_loop repeat
         @g << 'while '
