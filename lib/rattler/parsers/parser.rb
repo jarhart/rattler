@@ -41,6 +41,10 @@ module Rattler::Parsers
       false
     end
 
+    def sequence?
+      false
+    end
+
     # @param [Parser] other the parser to try if this parser fails.
     # @return a new parser that tries this parser first and if it fails tries
     #   +other+

@@ -14,13 +14,13 @@ module Rattler::Parsers
 
     private
 
-    def apply(results, scope)
+    def apply(scope)
       code_bindings = {}
       scope.each_binding {|k, v| code_bindings[k] = v.inspect }
       code_captures = if child.variable_capture_count?
-        [results.inspect]
+        [scope.captures.inspect]
       else
-        results.map {|_| _.inspect }
+        scope.captures.map {|_| _.inspect }
       end
       code_scope = ParserScope.new(code_bindings, code_captures)
       eval(bind(code_scope))

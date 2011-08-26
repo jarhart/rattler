@@ -17,14 +17,16 @@ module Rattler::Parsers
     # @return the result of applying the semantic action, or a false value if
     #   the parse failed.
     def parse(scanner, rules, scope = ParserScope.empty)
-      if result = child.parse(scanner, rules, scope) {|_| scope = _ }
-        if not child.capturing?
-          apply([], scope)
-        elsif result.respond_to?(:to_ary)
-          apply(result, scope)
-        else
-          apply([result], scope)
+      scope = scope.nest
+      if r = child.parse(scanner, rules, scope) {|_| scope = _ }
+        if child.capturing? and not child.sequence?
+          scope = if child.variable_capture_count?
+            scope.capture(*r)
+          else
+            scope.capture(r)
+          end
         end
+        apply(scope)
       end
     end
 

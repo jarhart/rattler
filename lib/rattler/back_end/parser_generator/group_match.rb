@@ -16,10 +16,17 @@ module Rattler::BackEnd::ParserGenerator
 
     def parse(scanner, rules, scope = ParserScope.empty)
       scanner.scan(re) && if num_groups == 1
+        yield scope.nest.capture(scanner[1]) if block_given?
         scanner[1]
       else
-        (1..num_groups).map {|_| scanner[_] }
+        rs = (1..num_groups).map {|_| scanner[_] }
+        yield scope.nest.capture(*rs) if block_given?
+        rs
       end
+    end
+
+    def sequence?
+      num_groups > 1
     end
 
   end

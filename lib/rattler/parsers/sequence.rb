@@ -64,5 +64,9 @@ module Rattler::Parsers
       @capture_count ||= count {|_| _.capturing? }
     end
 
+    def sequence?
+      true
+    end
+
   end
 end
