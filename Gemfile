@@ -12,7 +12,8 @@ group :development do
   gem "cucumber", "~> 1.0.0"
   gem "aruba", "~> 0.4.0"
   gem "yard", "~> 0.7.0"
-  gem "watchr", "~> 0.7.0"
+  gem "guard", "~> 0.6.2"
+  gem "guard-rspec", "~> 0.4.3"
   gem "ruby-graphviz", "~> 1.0.0"
   # gemspec
 end
