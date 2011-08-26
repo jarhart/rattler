@@ -79,7 +79,12 @@ module Rattler::Parsers
 
     def apply(scope)
       attrs = scope.bindings.empty? ? {} : {:labeled => scope.bindings}
-      target_class.send method_name, scope.captures, attrs
+      args = if child.variable_capture_count?
+        scope.captures.first
+      else
+        scope.captures
+      end
+      target_class.send method_name, args, attrs
     end
 
     def target_class

@@ -20,11 +20,7 @@ module Rattler::Parsers
       scope = scope.nest
       if r = child.parse(scanner, rules, scope) {|_| scope = _ }
         if child.capturing? and not child.sequence?
-          scope = if child.variable_capture_count?
-            scope.capture(*r)
-          else
-            scope.capture(r)
-          end
+          scope = scope.capture(r)
         end
         apply(scope)
       end
