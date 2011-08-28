@@ -41,11 +41,7 @@ module Rattler::Parsers
         end
       end
       yield scope if block_given?
-      case capture_count
-      when 0 then true
-      when 1 then scope.captures[0]
-      else scope.captures
-      end
+      parse_result(scope)
     end
 
     # Return a new parser that tries both this parser and +other+ and fails
@@ -66,6 +62,16 @@ module Rattler::Parsers
 
     def sequence?
       true
+    end
+
+    private
+
+    def parse_result(scope)
+      case capture_count
+      when 0 then true
+      when 1 then scope.captures[0]
+      else scope.captures
+      end
     end
 
   end
