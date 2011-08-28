@@ -104,27 +104,47 @@ describe JoinMatchCapturingSequence do
 
     context 'given a sequence of matches followed by something else' do
 
-      let(:sequence) { Sequence[
-        Match[/a/],
-        Match[/b/],
-        Apply[:c]
-      ] }
+      let(:sequence) { Sequence[Match[/a/], Match[/b/], something_else] }
 
-      it 'returns true' do
-        subject.applies_to?(sequence, capturing).should be_true
+      context 'if the something else is non-capturing' do
+
+        let(:something_else) { Skip[Apply[:c]] }
+
+        it 'returns true' do
+          subject.applies_to?(sequence, capturing).should be_true
+        end
+      end
+
+      context 'if the something else is capturing' do
+
+        let(:something_else) { Apply[:c] }
+
+        it 'returns false' do
+          subject.applies_to?(sequence, capturing).should be_false
+        end
       end
     end
 
     context 'given a sequence of matches following something else' do
 
-      let(:sequence) { Sequence[
-        Apply[:a],
-        Match[/b/],
-        Match[/c/]
-      ] }
+      let(:sequence) { Sequence[something_else, Match[/b/], Match[/c/]] }
 
-      it 'returns true' do
-        subject.applies_to?(sequence, capturing).should be_true
+      context 'if the something else is non-capturing' do
+
+        let(:something_else) { Skip[Apply[:a]] }
+
+        it 'returns true' do
+          subject.applies_to?(sequence, capturing).should be_true
+        end
+      end
+
+      context 'if the something else is capturing' do
+
+        let(:something_else) { Apply[:a] }
+
+        it 'returns false' do
+          subject.applies_to?(sequence, capturing).should be_false
+        end
       end
     end
 
@@ -159,24 +179,52 @@ describe JoinMatchCapturingSequence do
       let(:sequence) { Sequence[
         GroupMatch[Match[/a/], {:num_groups => 1}],
         GroupMatch[Match[/b/], {:num_groups => 1}],
-        Apply[:c]
+        something_else
       ] }
 
-      it 'returns true' do
-        subject.applies_to?(sequence, capturing).should be_true
+      context 'if the something else is non-capturing' do
+
+        let(:something_else) { Skip[Apply[:c]] }
+
+        it 'returns true' do
+          subject.applies_to?(sequence, capturing).should be_true
+        end
+      end
+
+      context 'if the something else is capturing' do
+
+        let(:something_else) { Apply[:c] }
+
+        it 'returns false' do
+          subject.applies_to?(sequence, capturing).should be_false
+        end
       end
     end
 
     context 'given a sequence of single-group matches following something else' do
 
       let(:sequence) { Sequence[
-        Apply[:a],
+        something_else,
         GroupMatch[Match[/b/], {:num_groups => 1}],
         GroupMatch[Match[/c/], {:num_groups => 1}]
       ] }
 
-      it 'returns true' do
-        subject.applies_to?(sequence, capturing).should be_true
+      context 'if the something else is non-capturing' do
+
+        let(:something_else) { Skip[Apply[:a]] }
+
+        it 'returns true' do
+          subject.applies_to?(sequence, capturing).should be_true
+        end
+      end
+
+      context 'if the something else is capturing' do
+
+        let(:something_else) { Apply[:a] }
+
+        it 'returns false' do
+          subject.applies_to?(sequence, capturing).should be_false
+        end
       end
     end
 

@@ -24,7 +24,14 @@ module Rattler::BackEnd::Optimizer
     def _applies_to?(parser, context)
       context.capturing? and
       parser.is_a?(Sequence) and
+      not disqualifying_captures?(parser) and
       any_neighbors?(parser) {|_| eligible_child? _ }
+    end
+
+    def disqualifying_captures?(parser)
+      capturing_children = parser.select {|_| _.capturing? }
+      capturing_children.any? {|_| eligible_child? _ } and
+      capturing_children.any? {|_| not eligible_child? _ }
     end
 
     def eligible_child?(child)
