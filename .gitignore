@@ -8,6 +8,9 @@ rdoc
 doc
 .yardoc
 
+# rspec
+.rspec
+
 # bundler
 .bundle
 
