@@ -7,7 +7,7 @@ describe Rattler::BackEnd::Compiler do
   describe '.compile_parser result' do
 
     let :compiled_parser do
-      described_class.compile_parser compiled_parser_base, grammar
+      described_class.compile_parser compiled_parser_base, grammar, :no_optimize => true
     end
 
     let(:compiled_parser_base) { Rattler::Runtime::RecursiveDescentParser }

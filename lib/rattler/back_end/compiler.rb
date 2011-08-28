@@ -37,24 +37,24 @@ module Rattler::BackEnd
     #   @param [String] grammar the grammar source to compile
     #   @return [Class] a new parser class
     #
-    def self.compile_parser(base, rules_or_grammar)
+    def self.compile_parser(base, rules_or_grammar, opts={})
       parser_class = Class.new(base)
-      compile(parser_class, rules_or_grammar)
+      compile(parser_class, rules_or_grammar, opts)
     end
 
     # Compile rules or grammar source into match methods in the module +mod+.
-    def self.compile(mod, rules_or_grammar)
-      self.new(mod).compile(rules_or_grammar)
+    def self.compile(mod, rules_or_grammar, opts={})
+      self.new(mod).compile(rules_or_grammar, opts)
     end
 
     # Compile +rules+ into match methods in the module +mod+.
-    def self.compile_rules(mod, rules)
-      self.new(mod).compile_rules(rules)
+    def self.compile_rules(mod, rules, opts={})
+      self.new(mod).compile_rules(rules, opts)
     end
 
     # Compile grammar +source+ into a match method in the module +mod+.
-    def compile_grammar(mod, source)
-      self.new(mod).compiler_grammar(source)
+    def self.compile_grammar(mod, source, opts={})
+      self.new(mod).compile_grammar(source, opts)
     end
 
     # Create a new compiler that compiles rules into match methods in the
@@ -80,10 +80,10 @@ module Rattler::BackEnd
     #   @param [String] grammar the grammar source to compile
     #   @return [Module] the module
     #
-    def compile(_)
+    def compile(_, opts={})
       case _
-      when Grammar, RuleSet, Rule then compile_rules(_)
-      else compile_grammar(_.to_s)
+      when Grammar, RuleSet, Rule then compile_rules(_, opts)
+      else compile_grammar(_.to_s, opts)
       end
     end
 
@@ -99,16 +99,16 @@ module Rattler::BackEnd
     #   @param [Rattler::Parser::Rule] rule the rule to compile
     #   @return [Module] the module
     #
-    def compile_rules(rules)
-      compile_model(rules)
+    def compile_rules(rules, opts={})
+      compile_model(rules, opts)
     end
 
     # Compile +grammar+ into match methods in the module.
     # @param [String] grammar the grammar source to compile
     # @return [Module] the module
-    def compile_grammar(source)
+    def compile_grammar(source, opts={})
       result = Rattler::Grammar.parse!(source)
-      compile_model(result.rules)
+      compile_model(result.rules, opts)
     end
 
     private
@@ -119,8 +119,8 @@ module Rattler::BackEnd
       end
     end
 
-    def compile_model(model) #:nodoc:
-      @mod.module_eval ParserGenerator.code_for(model)
+    def compile_model(model, opts={}) #:nodoc:
+      @mod.module_eval ParserGenerator.code_for(model, opts)
       @mod
     end
 
