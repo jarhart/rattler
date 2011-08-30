@@ -3,3 +3,4 @@ default: <%= std_opts %> --tags ~@wip
 jruby: <%= std_opts %> --tags ~@wip --tags ~@command-line
 windows_mri: <%= std_opts %> --tags ~@wip --tags ~@command-line
 wip: <%= std_opts %> --wip --tags @wip
+guard: <%= std_opts %> --tags ~@wip --tags ~@command-line
