@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Jason Arhart"]
-  s.date = %q{2011-08-23}
+  s.date = %q{2011-08-29}
   s.default_executable = %q{rtlr}
   s.description = %q{Simple language recognition tool for Ruby based on packrat parsing}
   s.email = %q{jarhart@gmail.com}
@@ -79,6 +79,7 @@ Gem::Specification.new do |s|
     "lib/rattler/back_end/parser_generator/repeat_generator.rb",
     "lib/rattler/back_end/parser_generator/rule_generator.rb",
     "lib/rattler/back_end/parser_generator/rule_set_generator.rb",
+    "lib/rattler/back_end/parser_generator/semantic_action_generator.rb",
     "lib/rattler/back_end/parser_generator/sequence_generator.rb",
     "lib/rattler/back_end/parser_generator/skip_generator.rb",
     "lib/rattler/back_end/parser_generator/skip_propogating.rb",
@@ -99,7 +100,6 @@ Gem::Specification.new do |s|
     "lib/rattler/parsers/action_code.rb",
     "lib/rattler/parsers/apply.rb",
     "lib/rattler/parsers/assert.rb",
-    "lib/rattler/parsers/assert_code.rb",
     "lib/rattler/parsers/atomic.rb",
     "lib/rattler/parsers/back_reference.rb",
     "lib/rattler/parsers/choice.rb",
@@ -107,7 +107,6 @@ Gem::Specification.new do |s|
     "lib/rattler/parsers/combining.rb",
     "lib/rattler/parsers/direct_action.rb",
     "lib/rattler/parsers/disallow.rb",
-    "lib/rattler/parsers/disallow_code.rb",
     "lib/rattler/parsers/dispatch_action.rb",
     "lib/rattler/parsers/e_symbol.rb",
     "lib/rattler/parsers/effect_code.rb",
@@ -125,11 +124,9 @@ Gem::Specification.new do |s|
     "lib/rattler/parsers/rule.rb",
     "lib/rattler/parsers/rule_set.rb",
     "lib/rattler/parsers/semantic.rb",
-    "lib/rattler/parsers/semantic_assert.rb",
+    "lib/rattler/parsers/semantic_action.rb",
     "lib/rattler/parsers/semantic_attribute.rb",
-    "lib/rattler/parsers/semantic_disallow.rb",
     "lib/rattler/parsers/sequence.rb",
-    "lib/rattler/parsers/side_effect.rb",
     "lib/rattler/parsers/skip.rb",
     "lib/rattler/parsers/token.rb",
     "lib/rattler/runner.rb",
@@ -183,6 +180,7 @@ Gem::Specification.new do |s|
     "features/grammar/posix_class.feature",
     "features/grammar/repeat.feature",
     "features/grammar/semantic_action.feature",
+    "features/grammar/semantic_result.feature",
     "features/grammar/sequence.feature",
     "features/grammar/side_effect.feature",
     "features/grammar/skip_operator.feature",
@@ -235,11 +233,13 @@ Gem::Specification.new do |s|
     "spec/rattler/back_end/parser_generator/repeat_generator_spec.rb",
     "spec/rattler/back_end/parser_generator/rule_generator_spec.rb",
     "spec/rattler/back_end/parser_generator/rule_set_generator_spec.rb",
+    "spec/rattler/back_end/parser_generator/semantic_action_generator_spec.rb",
     "spec/rattler/back_end/parser_generator/sequence_generator_spec.rb",
     "spec/rattler/back_end/parser_generator/skip_generator_spec.rb",
     "spec/rattler/back_end/parser_generator/token_generator_spec.rb",
     "spec/rattler/back_end/parser_generator/zero_or_more_generator_examples.rb",
     "spec/rattler/back_end/ruby_generator_spec.rb",
+    "spec/rattler/back_end/semantic_action_compiler_examples.rb",
     "spec/rattler/back_end/semantic_assert_compiler_examples.rb",
     "spec/rattler/back_end/semantic_disallow_compiler_examples.rb",
     "spec/rattler/back_end/shared_compiler_examples.rb",
@@ -269,10 +269,8 @@ Gem::Specification.new do |s|
     "spec/rattler/parsers/parser_scope_spec.rb",
     "spec/rattler/parsers/repeat_spec.rb",
     "spec/rattler/parsers/rule_set_spec.rb",
-    "spec/rattler/parsers/semantic_assert_spec.rb",
-    "spec/rattler/parsers/semantic_disallow_spec.rb",
+    "spec/rattler/parsers/semantic_action_spec.rb",
     "spec/rattler/parsers/sequence_spec.rb",
-    "spec/rattler/parsers/side_effect_spec.rb",
     "spec/rattler/parsers/skip_spec.rb",
     "spec/rattler/parsers/token_spec.rb",
     "spec/rattler/runtime/extended_packrat_parser_spec.rb",
@@ -298,32 +296,38 @@ Gem::Specification.new do |s|
 
     if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
       s.add_development_dependency(%q<bundler>, ["~> 1.0.0"])
+      s.add_development_dependency(%q<ruby-graphviz>, ["~> 1.0.0"])
       s.add_development_dependency(%q<jeweler>, ["~> 1.5.0"])
       s.add_development_dependency(%q<rspec>, ["~> 2.6.0"])
       s.add_development_dependency(%q<cucumber>, ["~> 1.0.0"])
       s.add_development_dependency(%q<aruba>, ["~> 0.4.0"])
       s.add_development_dependency(%q<yard>, ["~> 0.7.0"])
-      s.add_development_dependency(%q<watchr>, ["~> 0.7.0"])
-      s.add_development_dependency(%q<ruby-graphviz>, ["~> 1.0.0"])
+      s.add_development_dependency(%q<guard>, ["~> 0.6.2"])
+      s.add_development_dependency(%q<guard-rspec>, ["~> 0.4.3"])
+      s.add_development_dependency(%q<guard-cucumber>, ["~> 0.6.1"])
     else
       s.add_dependency(%q<bundler>, ["~> 1.0.0"])
+      s.add_dependency(%q<ruby-graphviz>, ["~> 1.0.0"])
       s.add_dependency(%q<jeweler>, ["~> 1.5.0"])
       s.add_dependency(%q<rspec>, ["~> 2.6.0"])
       s.add_dependency(%q<cucumber>, ["~> 1.0.0"])
       s.add_dependency(%q<aruba>, ["~> 0.4.0"])
       s.add_dependency(%q<yard>, ["~> 0.7.0"])
-      s.add_dependency(%q<watchr>, ["~> 0.7.0"])
-      s.add_dependency(%q<ruby-graphviz>, ["~> 1.0.0"])
+      s.add_dependency(%q<guard>, ["~> 0.6.2"])
+      s.add_dependency(%q<guard-rspec>, ["~> 0.4.3"])
+      s.add_dependency(%q<guard-cucumber>, ["~> 0.6.1"])
     end
   else
     s.add_dependency(%q<bundler>, ["~> 1.0.0"])
+    s.add_dependency(%q<ruby-graphviz>, ["~> 1.0.0"])
     s.add_dependency(%q<jeweler>, ["~> 1.5.0"])
     s.add_dependency(%q<rspec>, ["~> 2.6.0"])
     s.add_dependency(%q<cucumber>, ["~> 1.0.0"])
     s.add_dependency(%q<aruba>, ["~> 0.4.0"])
     s.add_dependency(%q<yard>, ["~> 0.7.0"])
-    s.add_dependency(%q<watchr>, ["~> 0.7.0"])
-    s.add_dependency(%q<ruby-graphviz>, ["~> 1.0.0"])
+    s.add_dependency(%q<guard>, ["~> 0.6.2"])
+    s.add_dependency(%q<guard-rspec>, ["~> 0.4.3"])
+    s.add_dependency(%q<guard-cucumber>, ["~> 0.6.1"])
   end
 end
 

@@ -173,6 +173,34 @@ describe Rattler::Grammar::GrammarParser do
       end
     end
 
+    context 'given a semantic result' do
+      it 'parses as a SemanticAction' do
+        matching(' ^{ 42 } ').as(:expression).
+          should result_in(SemanticAction['42']).at(8)
+      end
+    end
+
+    context 'given a positive semantic predicate' do
+      it 'parses as an Assert of a SemanticAction' do
+        matching(' &{ 42 } ').as(:expression).
+          should result_in(Assert[SemanticAction['42']]).at(8)
+      end
+    end
+
+    context 'given a negative semantic predicate' do
+      it 'parses as a Disallow of a SemanticAction' do
+        matching(' !{ 42 } ').as(:expression).
+          should result_in(Disallow[SemanticAction['42']]).at(8)
+      end
+    end
+
+    context 'given a semantic side-effect predicate' do
+      it 'parses as a Skip of a SemanticAction' do
+        matching(' ~{ 42 } ').as(:expression).
+          should result_in(Skip[SemanticAction['42']]).at(8)
+      end
+    end
+
     context 'given an optional expression' do
       it 'parses as a Repeat with optional bounds' do
         matching(' expr? ').as(:expression).
@@ -338,48 +366,6 @@ describe Rattler::Grammar::GrammarParser do
       end
     end
 
-    context 'given a side-effect-attributed expression' do
-      it 'parses as a SideEffect' do
-        matching(' digits ~{|_| @i = _.to_i} ').as(:expression).
-          should result_in(SideEffect[Apply[:digits], '|_| @i = _.to_i']).at(26)
-      end
-    end
-
-    context 'given a lone side effect' do
-      it 'parses as a SideEffect on ESymbol[]' do
-        matching(' ~{ @i = :foo } ').as(:expression).
-          should result_in(SideEffect[ESymbol[], '@i = :foo']).at(15)
-      end
-    end
-
-    context 'given a positive semantic-predicate-attributed expression' do
-      it 'parses as a SemanticAssert' do
-        matching(' digits &{|_| _.to_i} ').as(:expression).
-          should result_in(SemanticAssert[Apply[:digits], '|_| _.to_i']).at(21)
-      end
-    end
-
-    context 'given a lone positive semantic predicate' do
-      it 'parses as a SemanticAssert on ESymbol[]' do
-        matching(' &{ @foo } ').as(:expression).
-          should result_in(SemanticAssert[ESymbol[], '@foo']).at(10)
-      end
-    end
-
-    context 'given a negative semantic-predicate-attributed expression' do
-      it 'parses as a SemanticDisallow' do
-        matching(' digits !{|_| _.to_i} ').as(:expression).
-          should result_in(SemanticDisallow[Apply[:digits], '|_| _.to_i']).at(21)
-      end
-    end
-
-    context 'given a lone negative semantic predicate' do
-      it 'parses as a SemanticDisallow on ESymbol[]' do
-        matching(' !{ @foo } ').as(:expression).
-          should result_in(SemanticDisallow[ESymbol[], '@foo']).at(10)
-      end
-    end
-
     context 'given a sequence expression' do
       it 'parses as a Sequence' do
         matching(' name "=" value ').as(:expression).
@@ -394,6 +380,28 @@ describe Rattler::Grammar::GrammarParser do
               Sequence[Apply[:b], Apply[:c]],
               Apply[:d]
             ]).at(10)
+        end
+      end
+
+      context 'with a semantic result' do
+        it 'parses as a Sequence with a SemanticAction' do
+          matching(' a b ^{|a,b| a + b } ').as(:expression).
+            should result_in(Sequence[
+              Apply[:a],
+              Apply[:b],
+              SemanticAction['|a,b| a + b']
+            ]).at(20)
+        end
+      end
+
+      context 'with a semantic side-effect' do
+        it 'parses as a Sequence with a Skip of a SemanticAction' do
+          matching(' a b ~{|a,b| a + b } ').as(:expression).
+            should result_in(Sequence[
+              Apply[:a],
+              Apply[:b],
+              Skip[SemanticAction['|a,b| a + b']]
+            ]).at(20)
         end
       end
     end
@@ -464,81 +472,81 @@ describe Rattler::Grammar::GrammarParser do
       end
     end
 
-    context 'given a side-effect-attributed sequence expression' do
-      it 'parses as a SideEffect with a nested Sequence' do
-        matching(' name "=" value ~{|_| @n = _.size }').as(:expression).
-          should result_in(SideEffect[
-            Sequence[Apply[:name], Match[%r{=}], Apply[:value]],
-            '|_| @n = _.size'
-          ]).at(35)
-      end
-    end
+    # context 'given a side-effect-attributed sequence expression' do
+    #   it 'parses as a SideEffect with a nested Sequence' do
+    #     matching(' name "=" value ~{|_| @n = _.size }').as(:expression).
+    #       should result_in(SideEffect[
+    #         Sequence[Apply[:name], Match[%r{=}], Apply[:value]],
+    #         '|_| @n = _.size'
+    #       ]).at(35)
+    #   end
+    # end
 
-    context 'given a multiple-effect-attirbuted expression' do
-      it 'parses as nested SideEffects' do
-        matching(' digits ~{|_| @i = _.to_i } ~{|_| @j = _ * 2 } ').as(:expression).
-          should result_in(SideEffect[
-            SideEffect[Apply[:digits], '|_| @i = _.to_i'],
-            '|_| @j = _ * 2'
-          ]).at(46)
-      end
-    end
+    # context 'given a multiple-effect-attirbuted expression' do
+    #   it 'parses as nested SideEffects' do
+    #     matching(' digits ~{|_| @i = _.to_i } ~{|_| @j = _ * 2 } ').as(:expression).
+    #       should result_in(SideEffect[
+    #         SideEffect[Apply[:digits], '|_| @i = _.to_i'],
+    #         '|_| @j = _ * 2'
+    #       ]).at(46)
+    #   end
+    # end
 
-    context 'given consecutive side-effect-attributed expressions' do
-      it 'parses as nested SideEffects' do
-        matching(' digits ~{|_| @i = _.to_i } foo ~{|_| @j = _ * 2 } ').as(:expression).
-          should result_in(SideEffect[
-            Sequence[
-              SideEffect[Apply[:digits], '|_| @i = _.to_i'],
-              Apply[:foo]
-            ],
-            '|_| @j = _ * 2'
-          ]).at(50)
-      end
-    end
+    # context 'given consecutive side-effect-attributed expressions' do
+    #   it 'parses as nested SideEffects' do
+    #     matching(' digits ~{|_| @i = _.to_i } foo ~{|_| @j = _ * 2 } ').as(:expression).
+    #       should result_in(SideEffect[
+    #         Sequence[
+    #           SideEffect[Apply[:digits], '|_| @i = _.to_i'],
+    #           Apply[:foo]
+    #         ],
+    #         '|_| @j = _ * 2'
+    #       ]).at(50)
+    #   end
+    # end
 
-    context 'given a positive predicate-attributed sequence expression' do
-      it 'parses as a SemanticAssert with a nested Sequence' do
-        matching(' digits digits &{|a, b| a.to_i > b.to_i } ').as(:expression).
-          should result_in(SemanticAssert[
-            Sequence[Apply[:digits], Apply[:digits]],
-            '|a, b| a.to_i > b.to_i'
-          ]).at(41)
-      end
-    end
+    # context 'given a positive predicate-attributed sequence expression' do
+    #   it 'parses as a SemanticAssert with a nested Sequence' do
+    #     matching(' digits digits &{|a, b| a.to_i > b.to_i } ').as(:expression).
+    #       should result_in(SemanticAssert[
+    #         Sequence[Apply[:digits], Apply[:digits]],
+    #         '|a, b| a.to_i > b.to_i'
+    #       ]).at(41)
+    #   end
+    # end
 
-    context 'given a multiple-predicate-attirbuted expression' do
-      it 'parses as nested SemanticAsserts' do
-        matching(' digits &{|_| _.to_i > 1 } &{|_| _.to_i < 7 } ').as(:expression).
-          should result_in(SemanticAssert[
-            SemanticAssert[Apply[:digits], '|_| _.to_i > 1'],
-            '|_| _.to_i < 7'
-          ]).at(45)
-      end
-    end
+    # context 'given a multiple-predicate-attirbuted expression' do
+    #   it 'parses as nested SemanticAsserts' do
+    #     matching(' digits &{|_| _.to_i > 1 } &{|_| _.to_i < 7 } ').as(:expression).
+    #       should result_in(SemanticAssert[
+    #         SemanticAssert[Apply[:digits], '|_| _.to_i > 1'],
+    #         '|_| _.to_i < 7'
+    #       ]).at(45)
+    #   end
+    # end
 
-    context 'given consecutive predicate-attributed expressions' do
-      it 'parses as nested SemanticAsserts' do
-        matching(' digits &{|_| _.to_i > 1 } foo &{|_| _.empty? } ').as(:expression).
-          should result_in(SemanticAssert[
-            Sequence[
-              SemanticAssert[Apply[:digits], '|_| _.to_i > 1'],
-              Apply[:foo]
-            ],
-            '|_| _.empty?'
-          ]).at(47)
-      end
-    end
+    # context 'given consecutive predicate-attributed expressions' do
+    #   it 'parses as nested SemanticAsserts' do
+    #     matching(' digits &{|_| _.to_i > 1 } foo &{|_| _.empty? } ').as(:expression).
+    #       should result_in(SemanticAssert[
+    #         Sequence[
+    #           SemanticAssert[Apply[:digits], '|_| _.to_i > 1'],
+    #           Apply[:foo]
+    #         ],
+    #         '|_| _.empty?'
+    #       ]).at(47)
+    #   end
+    # end
 
-    context 'given a negative predicate-attributed sequence expression' do
-      it 'parses as a SemanticAssert with a nested Sequence' do
-        matching(' digits digits !{|a, b| a.to_i > b.to_i } ').as(:expression).
-          should result_in(SemanticDisallow[
-            Sequence[Apply[:digits], Apply[:digits]],
-            '|a, b| a.to_i > b.to_i'
-          ]).at(41)
-      end
-    end
+    # context 'given a negative predicate-attributed sequence expression' do
+    #   it 'parses as a SemanticAssert with a nested Sequence' do
+    #     matching(' digits digits !{|a, b| a.to_i > b.to_i } ').as(:expression).
+    #       should result_in(SemanticDisallow[
+    #         Sequence[Apply[:digits], Apply[:digits]],
+    #         '|a, b| a.to_i > b.to_i'
+    #       ]).at(41)
+    #   end
+    # end
 
     context 'given an ordered choice expression' do
       it 'parses as a Choice' do

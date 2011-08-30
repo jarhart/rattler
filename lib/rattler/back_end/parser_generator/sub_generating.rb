@@ -70,6 +70,9 @@ module Rattler::BackEnd::ParserGenerator
       when ESymbol
         cache_generator ESymbolGenerator, context
 
+      when SemanticAction
+        cache_generator SemanticActionGenerator, context
+
       when DispatchAction
         cache_generator DispatchActionGenerator, context
 

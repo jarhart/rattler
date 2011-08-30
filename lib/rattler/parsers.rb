@@ -29,11 +29,9 @@ module Rattler
     autoload :Disallow, 'rattler/parsers/disallow'
     autoload :Eof, 'rattler/parsers/eof'
     autoload :ESymbol, 'rattler/parsers/e_symbol'
+    autoload :SemanticAction, 'rattler/parsers/semantic_action'
     autoload :DispatchAction, 'rattler/parsers/dispatch_action'
     autoload :DirectAction, 'rattler/parsers/direct_action'
-    autoload :SemanticAssert, 'rattler/parsers/semantic_assert'
-    autoload :SemanticDisallow, 'rattler/parsers/semantic_disallow'
-    autoload :SideEffect, 'rattler/parsers/side_effect'
     autoload :SemanticAttribute, 'rattler/parsers/semantic_attribute'
     autoload :Semantic, 'rattler/parsers/semantic'
     autoload :Token, 'rattler/parsers/token'
@@ -48,9 +46,6 @@ module Rattler
     autoload :MatchJoining, 'rattler/parsers/match_joining'
     autoload :ParserScope, 'rattler/parsers/parser_scope'
     autoload :ActionCode, 'rattler/parsers/action_code'
-    autoload :EffectCode, 'rattler/parsers/effect_code'
-    autoload :AssertCode, 'rattler/parsers/assert_code'
-    autoload :DisallowCode, 'rattler/parsers/disallow_code'
     autoload :NodeCode, 'rattler/parsers/node_code'
 
     class <<self

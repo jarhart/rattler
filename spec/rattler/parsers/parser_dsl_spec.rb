@@ -193,48 +193,10 @@ describe ParserDSL do
     end
   end
 
-  describe '#side_effect' do
-    context 'given a parser' do
-      it 'creates a side-effect parser' do
-        subject.side_effect(subject.match(/\d+/), '@i = _.to_i').
-        should == SideEffect[Match[/\d+/], '@i = _.to_i']
-      end
-    end
-    context 'given a match argument' do
-      it 'creates a side-effect match parser' do
-        subject.side_effect(/\d+/, '@i = _.to_i').
-        should == SideEffect[Match[/\d+/], '@i = _.to_i']
-      end
-    end
-  end
-
-  describe '#semantic_assert' do
-    context 'given a parser' do
-      it 'creates a positive Semantic predicate parser' do
-        subject.semantic_assert(subject.match(/\d+/), '_.to_i < 7').
-        should == SemanticAssert[Match[/\d+/], '_.to_i < 7']
-      end
-    end
-    context 'given a match argument' do
-      it 'creates a positive Semantic predicate match parser' do
-        subject.semantic_assert(/\d+/, '_.to_i < 7').
-        should == SemanticAssert[Match[/\d+/], '_.to_i < 7']
-      end
-    end
-  end
-
-  describe '#semantic_disallow' do
-    context 'given a parser' do
-      it 'creates a negative Semantic predicate parser' do
-        subject.semantic_disallow(subject.match(/\d+/), '_.to_i < 7').
-        should == SemanticDisallow[Match[/\d+/], '_.to_i < 7']
-      end
-    end
-    context 'given a match argument' do
-      it 'creates a negative Semantic match parser' do
-        subject.semantic_disallow(/\d+/, '_.to_i < 7').
-        should == SemanticDisallow[Match[/\d+/], '_.to_i < 7']
-      end
+  describe '#semantic_action' do
+    it 'creates a semantic action' do
+      subject.semantic_action('_.to_i').
+      should == SemanticAction['_.to_i']
     end
   end
 

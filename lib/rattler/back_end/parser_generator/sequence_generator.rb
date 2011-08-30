@@ -94,8 +94,7 @@ module Rattler::BackEnd::ParserGenerator
 
     def gen_matching(child, scope)
       if child.labeled?
-        var_name = capture_name(scope) {|new_scope| scope = new_scope }
-        @g.surround("(#{var_name} = ", ')') { gen_nested child, :basic, scope }
+        scope = capture_child(child, scope)
       else
         gen_nested child, :intermediate_skip, scope
       end
@@ -107,13 +106,18 @@ module Rattler::BackEnd::ParserGenerator
         if block_given?
           yield
         else
-          var_name = capture_name(scope) {|new_scope| scope = new_scope }
-          @g.surround("(#{var_name} = ", ')') { gen_nested child, :basic, scope }
+          scope = capture_child(child, scope)
         end
       else
         gen_nested child, :intermediate, scope
       end
       labeled_scope(child, scope)
+    end
+
+    def capture_child(child, scope)
+      new_capture(scope) do |name|
+        @g.surround("(#{name} = ", ')') { gen_nested child, :basic, scope }
+      end
     end
 
     def labeled_scope(child, scope)
@@ -165,10 +169,10 @@ module Rattler::BackEnd::ParserGenerator
       '[' + scope.captures.join(', ') + ']'
     end
 
-    def capture_name(scope)
+    def new_capture(scope)
       new_scope = scope.capture("r#{sequence_level}_#{scope.captures.size}")
-      yield new_scope
-      last_capture_name(new_scope)
+      yield last_capture_name(new_scope)
+      new_scope
     end
 
     def last_capture_name(scope)

@@ -123,6 +123,15 @@ describe JoinMatchCapturingSequence do
           subject.applies_to?(sequence, capturing).should be_false
         end
       end
+
+      context 'if the something else is a semantic action' do
+
+        let(:something_else) { Skip[SemanticAction['_.join']] }
+
+        it 'returns false' do
+          subject.applies_to?(sequence, capturing).should be_false
+        end
+      end
     end
 
     context 'given a sequence of matches following something else' do
@@ -141,6 +150,15 @@ describe JoinMatchCapturingSequence do
       context 'if the something else is capturing' do
 
         let(:something_else) { Apply[:a] }
+
+        it 'returns false' do
+          subject.applies_to?(sequence, capturing).should be_false
+        end
+      end
+
+      context 'if the something else is a semantic action' do
+
+        let(:something_else) { Skip[SemanticAction['_.join']] }
 
         it 'returns false' do
           subject.applies_to?(sequence, capturing).should be_false
@@ -199,6 +217,15 @@ describe JoinMatchCapturingSequence do
           subject.applies_to?(sequence, capturing).should be_false
         end
       end
+
+      context 'if the something else is a semantic action' do
+
+        let(:something_else) { Skip[SemanticAction['_.join']] }
+
+        it 'returns false' do
+          subject.applies_to?(sequence, capturing).should be_false
+        end
+      end
     end
 
     context 'given a sequence of single-group matches following something else' do
@@ -221,6 +248,15 @@ describe JoinMatchCapturingSequence do
       context 'if the something else is capturing' do
 
         let(:something_else) { Apply[:a] }
+
+        it 'returns false' do
+          subject.applies_to?(sequence, capturing).should be_false
+        end
+      end
+
+      context 'if the something else is a semantic action' do
+
+        let(:something_else) { Skip[SemanticAction['_.join']] }
 
         it 'returns false' do
           subject.applies_to?(sequence, capturing).should be_false

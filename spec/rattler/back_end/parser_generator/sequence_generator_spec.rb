@@ -46,6 +46,127 @@ end
         CODE
       end
     end
+
+    context 'given a sequence with a single capture and a semantic action' do
+
+      let(:sequence) { Sequence[Match[/\w+/], action] }
+
+      context 'when the action uses a parameter' do
+
+        let(:action) { SemanticAction['|s| "<#{s}>"'] }
+
+        it 'generates code that binds the capture to the parameter' do
+          top_level_code(:sequence_level => 0) {|g| g.gen_basic sequence }.
+          should == (<<-'CODE').strip
+p0 = @scanner.pos
+begin
+  (r0_0 = @scanner.scan(/\w+/)) &&
+  (r0_1 = ("<#{r0_0}>")) &&
+  [r0_0, r0_1]
+end || begin
+  @scanner.pos = p0
+  false
+end
+          CODE
+        end
+      end
+
+      context 'when the action uses a "_"' do
+
+        let(:action) { SemanticAction['"<#{_}>"'] }
+
+        it 'generates code that binds the capture to "_"' do
+          top_level_code(:sequence_level => 0) {|g| g.gen_basic sequence }.
+          should == (<<-'CODE').strip
+p0 = @scanner.pos
+begin
+  (r0_0 = @scanner.scan(/\w+/)) &&
+  (r0_1 = ("<#{r0_0}>")) &&
+  [r0_0, r0_1]
+end || begin
+  @scanner.pos = p0
+  false
+end
+          CODE
+        end
+      end
+    end
+
+    context 'given a sequence with multiple captures and a semantic action' do
+
+      let(:sequence) { Sequence[Match[/\d+/], Skip[Match[/\s+/]], Match[/\d+/], action] }
+
+      context 'when the action uses parameters' do
+
+        let(:action) { SemanticAction['|a,b| b + a'] }
+
+        it 'generates code that binds the captures to the parameter' do
+          top_level_code(:sequence_level => 0) {|g| g.gen_basic sequence }.
+          should == (<<-'CODE').strip
+p0 = @scanner.pos
+begin
+  (r0_0 = @scanner.scan(/\d+/)) &&
+  @scanner.skip(/\s+/) &&
+  (r0_1 = @scanner.scan(/\d+/)) &&
+  (r0_2 = (r0_1 + r0_0)) &&
+  [r0_0, r0_1, r0_2]
+end || begin
+  @scanner.pos = p0
+  false
+end
+          CODE
+        end
+      end
+
+      context 'when the action uses "_"' do
+
+        let(:action) { SemanticAction['_ * 2'] }
+
+        it 'generates code that binds the array of captures to the parameter' do
+          top_level_code(:sequence_level => 0) {|g| g.gen_basic sequence }.
+          should == (<<-'CODE').strip
+p0 = @scanner.pos
+begin
+  (r0_0 = @scanner.scan(/\d+/)) &&
+  @scanner.skip(/\s+/) &&
+  (r0_1 = @scanner.scan(/\d+/)) &&
+  (r0_2 = ([r0_0, r0_1] * 2)) &&
+  [r0_0, r0_1, r0_2]
+end || begin
+  @scanner.pos = p0
+  false
+end
+          CODE
+        end
+      end
+    end
+
+    context 'given a sequence with labeled captures and a semantic action' do
+
+      let(:sequence) { Sequence[
+        Label[:x, Match[/\d+/]],
+        Skip[Match[/\s+/]],
+        Label[:y, Match[/\d+/]],
+        SemanticAction['y + x']
+      ] }
+
+      it 'generates code that binds the labeled captures to the parameter' do
+        top_level_code(:sequence_level => 0) {|g| g.gen_basic sequence }.
+        should == (<<-'CODE').strip
+p0 = @scanner.pos
+begin
+  (r0_0 = @scanner.scan(/\d+/)) &&
+  @scanner.skip(/\s+/) &&
+  (r0_1 = @scanner.scan(/\d+/)) &&
+  (r0_2 = (r0_1 + r0_0)) &&
+  [r0_0, r0_1, r0_2]
+end || begin
+  @scanner.pos = p0
+  false
+end
+        CODE
+      end
+    end
   end
 
   describe '#gen_assert' do

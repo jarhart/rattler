@@ -1,19 +1,41 @@
 Feature: Semantic side-effects
 
-  A semantic side-effect can be defined by placing a "~" in front of a semantic
-  action. The expression is evaulated for effect and always succeeds with no
-  parse result.
+  Semantic side effects can be used to set or change some state during a parse
+  using a Ruby expression without directly affecting the parse.  The expression
+  is evaluated for effect and its result is discarded.
 
-  Scenario: Single token
+  A semantic side-effect is written as a "~" followed by curly braces
+  surrounding a Ruby expression.
+
+  Scenario: Lone action
     Given a grammar with:
       """
-      expr <- @DIGIT+ ~{|s| $x = s.to_i }
+      expr <- ~{ $x = 42 }
       """
-    When I parse "42 "
-    Then the parse result should be "42"
+    When I parse "anything"
+    Then the parse result should be true
       And $x should be 42
+      And the parse position should be 0
+  
+  Scenario: False result
+    Given a grammar with:
+      """
+      expr <- ~{ false }
+      """
+    When I parse "anything"
+    Then the parse result should be true
+      And the parse position should be 0
 
-  Scenario: Sequence
+  Scenario: Single-capture sequence
+    Given a grammar with:
+      """
+      expr <- @DIGIT+ ~{|a| $x = a.to_i }
+      """
+    When I parse "23"
+    Then the parse result should be "23"
+      And $x should be 23
+  
+  Scenario: Multi-capture sequence
     Given a grammar with:
       """
       %whitespace SPACE*
@@ -41,7 +63,7 @@ Feature: Semantic side-effects
     Then the parse result should be ["(", "17", "+", "29", ")"]
       And $x should be 46
   
-  Scenario: Single token using "_"
+  Scenario: Single-capture sequence using "_"
     Given a grammar with:
       """
       expr <- @DIGIT+ ~{ $x = _.to_i }
@@ -50,7 +72,7 @@ Feature: Semantic side-effects
     Then the parse result should be "23"
       And $x should be 23
   
-  Scenario: Sequence using "_"
+  Scenario: Multi-capture sequence using "_"
     Given a grammar with:
       """
       %whitespace SPACE*
@@ -60,7 +82,7 @@ Feature: Semantic side-effects
     Then the parse result should be ["3", "16"]
       And $x should be ["16", "3"]
   
-  Scenario: Sequence using "_" as a parameter name
+  Scenario: Multi-capture sequence using "_" as a parameter name
     Given a grammar with:
       """
       %whitespace SPACE*
@@ -69,13 +91,3 @@ Feature: Semantic side-effects
     When I parse "3 16"
     Then the parse result should be ["3", "16"]
       And $x should be 3
-
-  Scenario: Lone action
-    Given a grammar with:
-      """
-      expr <- ~{ $x = 42 }
-      """
-    When I parse "anything"
-    Then the parse result should be true
-      And $x should be 42
-      And the parse position should be 0

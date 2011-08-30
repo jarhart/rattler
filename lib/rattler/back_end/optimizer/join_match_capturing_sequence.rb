@@ -28,16 +28,27 @@ module Rattler::BackEnd::Optimizer
       any_neighbors?(parser) {|_| eligible_child? _ }
     end
 
-    def disqualifying_captures?(parser)
-      capturing_children = parser.select {|_| _.capturing? }
-      capturing_children.any? {|_| eligible_child? _ } and
-      capturing_children.any? {|_| not eligible_child? _ }
-    end
-
     def eligible_child?(child)
       child.is_a? Match or
       (child.is_a? GroupMatch and child.num_groups == 1) or
       (child.is_a? Skip and child.child.is_a? Match)
+    end
+
+    def disqualifying_captures?(parser)
+      parser.any? {|_| _.capturing? and eligible_child? _ } and
+      parser.any? {|_| capture_incompatible? _ }
+    end
+
+    def capture_incompatible?(child)
+      (child.capturing? and not eligible_child? child) or
+      semantic? child
+    end
+
+    def semantic?(parser)
+      case parser
+      when SemanticAction then true
+      when Assert, Disallow, Skip then semantic? parser.child
+      end
     end
 
     def create_patterns(parsers)

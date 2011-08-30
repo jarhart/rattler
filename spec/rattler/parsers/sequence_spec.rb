@@ -68,6 +68,70 @@ describe Sequence do
         end
       end
     end
+
+    context 'with a single capture and a semantic action' do
+
+      context 'when the action uses a parameter' do
+
+        let(:nested) { [Match[/\w+/], SemanticAction['|s| "<#{s}>"']] }
+
+        it 'binds the capture to the parameter' do
+          parsing('foo').should result_in ['foo', '<foo>']
+        end
+      end
+
+      context 'when the action uses "_"' do
+
+        let(:nested) { [Match[/\w+/], SemanticAction['"<#{_}>"']] }
+
+        it 'binds the capture to "_"' do
+          parsing('foo').should result_in ['foo', '<foo>']
+        end
+      end
+    end
+
+    context 'with multiple captures and a semantic action' do
+
+      context 'when the action uses parameters' do
+
+        let(:nested) { [Match[/[a-z]+/], Match[/\d+/], SemanticAction['|a,b| b+a']] }
+
+        it 'binds the captures to the parameters' do
+          parsing('abc123').should result_in ['abc', '123', '123abc']
+        end
+      end
+
+      context 'when the action uses "_"' do
+
+        let(:nested) { [Match[/[a-z]+/], Match[/\d+/], SemanticAction['_']] }
+
+        it 'binds the array of captures to "_"' do
+          parsing('abc123').should result_in ['abc', '123', ['abc', '123']]
+        end
+      end
+    end
+
+    context 'with a single labeled capture and a semantic action' do
+
+      let(:nested) { [Label[:a, Match[/\w+/]], SemanticAction['"<#{a}>"']] }
+
+      it 'binds the capture to the label name' do
+        parsing('foo').should result_in ['foo', '<foo>']
+      end
+    end
+
+    context 'with multiple labeled captures and a semantic action' do
+
+      let(:nested) { [
+        Label[:a, Match[/[[:alpha:]]+/]],
+        Label[:b, Match[/[[:digit:]]+/]],
+        SemanticAction['b + a']
+      ] }
+
+      it 'binds the captures to the label names' do
+        parsing('abc123').should result_in ['abc', '123', '123abc']
+      end
+    end
   end
 
   describe '#capturing?' do

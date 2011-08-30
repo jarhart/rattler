@@ -46,9 +46,6 @@ include Rattler::Parsers
 
   attributed        <-  attributed? ~'<' node_action? literal? ~'>'             <DispatchAction>
                       / attributed? ~'{' action ~'}'                            <DirectAction>
-                      / attributed? ~'~' ~'{' action ~'}'                       <SideEffect>
-                      / attributed? ~'&' ~'{' action ~'}'                       <SemanticAssert>
-                      / attributed? ~'!' ~'{' action ~'}'                       <SemanticDisallow>
                       / attributed_terms
 
   node_action       <-  @(name (~'.' var_name)?)
@@ -71,8 +68,12 @@ include Rattler::Parsers
 
   labeled           <-  var_name ~':' labelable                                 <Label>
 
-  labelable         <-  list
-                      / list_term
+  labelable         <-  semantic_action / list / list_term
+
+  semantic_action   <-  ~'^' ~'{' action ~'}'                                   <SemanticAction>
+                      / ~'&' ~'{' action ~'}'                                   { semantic_assert _ }
+                      / ~'!' ~'{' action ~'}'                                   { semantic_disallow _ }
+                      / ~'~' ~'{' action ~'}'                                   { side_effect _ }
 
   list              <-  list_term ~('*' ',') list_term                          { list0 *_ }
                       / list_term ~('+' ',') list_term                          { list1 *_ }

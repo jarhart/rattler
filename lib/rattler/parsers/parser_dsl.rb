@@ -236,40 +236,13 @@ module Rattler
         DirectAction[to_parser(arg), code]
       end
 
-      # Create a new semantic action that evaluates ruby code for effect.
+      # Create a new semantic action.
       #
-      # @overload side_effect(parser, code)
-      #   @return [SideEffect] a new semantic action
-      # @overload side_effect(arg, code)
-      #   @return [SideEffect] a new semantic action using arg to define a
-      #     match parser
-      #   @see #match
-      def side_effect(arg, code)
-        SideEffect[to_parser(arg), code]
-      end
-
-      # Create a new positive semantic predicate.
+      # @param [String] code the action code
       #
-      # @overload semantic_assert(parser, code)
-      #   @return [SemanticAssert] a new positive Semantic predicate
-      # @overload semantic_assert(arg, code)
-      #   @return [SemanticAssert] a new positive Semantic predicate using arg
-      #     to define a match parser
-      #   @see #match
-      def semantic_assert(arg, code)
-        SemanticAssert[to_parser(arg), code]
-      end
-
-      # Create a new negative semantic predicate.
-      #
-      # @overload semantic_disallow(parser, code)
-      #   @return [SemanticDisallow] a new negative Semantic predicate
-      # @overload semantic_disallow(arg, code)
-      #   @return [SemanticDisallow] a new negative Semantic predicate using
-      #     arg to define a match parser
-      #   @see #match
-      def semantic_disallow(arg, code)
-        SemanticDisallow[to_parser(arg), code]
+      # @return [SemanticAssert] a new semantic action
+      def semantic_action(code)
+        SemanticAction[code]
       end
 
       # Create a new token parser or token rule.
