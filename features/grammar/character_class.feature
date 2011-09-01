@@ -1,8 +1,13 @@
 Feature: Character Classes
 
-  Character classes are sets of characters between "[" and "]" and mean match
-  any single character in the set. They are identical to character classes in
-  Ruby's regular expressions.
+  A character class defines a set of characters and matches any single
+  character in the set.
+
+  A character class is written as square brackets surrounding a set of
+  characters.
+
+  Character classes are identical in syntax and semantics to character classes
+  in Ruby's regular expressions.
   
   Scenario Outline: Parsing
     Given a grammar with:

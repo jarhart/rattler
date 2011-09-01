@@ -1,13 +1,14 @@
 Feature: List Matching
 
-  A term expression followed by "*," or "+," and a separator expression means
-  to match a list of terms with separators between them. "*," matches a list of
-  zero or more terms, "+," matches a list of one or more term.
+  A list matching expression defines a term expression and a separator and
+  matches a list of terms.
 
+  A list matching expression is written by following a parsing expression for
+  the term with "*," or "+," followed by a parsing expression for the separator.
   Repetition counts or ranges can also be used for generalized list matching
-  expressions. A count by itself means to match the preceding expression exactly
-  that many times. A range can be written with ".." between the lower and upper
-  bounds. The upper bound is optional.
+  expressions.  With a count by itself the expression matches a exactly that
+  many terms.  A range is written as a lower bound followed by "..", optionally
+  followed by an upper bound.
 
   Scenario Outline: Zero or more terms
     Given a grammar with:

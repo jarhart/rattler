@@ -1,9 +1,9 @@
 Feature: Generalized Repeat
 
   Repetition counts or ranges can be used for generalized repeat expressions.
-  A count by itself means to match the preceding expression exactly that many
-  times. A range can be written with ".." between the lower and upper bounds.
-  The upper bound is optional.
+  With a count by itself the expression matches a exactly that many times.
+  A range is written as a lower bound followed by "..", optionally followed by
+  an upper bound.
 
   Scenario Outline: Range
     Given a grammar with:

@@ -1,10 +1,13 @@
 Feature: Word Literal Expressions
+
+  A word literal is like a string literal but matches only if it is not
+  followed by a word character.  Word literals are useful to match whole words
+  only.   What is considered a word character can be defined using the
+  %word_character directive.  By default a word charactacter is an alphanumeric
+  character or the underscore character.
   
-  A word literal is like a string literal but delimited with backquotes (`) and
-  it means to match the literal only if it is not followed by a word character.
-  It is useful when you want to match whole words only. What is considered a
-  word character can be defined using the %word_character directive. By default
-  a word charactacter is an alphanumeric character or the underscore character.
+  A word literal is written like a string literal but delimited with backquotes
+  (`) instead of double or single quotes.
   
   Scenario Outline: Default word character definition
     Given a grammar with:
@@ -34,3 +37,4 @@ Feature: Word Literal Expressions
     | input      | result |
     | "for "     | "for"  |
     | "for-each" | FAIL   |
+  

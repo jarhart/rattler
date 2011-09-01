@@ -1,8 +1,10 @@
 Feature: Positive Lookahead Operator
   
-  The "&" operator before an expression means to match only if the expression
-  would match here but never consume any input. This is known as zero-width
-  positive lookahead.
+  A positive lookahead predicate matches if a parsing expression would match
+  but the predicate consumes no input.
+
+  Positive lookahead is written by placing a "&" in front of a parsing
+  expression.
   
   Scenario Outline: Parsing
     Given a grammar with:

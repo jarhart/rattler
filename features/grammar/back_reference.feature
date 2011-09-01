@@ -1,8 +1,10 @@
 Feature: Back References
 
-  A back reference is a "$" followed by a label defined earlier in a sequence.
-  The reference refers to the previous parse result and it means to match the
-  same exact input again.
+  A back reference refers to a previous labelled parsing expression and matches
+  the exact string matched by the referenced expression.
+
+  A back reference is written as a "$" followed by a label defined earlier in a
+  sequence.
 
   Scenario Outline: Parsing
     Given a grammar with:

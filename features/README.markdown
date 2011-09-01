@@ -16,12 +16,12 @@ dynamically from strings.
 
 Standard Parsing Expression Grammar Syntax
 
-* [String Literals](http://www.relishapp.com/jarhart/rattler/docs/grammar/literal-expressions)
+* [String Literals](http://www.relishapp.com/jarhart/rattler/docs/grammar/string-literals)
 * [Character Classes](http://www.relishapp.com/jarhart/rattler/docs/grammar/character-classes)
 * ["Any Character" Symbol](http://www.relishapp.com/jarhart/rattler/docs/grammar/any-character-symbol)
 * [Nonterminals](http://www.relishapp.com/jarhart/rattler/docs/grammar/nonterminals)
-* [Ordered Choice](http://www.relishapp.com/jarhart/rattler/docs/grammar/ordered-choice-expressions)
-* [Sequences](http://www.relishapp.com/jarhart/rattler/docs/grammar/sequence-expressions)
+* [Ordered Choice](http://www.relishapp.com/jarhart/rattler/docs/grammar/ordered-choice)
+* [Sequences](http://www.relishapp.com/jarhart/rattler/docs/grammar/sequences)
 * [Zero-Or-More](http://www.relishapp.com/jarhart/rattler/docs/grammar/zero-or-more)
 * [One-Or-More](http://www.relishapp.com/jarhart/rattler/docs/grammar/one-or-more)
 * [Optional Expressions](http://www.relishapp.com/jarhart/rattler/docs/grammar/optional-operator)
@@ -29,9 +29,9 @@ Standard Parsing Expression Grammar Syntax
 * [Negative Lookahead](http://www.relishapp.com/jarhart/rattler/docs/grammar/negative-lookahead-operator)
 * [Comments](http://www.relishapp.com/jarhart/rattler/docs/grammar/comments)
 
-Rattler Extended Grammar Syntax
+Rattler Extended Matching Syntax
 
-* [Whitespace Skipping](http://www.relishapp.com/jarhart/rattler/docs/grammar/whitespace)
+* [Whitespace Skipping](http://www.relishapp.com/jarhart/rattler/docs/grammar/whitespace-skipping)
 * [POSIX Character Classes](http://www.relishapp.com/jarhart/rattler/docs/grammar/posix-character-classes)
 * [Skip Operator](http://www.relishapp.com/jarhart/rattler/docs/grammar/skip-operator)
 * [Token Operator](http://www.relishapp.com/jarhart/rattler/docs/grammar/token-operator)
@@ -42,8 +42,12 @@ Rattler Extended Grammar Syntax
 * [EOF Symbol](http://www.relishapp.com/jarhart/rattler/docs/grammar/eof-symbol)
 * ["Empty" Symbol](http://www.relishapp.com/jarhart/rattler/docs/grammar/e-symbol)
 * [Fail Expressions](http://www.relishapp.com/jarhart/rattler/docs/grammar/fail-expressions)
+
+Semantics
+
 * [Semantic Actions](http://www.relishapp.com/jarhart/rattler/docs/grammar/semantic-actions)
 * [Node Actions](http://www.relishapp.com/jarhart/rattler/docs/grammar/node-actions)
+* [Semantic Results](http://relishapp.com/jarhart/rattler/docs/grammar/semantic-results)
 * [Positive Semantic Predicates](http://www.relishapp.com/jarhart/rattler/docs/grammar/positive-semantic-predicates)
 * [Negative Semantic Predicates](http://www.relishapp.com/jarhart/rattler/docs/grammar/negative-semantic-predicates)
 * [Semantic side-effects](http://www.relishapp.com/jarhart/rattler/docs/grammar/semantic-side-effects)

@@ -1,8 +1,11 @@
-Feature: Ordered Choice Expressions
+Feature: Ordered Choice
   
-  An ordered choice expression is a series of sub-expressions separated by "/"
-  and it means to try each sub-expression in order until one matches, and fail
-  if none of the sub-expressions match.
+  An ordered choice tries a series of parsing expressions in order until one
+  matches, and fails if none of the expressions match.  The first expression
+  that matches is the one that is used.
+
+  An ordered choice is written as a series of parsing expressions separated by
+  "/".  The "/" has the lowest precedence.
   
   Scenario Outline: Parsing
     Given a grammar with:

@@ -1,9 +1,10 @@
 Feature: Token Operator
   
-  The "@" operator before an expression means match as a token, i.e the result
-  is the entire matched string and whitespace within the token is never
-  automatically skipped. The expression becomes atomic, so any defined
-  whitespace will be automatically skipped before the token.
+  The "@" operator in front of a parsing expression causes it to match as a
+  token. The parse result is the entire string matched by the expression, and
+  whitespace is never automatically skipped within the expression. The
+  expression becomes atomic, so any defined whitespace will be automatically
+  skipped before the token is matched.
   
   Scenario: Nested sequences and repeats
     Given a grammar with:
@@ -19,7 +20,7 @@ Feature: Token Operator
       %whitespace SPACE*
       number <- @("-"? DIGIT+ ("." DIGIT+)?)
       """
-    When I parse "23 . 45"
+    When I parse "  23 . 45"
     Then the parse result should be "23"
   
   Scenario: With non-capturing sub-expressions

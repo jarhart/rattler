@@ -1,6 +1,7 @@
 Feature: Skip Operator
   
-  The "~" operator before an expression means to match but ignore the result.
+  The "~" operator in front of a parsing expression causes the expression's
+  parse result to be discarded.
   
   Scenario: Sequence with skipped sub-expressions
     Given a grammar with:

@@ -1,8 +1,11 @@
-Feature: Sequence Expressions
+Feature: Sequences
   
-  A sequence expression is a series of sub-expressions and it means to match
-  all of the sub-expressions in sequence, otherwise fail and consume no input.
-  
+  A sequence is a series of parsing expressions that matches if all of the
+  expressions match in sequence. If any of the parsing expressions fail, the
+  entire sequence fails and backtracks to the starting point.
+
+  A sequence is written as a series of parsing expressions separated by spaces.
+
   Scenario Outline: Parsing
     Given a grammar with:
       """

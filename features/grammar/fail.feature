@@ -1,10 +1,12 @@
 Feature: Fail Expressions
-  
-  A "fail" expression means alway fail here with a specified message. It can
-  used to provide more meaningful messages when a parse fails. The syntax is
-  either "fail", "fail_rule" or "fail_parse" followed by the message specified
-  as a string literal. Using "fail_rule" causes the entire rule to fail and
-  "fail_parse" causes the entire parse to fail.
+
+  A fail expression always fails with a specified message.  It can used to
+  provide more meaningful messages when a parse fails.
+
+  A fail expression is written as either "fail", "fail_rule" or "fail_parse"
+  followed by the message specified as a string literal.  Using "fail_rule"
+  causes the entire rule to fail and "fail_parse" causes the entire parse to
+  fail.
   
   Scenario: Fail-expression
     Given a grammar with:

@@ -1,7 +1,9 @@
-Feature: Literal Expressions
+Feature: String Literals
+
+  A string literal matches exact text.  The expression matches if the exact
+  text is next in the input.
   
-  A string literal has the same syntax as a Ruby string literal and it means to
-  match if that exact text is next in the input.
+  A string literal is written exactly like a Ruby string literal.
   
   Scenario Outline: Normal String
     Given a grammar with:

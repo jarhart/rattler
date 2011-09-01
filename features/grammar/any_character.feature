@@ -1,6 +1,6 @@
 Feature: "Any Character" Symbol
 
-  The "." (period) means match any single character.
+  A "." (period) matches any single character.
 
   Scenario Outline: Parsing
     Given a grammar with:

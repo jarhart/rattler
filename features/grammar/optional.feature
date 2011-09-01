@@ -1,7 +1,7 @@
 Feature: Optional Operator
   
-  The "?" operator following an expression makes the it optional, meaning it
-  succeeds even if no input is matched.
+  The "?" operator following a parsing expression makes it optional, so that it
+  succeeds even if the expression does not match.
   
   Scenario Outline: Capturing Expression
     Given a grammar with:
