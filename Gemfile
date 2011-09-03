@@ -12,7 +12,7 @@ group :development do
   gem "rspec", "~> 2.6.0"
   gem "cucumber", "~> 1.0.0"
   gem "aruba", "~> 0.4.0"
-  gem "rcov", "~> 0.9.10", :platforms => [:ruby_18, :mingw_18]
+  gem "rcov", "~> 0.9.10", :platforms => [:mri_18, :mingw_18]
   gem "yard", "~> 0.7.0"
   gem "guard", "~> 0.6.3"
   gem "guard-rspec", "~> 0.4.3"
