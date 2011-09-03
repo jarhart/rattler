@@ -1,7 +1,8 @@
 Feature: Zero-Or-More
   
   The "*" operator following a parsing expression causes it to match repeatedly
-  and succeed even if the expression never matches.
+  and succeed even if the expression never matches, i.e. it matches zero or
+  more times.
   
   Scenario Outline: Capturing Expression
     Given a grammar with:

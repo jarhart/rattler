@@ -1,7 +1,8 @@
 Feature: One-Or-More
   
   The "+" operator following a parsing expression causes it to match repeatedly
-  and succeed if the expression matches at least once.
+  and succeed if the expression matches at least once, i.e. it matches one or
+  more times.
   
   Scenario Outline: Capturing Expression
     Given a grammar with:
