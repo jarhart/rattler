@@ -9,6 +9,8 @@ rescue Bundler::BundlerError => e
 end
 require 'rake'
 
+task :default => :test
+
 METAGRAMMAR_SOURCE = File.join *%w(lib rattler grammar rattler.rtlr)
 METAGRAMMAR_ARCHIVE = 'archive'
 
@@ -30,17 +32,10 @@ Jeweler::RubygemsDotOrgTasks.new
 
 require 'rspec/core'
 require 'rspec/core/rake_task'
-RSpec::Core::RakeTask.new(:spec) do |spec|
-  spec.pattern = FileList['spec/**/*_spec.rb']
-end
-
-# RSpec::Core::RakeTask.new(:rcov) do |spec|
-#   spec.pattern = 'spec/**/*_spec.rb'
-#   spec.rcov = true
-# end
+RSpec::Core::RakeTask.new
 
 require 'cucumber/rake/task'
-Cucumber::Rake::Task.new :features do |t|
+Cucumber::Rake::Task.new do |t|
   if Cucumber::JRUBY
     t.profile = 'jruby'
   elsif Cucumber::WINDOWS_MRI
@@ -48,10 +43,32 @@ Cucumber::Rake::Task.new :features do |t|
   end
 end
 
-task :default => :test
-
 desc 'Run all tests'
-task :test => [:spec, :features]
+task :test => [:spec, :cucumber]
+
+if RUBY_VERSION.to_f == 1.8
+  namespace :rcov do
+    desc 'Run RSpec code examples with code coverage'
+    RSpec::Core::RakeTask.new do |t|
+      t.rcov = true
+      t.rcov_opts = ['--exclude', 'gems/*,features,spec']
+    end
+
+    desc 'Run Cucumber features'
+    Cucumber::Rake::Task.new do |t|
+      if Cucumber::JRUBY
+        t.profile = 'jruby'
+      elsif Cucumber::WINDOWS_MRI
+        t.profile = 'windows_mri'
+      end
+      t.rcov = true
+      t.rcov_opts =  ['--exclude', 'gems/*,features,spec']
+    end
+  end
+
+  desc 'Run all tests with code coverage'
+  task :rcov => ['rcov:spec', 'rcov:cucumber']
+end
 
 require 'yard'
 YARD::Rake::YardocTask.new
@@ -60,6 +77,14 @@ desc 'Regenerate Metagrammar module from rattler.rtlr'
 task :metagrammar => [:archive_metagrammar, :lib_path] do
   require 'rattler/runner'
   Rattler::Runner.run([METAGRAMMAR_SOURCE, '-l', 'lib', '-f', '-s'])
+end
+
+desc "delete generated files"
+task :clobber do
+  sh 'find . -name "*.rbc" -exec rm {} \;'
+  sh 'rm -rf pkg'
+  sh 'rm -rf doc'
+  sh 'rm -rf coverage'
 end
 
 task :lib_path do
