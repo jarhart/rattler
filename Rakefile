@@ -11,9 +11,6 @@ require 'rake'
 
 task :default => :test
 
-METAGRAMMAR_SOURCE = File.join *%w(lib rattler grammar rattler.rtlr)
-METAGRAMMAR_ARCHIVE = 'archive'
-
 require 'jeweler'
 Jeweler::Tasks.new do |gem|
   # gem is a Gem::Specification... see http://docs.rubygems.org/read/chapter/20 for more options
@@ -74,10 +71,7 @@ require 'yard'
 YARD::Rake::YardocTask.new
 
 desc 'Regenerate Metagrammar module from rattler.rtlr'
-task :metagrammar => [:archive_metagrammar, :lib_path] do
-  require 'rattler/runner'
-  Rattler::Runner.run([METAGRAMMAR_SOURCE, '-l', 'lib', '-f', '-s'])
-end
+task :metagrammar => [:archive_metagrammar, :generate_metagrammar]
 
 desc "delete generated files"
 task :clobber do
@@ -87,15 +81,16 @@ task :clobber do
   sh 'rm -rf coverage'
 end
 
-task :lib_path do
-  lib_path = File.expand_path(File.join(File.dirname(__FILE__), 'lib'))
-  $LOAD_PATH.unshift lib_path unless $LOAD_PATH.include? lib_path
+require 'rattler/rake_task'
+Rattler::RakeTask.new :generate_metagrammar do |t|
+  t.grammar = File.join *%w(lib rattler grammar rattler.rtlr)
+  t.rtlr_opts = ['-l', 'lib', '-f', '-s']
 end
 
 task :archive_metagrammar do
   source_file = File.join 'lib', 'rattler', 'grammar', 'metagrammar.rb'
   timestamp = Time.now.strftime '%Y%m%d_%H%M%S'
-  target_file = File.join METAGRAMMAR_ARCHIVE, "metagrammar_#{timestamp}.rb"
-  mkdir_p METAGRAMMAR_ARCHIVE
+  target_file = File.join 'archive', "metagrammar_#{timestamp}.rb"
+  mkdir_p File.dirname(target_file)
   cp source_file, target_file
 end
