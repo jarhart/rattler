@@ -8,7 +8,7 @@ group 'spec' do
   end
 end
 
-group 'features' do
+group 'cucumber' do
   guard 'cucumber', :cli => '--profile guard' do
     watch(%r{^features/.+\.feature$})
     watch(%r{^features/support/.+$})          { 'features' }
