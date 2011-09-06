@@ -33,3 +33,27 @@ Feature: One-Or-More
     | "-"   | true   | 1   |
     | "---" | true   | 3   |
     | "foo" | false  | 0   |
+  
+  Scenario Outline: Choice of capturing or non-capturing
+    Given a grammar with:
+      """
+      expr  <- ("a" / ~"b")*
+      """
+    When I parse <input>
+    Then the parse result should be <result>
+      And the parse position should be <pos>
+  
+  Examples:
+    | input | result     | pos |
+    | "aa"  | ["a", "a"] | 2   |
+    | "aba" | ["a", "a"] | 3   |
+    | "bbc" | []         | 2   |
+
+  Scenario: Semantic attribute returning true
+    Given a grammar with:
+      """
+      expr  <- (ALPHA { true })+
+      """
+    When I parse "foo "
+    Then the parse result should be []
+      And the parse position should be 3
