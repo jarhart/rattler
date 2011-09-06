@@ -97,6 +97,32 @@ describe Repeat do
       end
     end
 
+    context 'with a choice of capturing or non-capturing parsers' do
+
+      subject { Repeat[child, 0, nil] }
+
+      let(:child) { Choice[
+        Match[/a/],
+        Skip[Match[/b/]]
+      ] }
+
+      it 'returns only the capturing results' do
+        parsing('aba').should result_in(['a', 'a']).at(3)
+      end
+    end
+
+    context 'with an attributed sequence with a semantic action returning true' do
+
+      subject { Repeat[child, 0, nil] }
+
+      let(:child) do
+        AttributedSequence[Match[/\w/], SemanticAction['true']]
+      end
+
+      it 'returns an empty array' do
+        parsing('foo ').should result_in([]).at(3)
+      end
+    end
   end
 
   describe '#capturing?' do

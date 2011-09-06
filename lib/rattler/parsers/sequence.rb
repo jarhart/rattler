@@ -15,7 +15,7 @@ module Rattler::Parsers
   # @author Jason Arhart
   #
   class Sequence < Parser
-    include Combining
+    include Sequencing
 
     # @private
     def self.parsed(results, *_) #:nodoc:
@@ -30,18 +30,12 @@ module Rattler::Parsers
     # @return an array of captured results of each parser in sequence, or
     #   +false+
     def parse(scanner, rules, scope = ParserScope.empty)
-      scope = scope.nest
-      pos = scanner.pos
-      for child in children
-        if r = child.parse(scanner, rules, scope) {|_| scope = scope.merge _ }
-          scope = scope.capture(r) unless r == true
-        else
-          scanner.pos = pos
-          return false
+      backtracking(scanner) do
+        if scope = parse_children(scanner, rules, scope.nest)
+          yield scope if block_given?
+          parse_result(scope)
         end
       end
-      yield scope if block_given?
-      parse_result(scope)
     end
 
     # Return a new parser that tries both this parser and +other+ and fails
@@ -53,15 +47,15 @@ module Rattler::Parsers
       Sequence[(children + [other])]
     end
 
+    def >>(semantic)
+      AttributedSequence[(children + [semantic])]
+    end
+
     # The number of child parsers that are capturing
     #
     # @return the number of child parsers that are capturing
     def capture_count
       @capture_count ||= count {|_| _.capturing? }
-    end
-
-    def sequence?
-      true
     end
 
     private

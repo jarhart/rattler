@@ -282,90 +282,6 @@ describe Rattler::Grammar::GrammarParser do
       end
     end
 
-    context 'given a dispatch-action-attributed expression' do
-
-      context 'given an action with a class name' do
-        it 'parses as a DispatchAction with the default method' do
-          matching(' expr <Expr> ').as(:expression).
-            should result_in(DispatchAction[Apply[:expr],
-              {:target => 'Expr', :method => 'parsed'}
-            ]).at(12)
-        end
-
-        context 'with a literal' do
-          it 'uses the literal as the name' do
-            matching(' expr <Expr "expression"> ').as(:expression).
-              should result_in(DispatchAction[Apply[:expr],
-                {:target => 'Expr', :method => 'parsed',
-                  :target_attrs => {:name => 'expression'} }
-              ]).at(25)
-          end
-        end
-      end
-
-      context 'given an action with a class and method names' do
-        it 'parses as a DispatchAction with the default method' do
-          matching(' expr <Expr.eval> ').as(:expression).
-            should result_in(DispatchAction[Apply[:expr],
-              {:target => 'Expr', :method => 'eval'}
-            ]).at(17)
-        end
-
-        context 'with a literal' do
-          it 'uses the literal as the name' do
-            matching(' expr <Expr.eval "expression"> ').as(:expression).
-              should result_in(DispatchAction[Apply[:expr],
-                { :target => 'Expr', :method => 'eval',
-                  :target_attrs => {:name => 'expression'} }
-              ]).at(30)
-          end
-        end
-      end
-
-      context 'given an empty action' do
-        it 'parses as a DispatchAction with the default target and method' do
-          matching(' expr <> ').as(:expression).
-            should result_in(DispatchAction[Apply[:expr],
-              {:target => 'Rattler::Runtime::ParseNode', :method => 'parsed'}
-            ]).at(8)
-        end
-      end
-
-      context 'given an action with just a literal' do
-        it 'parses as a default node with the literal as the name' do
-          matching(' expr <"expression"> ').as(:expression).
-            should result_in(DispatchAction[Apply[:expr],
-              { :target => 'Rattler::Runtime::ParseNode',
-                :method => 'parsed',
-                :target_attrs => {:name => 'expression'} }
-            ]).at(20)
-        end
-      end
-    end
-
-    context 'given a lone dispatch action' do
-      it 'parses as a DispatchAction on ESymbol[]' do
-        matching(' <Foo> ').as(:expression).
-          should result_in(DispatchAction[ESymbol[],
-            {:target => 'Foo', :method => 'parsed'}]).
-          at(6)
-      end
-    end
-
-    context 'given a direct-action-attributed expression' do
-      it 'parses as a DirectAction' do
-        matching(' digits {|_| _.to_i} ').as(:expression).
-          should result_in(DirectAction[Apply[:digits], '|_| _.to_i']).at(20)
-      end
-    end
-
-    context 'given a lone direct action' do
-      it 'parses as a DirectAction on ESymbol[]' do
-        matching(' { :foo } ').as(:expression).
-          should result_in(DirectAction[ESymbol[], ':foo']).at(9)
-      end
-    end
-
     context 'given a sequence expression' do
       it 'parses as a Sequence' do
         matching(' name "=" value ').as(:expression).
@@ -406,147 +322,163 @@ describe Rattler::Grammar::GrammarParser do
       end
     end
 
-    context 'given a dispatch-attributed sequence expression' do
-      it 'parses as a DispatchAction with a nested Sequence' do
-        matching(' name "=" value <Assign>').as(:expression).
-          should result_in(DispatchAction[
-            Sequence[Apply[:name], Match[%r{=}], Apply[:value]],
-            {:target => 'Assign', :method => 'parsed'}
-          ]).at(24)
+    context 'given an attributed expression' do
+
+      context 'with a single term and a semantic action' do
+        it 'parses as an AttributedSequence' do
+          matching(' digits {|_| _.to_i} ').as(:expression).
+            should result_in(AttributedSequence[
+              Apply[:digits], SemanticAction['|_| _.to_i']
+            ]).at(20)
+        end
+      end
+
+      context 'with a single term and a node action' do
+
+        context 'with just a class name' do
+          it 'parses as an AttributedSequence' do
+            matching(' expr <Expr> ').as(:expression).
+              should result_in(AttributedSequence[
+                Apply[:expr], NodeAction['Expr']
+              ]).at(12)
+          end
+        end
+
+        context 'with a class name and a method name' do
+          it 'parses as an AttributedSequence with the method attribute' do
+            matching(' expr <Expr.create> ').as(:expression).
+              should result_in(AttributedSequence[
+                Apply[:expr], NodeAction['Expr', {:method => 'create'}]
+              ]).at(19)
+          end
+        end
+
+        context 'with a class name and a node name' do
+          it 'parses as an AttributedSequence with the node name attribute' do
+            matching(' expr <Expr "EXPR"> ').as(:expression).
+              should result_in(AttributedSequence[
+                Apply[:expr],
+                NodeAction['Expr', {:node_attrs => {:name => 'EXPR'}}]
+              ]).at(19)
+          end
+        end
+
+        context 'with class, method and node names' do
+          it 'parses as an AttributedSequence with the method and node name attributes' do
+            matching(' expr <Expr.create "EXPR"> ').as(:expression).
+              should result_in(AttributedSequence[
+                Apply[:expr],
+                NodeAction['Expr', { :method => 'create',
+                                     :node_attrs => {:name => 'EXPR'} }]
+              ]).at(26)
+          end
+        end
+
+        context 'with no names' do
+          it 'parses as an AttributedSequence with a default NodeAction' do
+            matching(' expr <> ').as(:expression).
+              should result_in(AttributedSequence[
+                Apply[:expr], NodeAction['Rattler::Runtime::ParseNode']
+              ]).at(8)
+          end
+        end
+
+        context 'with just a node name' do
+          it 'parses as an AttributedSequence with a node name attribute' do
+            matching(' expr <"EXPR"> ').as(:expression).
+              should result_in(AttributedSequence[
+                Apply[:expr],
+                NodeAction['Rattler::Runtime::ParseNode',
+                            {:node_attrs => {:name => 'EXPR'}}]
+              ]).at(14)
+          end
+        end
+      end
+
+      context 'with multiple terms and a semantic action' do
+        it 'parses as an AttributedSequence' do
+          matching(' name "=" value {|_| _.size }').as(:expression).
+            should result_in(AttributedSequence[
+              Apply[:name],
+              Match[%r{=}],
+              Apply[:value],
+              SemanticAction['|_| _.size']
+            ]).at(29)
+        end
+      end
+
+      context 'with multiple terms and a node action' do
+        it 'parses as an AttributedSequence' do
+          matching(' name "=" value <Assign>').as(:expression).
+            should result_in(AttributedSequence[
+              Apply[:name],
+              Match[%r{=}],
+              Apply[:value],
+              NodeAction['Assign']
+            ]).at(24)
+        end
       end
     end
 
-    context 'given a multiple-dispatch-attributed expression' do
-      it 'parses as nested DispatchActions' do
-        matching(' digits <Int> <Foo> ').as(:expression).
-          should result_in(DispatchAction[
-            DispatchAction[Apply[:digits], {:target => 'Int', :method => 'parsed'}],
-            {:target => 'Foo', :method => 'parsed'}
-          ]).at(19)
+    context 'given a lone semantic action' do
+      it 'parses as a SemanticAction' do
+        matching(' { 42 } ').as(:expression).
+          should result_in(SemanticAction['42']).at(7)
       end
     end
 
-    context 'given consecutive dispatch-attributed expressions' do
-      it 'parses as nested DispatchActions' do
-        matching(' digits <Int> foo <Foo> ').as(:expression).
-          should result_in(DispatchAction[
-            Sequence[
-              DispatchAction[Apply[:digits], {:target => 'Int', :method => 'parsed'}],
-              Apply[:foo]
-            ],
-            {:target => 'Foo', :method => 'parsed'}
-          ]).at(23)
+    context 'given a lone node action' do
+      it 'parses as a NodeAction' do
+        matching(' <Foo> ').as(:expression).
+          should result_in(NodeAction['Foo']).at(6)
       end
     end
 
-    context 'given a direct-attributed sequence expression' do
-      it 'parses as a DirectAction with a nested Sequence' do
-        matching(' name "=" value {|_| _.size }').as(:expression).
-          should result_in(DirectAction[
-            Sequence[Apply[:name], Match[%r{=}], Apply[:value]],
-            '|_| _.size'
-          ]).at(29)
-      end
-    end
-
-    context 'given a multiple-direct-attirbuted expression' do
-      it 'parses as nested DirectActions' do
+    context 'given a multiple-semantic-attirbuted expression' do
+      it 'parses as nested AttributedSequences' do
         matching(' digits {|_| _.to_i } {|_| _ * 2 } ').as(:expression).
-          should result_in(DirectAction[
-            DirectAction[Apply[:digits], '|_| _.to_i'],
-            '|_| _ * 2'
+          should result_in(AttributedSequence[
+            AttributedSequence[Apply[:digits], SemanticAction['|_| _.to_i']],
+            SemanticAction['|_| _ * 2']
           ]).at(34)
       end
     end
 
-    context 'given consecutive direct-attributed expressions' do
-      it 'parses as nested DirectActions' do
+    context 'given a multiple-node-attirbuted expression' do
+      it 'parses as nested AttributedSequences' do
+        matching(' digits <Int> <Expr> ').as(:expression).
+          should result_in(AttributedSequence[
+            AttributedSequence[Apply[:digits], NodeAction['Int']],
+            NodeAction['Expr']
+          ]).at(20)
+      end
+    end
+
+    context 'given consecutive semantic-attributed expressions' do
+      it 'parses as nested AttributedSequences' do
         matching(' digits {|_| _.to_i } foo {|_| _ * 2 } ').as(:expression).
-          should result_in(DirectAction[
-            Sequence[
-              DirectAction[Apply[:digits], '|_| _.to_i'],
-              Apply[:foo]
+          should result_in(AttributedSequence[
+            AttributedSequence[
+              Apply[:digits], SemanticAction['|_| _.to_i']
             ],
-            '|_| _ * 2'
+            Apply[:foo],
+            SemanticAction['|_| _ * 2']
           ]).at(38)
       end
     end
 
-    # context 'given a side-effect-attributed sequence expression' do
-    #   it 'parses as a SideEffect with a nested Sequence' do
-    #     matching(' name "=" value ~{|_| @n = _.size }').as(:expression).
-    #       should result_in(SideEffect[
-    #         Sequence[Apply[:name], Match[%r{=}], Apply[:value]],
-    #         '|_| @n = _.size'
-    #       ]).at(35)
-    #   end
-    # end
-
-    # context 'given a multiple-effect-attirbuted expression' do
-    #   it 'parses as nested SideEffects' do
-    #     matching(' digits ~{|_| @i = _.to_i } ~{|_| @j = _ * 2 } ').as(:expression).
-    #       should result_in(SideEffect[
-    #         SideEffect[Apply[:digits], '|_| @i = _.to_i'],
-    #         '|_| @j = _ * 2'
-    #       ]).at(46)
-    #   end
-    # end
-
-    # context 'given consecutive side-effect-attributed expressions' do
-    #   it 'parses as nested SideEffects' do
-    #     matching(' digits ~{|_| @i = _.to_i } foo ~{|_| @j = _ * 2 } ').as(:expression).
-    #       should result_in(SideEffect[
-    #         Sequence[
-    #           SideEffect[Apply[:digits], '|_| @i = _.to_i'],
-    #           Apply[:foo]
-    #         ],
-    #         '|_| @j = _ * 2'
-    #       ]).at(50)
-    #   end
-    # end
-
-    # context 'given a positive predicate-attributed sequence expression' do
-    #   it 'parses as a SemanticAssert with a nested Sequence' do
-    #     matching(' digits digits &{|a, b| a.to_i > b.to_i } ').as(:expression).
-    #       should result_in(SemanticAssert[
-    #         Sequence[Apply[:digits], Apply[:digits]],
-    #         '|a, b| a.to_i > b.to_i'
-    #       ]).at(41)
-    #   end
-    # end
-
-    # context 'given a multiple-predicate-attirbuted expression' do
-    #   it 'parses as nested SemanticAsserts' do
-    #     matching(' digits &{|_| _.to_i > 1 } &{|_| _.to_i < 7 } ').as(:expression).
-    #       should result_in(SemanticAssert[
-    #         SemanticAssert[Apply[:digits], '|_| _.to_i > 1'],
-    #         '|_| _.to_i < 7'
-    #       ]).at(45)
-    #   end
-    # end
-
-    # context 'given consecutive predicate-attributed expressions' do
-    #   it 'parses as nested SemanticAsserts' do
-    #     matching(' digits &{|_| _.to_i > 1 } foo &{|_| _.empty? } ').as(:expression).
-    #       should result_in(SemanticAssert[
-    #         Sequence[
-    #           SemanticAssert[Apply[:digits], '|_| _.to_i > 1'],
-    #           Apply[:foo]
-    #         ],
-    #         '|_| _.empty?'
-    #       ]).at(47)
-    #   end
-    # end
-
-    # context 'given a negative predicate-attributed sequence expression' do
-    #   it 'parses as a SemanticAssert with a nested Sequence' do
-    #     matching(' digits digits !{|a, b| a.to_i > b.to_i } ').as(:expression).
-    #       should result_in(SemanticDisallow[
-    #         Sequence[Apply[:digits], Apply[:digits]],
-    #         '|a, b| a.to_i > b.to_i'
-    #       ]).at(41)
-    #   end
-    # end
+    context 'given consecutive semantic-attributed expressions' do
+      it 'parses as nested AttributedSequences' do
+        matching(' digits <Int> foo <Foo> ').as(:expression).
+          should result_in(AttributedSequence[
+            AttributedSequence[
+              Apply[:digits], NodeAction['Int']
+            ],
+            Apply[:foo],
+            NodeAction['Foo']
+          ]).at(23)
+      end
+    end
 
     context 'given an ordered choice expression' do
       it 'parses as a Choice' do
@@ -572,19 +504,6 @@ describe Rattler::Grammar::GrammarParser do
     it 'skips comments' do
       matching("\n# a comment\n\t foo").as(:expression).
         should result_in(Apply[:foo]).at(18)
-    end
-  end
-
-  describe '#match(:attributed)' do
-    it 'recognizes dispatch-action-attributed expressions' do
-      matching(' expr <Expr> ').as(:attributed).
-        should result_in(DispatchAction[Apply[:expr], {:target => 'Expr', :method => 'parsed'}]).
-        at(12)
-    end
-
-    it 'recognizes direct-action-attributed expressions' do
-      matching(' digits {|_| _.to_i} ').as(:attributed).
-        should result_in(DirectAction[Apply[:digits], '|_| _.to_i']).at(20)
     end
   end
 

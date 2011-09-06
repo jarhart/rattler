@@ -84,44 +84,6 @@ r
     end
   end
 
-  describe '#gen_dispatch_action' do
-
-    let(:code) { NodeCode.new('Word', 'parsed') }
-
-    context 'when nested' do
-      it 'generates nested apply-rule code with a dispatch action' do
-        nested_code {|g| g.gen_dispatch_action apply, code }.
-          should == '((r = match(:foo)) && Word.parsed([r]))'
-      end
-    end
-
-    context 'when top-level' do
-      it 'generates top level apply-rule code with a dispatch action' do
-        top_level_code {|g| g.gen_dispatch_action apply, code }.
-          should == '(r = match(:foo)) && Word.parsed([r])'
-      end
-    end
-  end
-
-  describe '#gen_direct_action' do
-
-    let(:code) { ActionCode.new('|_| _.to_sym') }
-
-    context 'when nested' do
-      it 'generates nested apply-rule code with a direct action' do
-        nested_code {|g| g.gen_direct_action apply, code }.
-          should == '((r = match(:foo)) && (r.to_sym))'
-      end
-    end
-
-    context 'when top-level' do
-      it 'generates top level apply-rule code with a direct action' do
-        top_level_code {|g| g.gen_direct_action apply, code }.
-          should == '(r = match(:foo)) && (r.to_sym)'
-      end
-    end
-  end
-
   describe '#gen_token' do
 
     context 'when nested' do

@@ -12,7 +12,7 @@ module Rattler::Parsers
 
     # @private
     def self.parsed(results, *_) #:nodoc:
-      self.new(results)
+      self.new(results[0])
     end
 
     def initialize(*args)

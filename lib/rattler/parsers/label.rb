@@ -29,6 +29,10 @@ module Rattler::Parsers
       self.new(parser, :label => label.to_sym)
     end
 
+    def capturing_decidable?
+      child.capturing_decidable?
+    end
+
     # Always +true+
     # @return true
     def labeled?

@@ -11,9 +11,10 @@ module Rattler::Parsers
       @empty ||= self.new
     end
 
-    def initialize(bindings={}, captures=[])
+    def initialize(bindings={}, captures=[], captures_decidable=true)
       @bindings = bindings
       @captures = captures
+      @captures_decidable = captures_decidable
     end
 
     attr_reader :bindings, :captures
@@ -22,14 +23,14 @@ module Rattler::Parsers
     #
     # @return [ParserScope] a new scope with additional bindings
     def bind(new_bindings)
-      self.class.new(@bindings.merge(new_bindings), @captures)
+      self.class.new(@bindings.merge(new_bindings), @captures, @captures_decidable)
     end
 
     # Create a new scope with additional captures.
     #
     # @return [ParserScope] a new scope with additional captures
     def capture(*new_captures)
-      self.class.new(@bindings, @captures + new_captures)
+      self.class.new(@bindings, @captures + new_captures, @captures_decidable)
     end
 
     # Create a new scope with this scope as the outer scope. The new scope
@@ -37,7 +38,7 @@ module Rattler::Parsers
     #
     # @return [ParserScope] a new scope with this scope as the outer scope
     def nest
-      self.class.new(@bindings)
+      self.class.new(@bindings, [], @captures_decidable)
     end
 
     # Create a new scope with bindings from another scope.
@@ -45,6 +46,18 @@ module Rattler::Parsers
     # @return [ParserScope] a new scope with bindings from another scope
     def merge(other)
       bind(other.bindings)
+    end
+
+    def with_undecidable_captures
+      if captures_decidable?
+        self.class.new(@bindings, @captures, false)
+      else
+        self
+      end
+    end
+
+    def captures_decidable?
+      @captures_decidable
     end
 
     def has_name?(name)

@@ -7,8 +7,6 @@ module Rattler::BackEnd::ParserGenerator
     basic
     assert
     disallow
-    dispatch_action
-    direct_action
     token
     skip
     intermediate

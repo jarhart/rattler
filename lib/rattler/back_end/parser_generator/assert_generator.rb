@@ -21,14 +21,6 @@ module Rattler::BackEnd::ParserGenerator
       gen_basic assert, scope
     end
 
-    def gen_dispatch_action(assert, code, scope = ParserScope.empty)
-      expr(:block) { gen_action assert, code.bind(scope, '[]'), scope }
-    end
-
-    def gen_direct_action(assert, code, scope = ParserScope.empty)
-      expr(:block) { gen_action assert, "(#{code.bind scope})", scope }
-    end
-
     def gen_token(assert, scope = ParserScope.empty)
       expr(:block) { gen_action assert, "''", scope }
     end

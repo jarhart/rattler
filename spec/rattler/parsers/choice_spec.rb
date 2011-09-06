@@ -34,7 +34,6 @@ describe Choice do
         end
       end
     end
-
   end
 
   describe '#capturing?' do
@@ -56,7 +55,45 @@ describe Choice do
         subject.should_not be_capturing
       end
     end
+  end
 
+  describe '#capturing_decidable?' do
+
+    context 'with all decidably capturing parsers' do
+
+      let(:nested) { [Match[/a/], Match[/b/]] }
+
+      it 'is true' do
+        subject.should be_capturing_decidable
+      end
+    end
+
+    context 'with all decidably non-capturing parsers' do
+
+      let(:nested) { [Skip[Match[/a/]], Skip[Match[/b/]]] }
+
+      it 'is true' do
+        subject.should be_capturing_decidable
+      end
+    end
+
+    context 'with any non-capturing_decidable parsers' do
+
+      let(:nested) { [Match[/a/], Apply[:a]] }
+
+      it 'is false' do
+        subject.should_not be_capturing_decidable
+      end
+    end
+
+    context 'with both decidably capturing and decidably non-capturing parsers' do
+
+      let(:nested) { [Match[/a/], Skip[Match[/b/]]] }
+
+      it 'is false' do
+        subject.should_not be_capturing_decidable
+      end
+    end
   end
 
   describe '#with_ws' do

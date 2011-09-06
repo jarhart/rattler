@@ -15,6 +15,8 @@ module Rattler::Parsers
   #
   class Parser < Rattler::Util::Node
 
+    include Rattler::Runtime::ParserHelper
+
     # @private
     def self.parsed(*args) #:nodoc:
       self[*args]
@@ -33,6 +35,10 @@ module Rattler::Parsers
       false
     end
 
+    def capturing_decidable?
+      true
+    end
+
     # Return +true+ if the parser associates a label with parse results. Only
     # instances of +Label+ should return +true+.
     #
@@ -42,6 +48,10 @@ module Rattler::Parsers
     end
 
     def sequence?
+      false
+    end
+
+    def semantic?
       false
     end
 
@@ -57,6 +67,13 @@ module Rattler::Parsers
     #   unless both parse in sequence
     def &(other)
       Sequence[self, other]
+    end
+
+    # @param [Parser] semantic a semantic action.
+    # @return a new parser that tries this parser and returns the result of
+    #   the semantic action if it succeeds
+    def >>(semantic)
+      AttributedSequence[self, semantic]
     end
 
     # @return a new parser that tries this parser but returns +true+ if it

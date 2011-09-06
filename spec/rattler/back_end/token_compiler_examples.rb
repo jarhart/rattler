@@ -244,14 +244,6 @@ shared_examples_for 'a compiled parser with a token' do
     end
   end
 
-  context 'with a nested dispatch-action rule' do
-    let(:grammar) { define_grammar do
-      rule(:foo) { token(dispatch_action(/\w+/)) }
-    end }
-    it { should parse('abc123').succeeding.like reference_parser }
-    it { should parse('  ').failing.like reference_parser }
-  end
-
   context 'with a nested skip rule' do
     let(:grammar) { define_grammar do
       rule(:foo) { token(skip(/\w+/)) }

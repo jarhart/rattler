@@ -44,14 +44,17 @@ include Rattler::Parsers
   expression        <-  expression ~'/' attributed                              <Choice>
                       / attributed
 
-  attributed        <-  attributed? ~'<' node_action? literal? ~'>'             <DispatchAction>
-                      / attributed? ~'{' action ~'}'                            <DirectAction>
+  attributed        <-  attributed? (semantic_action / node_action)             <AttributedSequence>
                       / attributed_terms
 
-  node_action       <-  @(name (~'.' var_name)?)
+  old_node_action   <-  @(name (~'.' var_name)?)
 
-  action            <-  @(( '{' [^}]* '}'
+  semantic_action   <-  ~'{' action_code ~'}'                                   <SemanticAction>
+
+  action_code       <-  @(( '{' [^}]* '}'
                           / [^{}]         )*)
+
+  node_action       <-  ~'<' (name (~'.' var_name)?)? literal? ~'>'             <NodeAction>
 
   attributed_terms  <-  attributed term                                         <Sequence>
                       / terms
@@ -68,12 +71,12 @@ include Rattler::Parsers
 
   labeled           <-  var_name ~':' labelable                                 <Label>
 
-  labelable         <-  semantic_action / list / list_term
+  labelable         <-  semantic_term / list / list_term
 
-  semantic_action   <-  ~'^' ~'{' action ~'}'                                   <SemanticAction>
-                      / ~'&' ~'{' action ~'}'                                   { semantic_assert _ }
-                      / ~'!' ~'{' action ~'}'                                   { semantic_disallow _ }
-                      / ~'~' ~'{' action ~'}'                                   { side_effect _ }
+  semantic_term     <-  ~'^' semantic_action
+                      / ~'&' semantic_action                                    { Assert[_] }
+                      / ~'!' semantic_action                                    { Disallow[_] }
+                      / ~'~' semantic_action                                    { Skip[_] }
 
   list              <-  list_term ~('*' ',') list_term                          { list0 *_ }
                       / list_term ~('+' ',') list_term                          { list1 *_ }

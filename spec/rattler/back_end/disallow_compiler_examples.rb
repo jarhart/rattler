@@ -46,6 +46,50 @@ shared_examples_for 'a compiled parser with a disallow' do
     end }
     it { should parse('   ').succeeding.like reference_parser }
     it { should parse('abc123  ').failing.like reference_parser }
+
+    context 'with a semantic action' do
+
+      context 'when the expression has parameters' do
+        let(:grammar) { define_grammar do
+          rule(:a) { disallow(
+            match(/\d+/) & semantic_action('|a| a.to_i * 2')
+          ) }
+        end }
+        it { should parse('    ').succeeding.like reference_parser }
+        it { should parse('451a').failing.like reference_parser }
+      end
+
+      context 'when the expression uses "_"' do
+
+        context 'given a single capture' do
+          let(:grammar) { define_grammar do
+            rule(:a) { disallow(match(/\d+/) & semantic_action('_ * 2')) }
+          end }
+          it { should parse('    ').succeeding.like reference_parser }
+          it { should parse('451a').failing.like reference_parser }
+        end
+
+        context 'given multiple captures' do
+          let(:grammar) { define_grammar do
+            rule(:a) { disallow(
+              match(/\d+/) & skip(/\s+/) & match(/\d+/) & semantic_action('_')
+            ) }
+          end }
+          it { should parse('     ').succeeding.like reference_parser }
+          it { should parse('23 42').failing.like reference_parser }
+        end
+      end
+
+      context 'when the expression uses labels' do
+        let(:grammar) { define_grammar do
+          rule(:a) { disallow(
+            label(:a, /\d+/) & semantic_action('a.to_i * 2')
+          ) }
+        end }
+        it { should parse('    ').succeeding.like reference_parser }
+        it { should parse('451a').failing.like reference_parser }
+      end
+    end
   end
 
   context 'with a nested optional rule' do
@@ -161,12 +205,67 @@ shared_examples_for 'a compiled parser with a disallow' do
     it { should parse('abc123  ').failing.like reference_parser }
   end
 
-  context 'with a nested dispatch-action rule' do
-    let(:grammar) { define_grammar do
-      rule(:word) { disallow(dispatch_action(/\w+/)) }
-    end }
-    it { should parse('   ').succeeding.like reference_parser }
-    it { should parse('abc123  ').failing.like reference_parser }
+  context 'with a nested attributed sequence' do
+
+    context 'with a single capture and a semantic action' do
+
+      context 'when the action uses a parameter' do
+        let(:grammar) { define_grammar do
+          rule(:a) { disallow(match(/\d+/) >> semantic_action('|a| a.to_i')) }
+        end }
+        it { should parse('    ').succeeding.like reference_parser }
+        it { should parse('451a').failing.like reference_parser }
+      end
+
+      context 'when the action uses "_"' do
+        let(:grammar) { define_grammar do
+          rule(:a) { disallow(match(/\d+/) >> semantic_action('_.to_i')) }
+        end }
+        it { should parse('    ').succeeding.like reference_parser }
+        it { should parse('451a').failing.like reference_parser }
+      end
+    end
+
+    context 'with multiple captures and a semantic action' do
+
+      context 'when the action uses parameters' do
+        let(:grammar) { define_grammar do
+          rule(:a) { disallow(
+            (match(/[a-z]+/) & match(/\d+/)) >> semantic_action('|a,b| b+a')
+          ) }
+        end }
+        it { should parse('      ').succeeding.like reference_parser }
+        it { should parse('abc123').failing.like reference_parser }
+      end
+
+      context 'when the action uses "_"' do
+        let(:grammar) { define_grammar do
+          rule(:a) { disallow(
+            (match(/[a-z]+/) & match(/\d+/)) >> semantic_action('_.reverse')
+          ) }
+        end }
+        it { should parse('      ').succeeding.like reference_parser }
+        it { should parse('abc123').failing.like reference_parser }
+      end
+    end
+
+    context 'with a single labeled capture and a semantic action' do
+      let(:grammar) { define_grammar do
+        rule(:e) { disallow(label(:a, /\d+/) >> semantic_action('a.to_i')) }
+      end }
+      it { should parse('    ').succeeding.like reference_parser }
+      it { should parse('451a').failing.like reference_parser }
+    end
+
+    context 'with multiple labeled captures and a semantic action' do
+      let(:grammar) { define_grammar do
+        rule(:e) { disallow(
+          (label(:a, /[a-z]+/) & label(:b, /\d+/)) >> semantic_action('b + a')
+        ) }
+      end }
+      it { should parse('      ').succeeding.like reference_parser }
+      it { should parse('abc123').failing.like reference_parser }
+    end
   end
 
   context 'with a nested token rule' do

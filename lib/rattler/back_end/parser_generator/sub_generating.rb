@@ -73,11 +73,11 @@ module Rattler::BackEnd::ParserGenerator
       when SemanticAction
         cache_generator SemanticActionGenerator, context
 
-      when DispatchAction
-        cache_generator DispatchActionGenerator, context
+      when NodeAction
+        cache_generator NodeActionGenerator, context
 
-      when DirectAction
-        cache_generator DirectActionGenerator, context
+      when AttributedSequence
+        cache_generator AttributedSequenceGenerator, context, :new_sequence_level => true
 
       when Token
         cache_generator TokenGenerator, context

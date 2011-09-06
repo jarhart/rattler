@@ -21,14 +21,6 @@ module Rattler::BackEnd::ParserGenerator
       gen_basic disallow, scope
     end
 
-    def gen_dispatch_action(disallow, code, scope = ParserScope.empty)
-      expr(:block) { gen_action disallow, code.bind(scope, '[]'), scope }
-    end
-
-    def gen_direct_action(disallow, code, scope = ParserScope.empty)
-      expr(:block) { gen_action disallow, "(#{code.bind scope})", scope }
-    end
-
     def gen_token(disallow, scope = ParserScope.empty)
       expr(:block) { gen_action disallow, "''", scope }
     end

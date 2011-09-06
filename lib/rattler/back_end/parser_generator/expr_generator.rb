@@ -14,21 +14,6 @@ module Rattler::BackEnd::ParserGenerator
       @repeat_level = repeat_level
     end
 
-    def gen_dispatch_action(parser, code, scope = ParserScope.empty)
-      expr :block do
-        gen_capture { block_given? ? yield : gen_basic(parser, scope) }
-        (@g << ' &&').newline << code.bind(scope, dispatch_action_args)
-      end
-    end
-
-    def gen_direct_action(parser, code, scope = ParserScope.empty)
-      expr :block do
-        gen_capture { block_given? ? yield : gen_basic(parser, scope) }
-        (@g << ' &&').newline <<
-          '(' << code.bind(scope.capture(*direct_action_args)) << ')'
-      end
-    end
-
     def gen_token(parser, scope = ParserScope.empty)
       expr :block do
         (@g << "#{token_pos_name} = @scanner.pos").newline
@@ -78,14 +63,6 @@ module Rattler::BackEnd::ParserGenerator
 
     def gen_capture
       @g.surround("(#{result_name} = ", ')') { yield }
-    end
-
-    def dispatch_action_args
-      "[#{result_name}]"
-    end
-
-    def direct_action_args
-      [result_name]
     end
 
   end

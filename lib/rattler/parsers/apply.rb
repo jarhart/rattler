@@ -40,5 +40,9 @@ module Rattler::Parsers
       (rule = rules[rule_name]) && rule.parse(scanner, rules, scope)
     end
 
+    def capturing_decidable?
+      false
+    end
+
   end
 end

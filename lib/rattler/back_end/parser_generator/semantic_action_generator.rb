@@ -11,10 +11,7 @@ module Rattler::BackEnd::ParserGenerator
     end
 
     def gen_assert(action, scope = ParserScope.empty)
-      expr do
-        gen_intermediate_assert action, scope
-        @g << ' && true'
-      end
+      expr { @g.suffix(' && true') { gen_intermediate_assert action, scope } }
     end
 
     def gen_disallow(action, scope = ParserScope.empty)
@@ -23,15 +20,11 @@ module Rattler::BackEnd::ParserGenerator
     end
 
     def gen_token(action, scope = ParserScope.empty)
-      gen_nested action, :basic, scope
-      @g << '.to_s'
+      @g.suffix('.to_s') { gen_nested action, :basic, scope }
     end
 
     def gen_skip(action, scope = ParserScope.empty)
-      expr do
-        gen_top_level action, :basic, scope
-        @g << '; true'
-      end
+      expr { @g.suffix('; true') { gen_top_level action, :basic, scope } }
     end
 
     def gen_intermediate_assert(action, scope = ParserScope.empty)

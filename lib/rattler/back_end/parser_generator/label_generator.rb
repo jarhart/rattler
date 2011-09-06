@@ -12,33 +12,6 @@ module Rattler::BackEnd::ParserGenerator
       generate label.child, :basic, scope
     end
 
-    def gen_dispatch_action(label, code, scope = ParserScope.empty)
-      expr :block do
-        scope = gen_capturing label.child, scope, label.label
-        (@g << ' &&').newline << code.bind(scope, dispatch_action_args)
-      end
-    end
-
-    def gen_direct_action(label, code, scope = ParserScope.empty)
-      expr :block do
-        scope = gen_capturing label.child, scope, label.label
-        (@g << ' &&').newline
-        @g.surround('(', ')') { @g << code.bind(scope.capture(*direct_action_args)) }
-      end
-    end
-
-    private
-
-    def gen_capturing(child, scope, label)
-      if child.capturing?
-        gen_capture { gen_nested child, :basic, scope }
-        scope.bind(label => result_name)
-      else
-        generate child, :intermediate, scope
-        scope
-      end
-    end
-
   end
 
   # @private

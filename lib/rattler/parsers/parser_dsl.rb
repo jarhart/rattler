@@ -212,37 +212,22 @@ module Rattler
         ESymbol[]
       end
 
-      # Create a new semantic action that dispatches to a method.
-      #
-      # @overload dispatch_action(parser)
-      #   @return [DispatchAction] a new semantic action
-      # @overload dispatch_action(arg)
-      #   @return [DispatchAction] a new semantic action using arg to define a
-      #     match parser
-      #   @see #match
-      def dispatch_action(arg, attrs={})
-        DispatchAction[to_parser(arg), attrs]
-      end
-
-      # Create a new semantic action that evaluates ruby code.
-      #
-      # @overload direct_action(parser, code)
-      #   @return [DirectAction] a new semantic action
-      # @overload direct_action(arg, code)
-      #   @return [DirectAction] a new semantic action using arg to define a
-      #     match parser
-      #   @see #match
-      def direct_action(arg, code)
-        DirectAction[to_parser(arg), code]
-      end
-
       # Create a new semantic action.
       #
       # @param [String] code the action code
       #
-      # @return [SemanticAssert] a new semantic action
+      # @return [SemanticAction] a new semantic action
       def semantic_action(code)
         SemanticAction[code]
+      end
+
+      # Create a new node action.
+      #
+      # @param [Module] node_class the node class
+      #
+      # @return [NodeAction] a new node action
+      def node_action(node_class, attrs={})
+        NodeAction[node_class, attrs]
       end
 
       # Create a new token parser or token rule.

@@ -12,22 +12,6 @@ module Rattler::BackEnd::ParserGenerator
       @g << 'false'
     end
 
-    def gen_dispatch_action(optional, code, scope = ParserScope.empty)
-      expr :block do
-        gen_loop optional, scope
-        @g.newline << code.bind(scope, "#{result_name} ? [#{result_name}] : []")
-      end
-    end
-
-    def gen_direct_action(optional, code, scope = ParserScope.empty)
-      expr :block do
-        @g << "#{result_name} = "
-        generate optional.child, :basic, scope
-        @g.newline <<
-          '(' << code.bind(scope.capture("(#{result_name} ? [#{result_name}] : [])")) << ')'
-      end
-    end
-
     def gen_token(optional, scope = ParserScope.empty)
       expr :block do
         generate optional.child, :token, scope

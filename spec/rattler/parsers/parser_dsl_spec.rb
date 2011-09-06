@@ -149,54 +149,29 @@ describe ParserDSL do
     end
   end
 
-  describe '#dispatch_action' do
-    context 'given a parser' do
-      context 'given options' do
-        it 'creates an dispatch-action parser with the options' do
-          subject.dispatch_action(subject.match(/\w+/), :method => 'word').
-          should == DispatchAction[Match[/\w+/], {:method => 'word'}]
-        end
-      end
-      context 'given no options' do
-        it 'creates a default dispatch-action parser' do
-          subject.dispatch_action(subject.match(/\w+/)).should == DispatchAction[Match[/\w+/]]
-        end
-      end
-    end
-    context 'given a match argument' do
-      context 'given options' do
-        it 'creates an dispatch-action match parser with the options' do
-          subject.dispatch_action(/\w+/, :method => 'word').
-          should == DispatchAction[Match[/\w+/], {:method => 'word'}]
-        end
-      end
-      context 'given no options' do
-        it 'creates a default dispatch-action match parser' do
-          subject.dispatch_action(/\w+/).should == DispatchAction[Match[/\w+/]]
-        end
-      end
-    end
-  end
-
-  describe '#direct_action' do
-    context 'given a parser' do
-      it 'creates a direct-action parser' do
-        subject.direct_action(subject.match(/\d+/), '|_| _.to_i').
-        should == DirectAction[Match[/\d+/], '|_| _.to_i']
-      end
-    end
-    context 'given a match argument' do
-      it 'creates a direct-action match parser' do
-        subject.direct_action(/\d+/, '|_| _.to_i').
-        should == DirectAction[Match[/\d+/], '|_| _.to_i']
-      end
-    end
-  end
-
   describe '#semantic_action' do
     it 'creates a semantic action' do
       subject.semantic_action('_.to_i').
       should == SemanticAction['_.to_i']
+    end
+  end
+
+  describe '#node_action' do
+    it 'creates a node action' do
+      subject.node_action(Rattler::Runtime::ParseNode).
+      should == NodeAction[Rattler::Runtime::ParseNode]
+    end
+    context 'given an alternate method' do
+      it 'creates a node action with an alternate method' do
+        subject.node_action(Rattler::Runtime::ParseNode, :method => 'create').
+        should == NodeAction[Rattler::Runtime::ParseNode, {:method => 'create'}]
+      end
+    end
+    context 'given node attributes' do
+      it 'creates a node action with node attributes' do
+        subject.node_action(Rattler::Runtime::ParseNode, :node_attrs => {:name => "FOO"}).
+        should == NodeAction[Rattler::Runtime::ParseNode, {:node_attrs => {:name => "FOO"}}]
+      end
     end
   end
 

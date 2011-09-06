@@ -29,20 +29,6 @@ module Rattler::BackEnd::ParserGenerator
       end
     end
 
-    def gen_dispatch_action(apply, code, scope = ParserScope.empty)
-      expr do
-        gen_capture { gen_basic apply }
-        @g << ' && ' << code.bind(scope, dispatch_action_args)
-      end
-    end
-
-    def gen_direct_action(apply, code, scope = ParserScope.empty)
-      expr do
-        gen_capture { gen_basic apply }
-        @g << ' && (' << code.bind(scope.capture(*direct_action_args)) << ')'
-      end
-    end
-
     def gen_skip(apply, scope = ParserScope.empty)
       expr { gen_bare_skip apply }
     end

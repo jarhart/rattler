@@ -19,18 +19,6 @@ module Rattler::BackEnd::ParserGenerator
       end
     end
 
-    def gen_dispatch_action(list, code, scope = ParserScope.empty)
-      gen_capturing list, scope do |a|
-        code.bind scope, "select_captures(#{a})"
-      end
-    end
-
-    def gen_direct_action(list, code, scope = ParserScope.empty)
-      gen_capturing list, scope do |a|
-        '(' + code.bind(scope.capture("select_captures(#{a})")) + ')'
-      end
-    end
-
     def gen_assert(list, scope = ParserScope.empty)
       gen_predicate(list, scope) do
         @g.newline << "#{count_name} >= #{list.lower_bound}"

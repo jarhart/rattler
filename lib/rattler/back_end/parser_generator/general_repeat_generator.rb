@@ -22,20 +22,6 @@ module Rattler::BackEnd::ParserGenerator
       gen_predicate(repeat, scope) { gen_disallow_result repeat }
     end
 
-    def gen_dispatch_action(repeat, code, scope = ParserScope.empty)
-      expr :block do
-        gen_loop repeat, scope
-        gen_result repeat, code.bind(scope, "select_captures(#{accumulator_name})")
-      end
-    end
-
-    def gen_direct_action(repeat, code, scope = ParserScope.empty)
-      expr :block do
-        gen_loop repeat, scope
-        gen_result(repeat, '(' + code.bind(scope.capture("select_captures(#{accumulator_name})")) + ')')
-      end
-    end
-
     def gen_token(repeat, scope = ParserScope.empty)
       expr :block do
         gen_loop(repeat, scope) { |child| generate child, :token, scope }
@@ -58,7 +44,7 @@ module Rattler::BackEnd::ParserGenerator
     def gen_capturing(repeat, scope)
       expr :block do
         gen_loop(repeat, scope) { |child| gen_nested child, :basic, scope }
-        gen_result repeat, accumulator_name
+        gen_result repeat, result_expr(repeat)
       end
     end
 
@@ -140,6 +126,14 @@ module Rattler::BackEnd::ParserGenerator
     def gen_disallow_result(repeat)
       @g << "@scanner.pos = #{saved_pos_name}"
       @g.newline << "(#{count_name} < #{repeat.lower_bound})"
+    end
+
+    def result_expr(repeat)
+      if repeat.child.capturing_decidable?
+        accumulator_name
+      else
+        "select_captures(#{accumulator_name})"
+      end
     end
 
     def accumulator_name

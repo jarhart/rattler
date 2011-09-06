@@ -3,11 +3,11 @@ require File.expand_path(File.dirname(__FILE__) + '/../../spec_helper')
 describe Sequence do
   include CombinatorParserSpecHelper
 
-  subject { Sequence[*nested] }
+  subject { Sequence[*children] }
 
   describe '#parse' do
 
-    let(:nested) { [Match[/[[:alpha:]]+/], Match[/\=/], Match[/[[:digit:]]+/]] }
+    let(:children) { [Match[/[[:alpha:]]+/], Match[/\=/], Match[/[[:digit:]]+/]] }
 
     context 'when all of the parsers match in sequence' do
       it 'matches returning the results in an array' do
@@ -23,7 +23,7 @@ describe Sequence do
 
     context 'with non-capturing parsers' do
 
-      let :nested do
+      let :children do
         [Match[/[[:alpha:]]+/], Skip[Match[/\s+/]], Match[/[[:digit:]]+/]]
       end
 
@@ -36,7 +36,7 @@ describe Sequence do
 
     context 'with only one capturing parser' do
 
-      let(:nested) { [Skip[Match[/\s+/]], Match[/\w+/]] }
+      let(:children) { [Skip[Match[/\s+/]], Match[/\w+/]] }
 
       context 'when all of the parsers match in sequence' do
         it 'returns the result of the capturing parser' do
@@ -47,7 +47,7 @@ describe Sequence do
 
     context 'with no capturing parsers' do
 
-      let(:nested) { [Skip[Match[/\s*/]], Skip[Match[/#[^\n]+/]]] }
+      let(:children) { [Skip[Match[/\s*/]], Skip[Match[/#[^\n]+/]]] }
 
       context 'when all of the parsers match in sequence' do
         it 'returns true' do
@@ -58,7 +58,7 @@ describe Sequence do
 
     context 'with an apply parser referencing a non-capturing rule' do
 
-      let(:nested) { [Match[/[[:alpha:]]+/], Apply[:ws], Match[/[[:digit:]]+/]] }
+      let(:children) { [Match[/[[:alpha:]]+/], Apply[:ws], Match[/[[:digit:]]+/]] }
 
       let(:rules) { RuleSet[Rule[:ws, Skip[Match[/\s+/]]]] }
 
@@ -73,7 +73,7 @@ describe Sequence do
 
       context 'when the action uses a parameter' do
 
-        let(:nested) { [Match[/\w+/], SemanticAction['|s| "<#{s}>"']] }
+        let(:children) { [Match[/\w+/], SemanticAction['|s| "<#{s}>"']] }
 
         it 'binds the capture to the parameter' do
           parsing('foo').should result_in ['foo', '<foo>']
@@ -82,7 +82,7 @@ describe Sequence do
 
       context 'when the action uses "_"' do
 
-        let(:nested) { [Match[/\w+/], SemanticAction['"<#{_}>"']] }
+        let(:children) { [Match[/\w+/], SemanticAction['"<#{_}>"']] }
 
         it 'binds the capture to "_"' do
           parsing('foo').should result_in ['foo', '<foo>']
@@ -94,7 +94,7 @@ describe Sequence do
 
       context 'when the action uses parameters' do
 
-        let(:nested) { [Match[/[a-z]+/], Match[/\d+/], SemanticAction['|a,b| b+a']] }
+        let(:children) { [Match[/[a-z]+/], Match[/\d+/], SemanticAction['|a,b| b+a']] }
 
         it 'binds the captures to the parameters' do
           parsing('abc123').should result_in ['abc', '123', '123abc']
@@ -103,7 +103,7 @@ describe Sequence do
 
       context 'when the action uses "_"' do
 
-        let(:nested) { [Match[/[a-z]+/], Match[/\d+/], SemanticAction['_']] }
+        let(:children) { [Match[/[a-z]+/], Match[/\d+/], SemanticAction['_']] }
 
         it 'binds the array of captures to "_"' do
           parsing('abc123').should result_in ['abc', '123', ['abc', '123']]
@@ -113,7 +113,7 @@ describe Sequence do
 
     context 'with a single labeled capture and a semantic action' do
 
-      let(:nested) { [Label[:a, Match[/\w+/]], SemanticAction['"<#{a}>"']] }
+      let(:children) { [Label[:a, Match[/\w+/]], SemanticAction['"<#{a}>"']] }
 
       it 'binds the capture to the label name' do
         parsing('foo').should result_in ['foo', '<foo>']
@@ -122,7 +122,7 @@ describe Sequence do
 
     context 'with multiple labeled captures and a semantic action' do
 
-      let(:nested) { [
+      let(:children) { [
         Label[:a, Match[/[[:alpha:]]+/]],
         Label[:b, Match[/[[:digit:]]+/]],
         SemanticAction['b + a']
@@ -138,7 +138,7 @@ describe Sequence do
 
     context 'with any capturing parsers' do
 
-      let(:nested) { [Skip[Match[/\s*/]], Match[/\w+/]] }
+      let(:children) { [Skip[Match[/\s*/]], Match[/\w+/]] }
 
       it 'is true' do
         subject.should be_capturing
@@ -147,7 +147,7 @@ describe Sequence do
 
     context 'with no capturing parsers' do
 
-      let(:nested) { [Skip[Match[/\s*/]], Skip[Match[/#[^\n]+/]]] }
+      let(:children) { [Skip[Match[/\s*/]], Skip[Match[/#[^\n]+/]]] }
 
       it 'is false' do
         subject.should_not be_capturing
@@ -158,13 +158,72 @@ describe Sequence do
   describe '#with_ws' do
 
     let(:ws) { Match[/\s*/] }
-    let(:nested) { [Match[/[[:alpha:]]+/], Match[/[[:digit:]]+/]] }
+    let(:children) { [Match[/[[:alpha:]]+/], Match[/[[:digit:]]+/]] }
 
-    it 'applies #with_ws to the nested parsers' do
+    it 'applies #with_ws to the children parsers' do
       subject.with_ws(ws).should == Sequence[
-        Sequence[Skip[ws], nested[0]],
-        Sequence[Skip[ws], nested[1]]
+        Sequence[Skip[ws], children[0]],
+        Sequence[Skip[ws], children[1]]
       ]
+    end
+  end
+
+  describe '#capture_count' do
+
+    context 'with no capturing parsers' do
+
+      let(:children) { [Skip[Match[/\s*/]], Skip[Match[/#[^\n]+/]]] }
+
+      it 'is 0' do
+        subject.capture_count.should == 0
+      end
+    end
+
+    context 'with a single capturing parser' do
+
+      let(:children) { [Skip[Match[/\s*/]], Match[/\w+/]] }
+
+      it 'is 1' do
+        subject.capture_count.should == 1
+      end
+    end
+
+    context 'with a two capturing parsers' do
+
+      let(:children) { [Match[/[a-z]+/], Match[/\d+/]] }
+
+      it 'is 2' do
+        subject.capture_count.should == 2
+      end
+    end
+
+    context 'with a non-capturing parser and two capturing parsers' do
+
+      let(:children) { [Match[/\d+/], Skip[Match[/\s*/]], Match[/\d+/]] }
+
+      it 'is 2' do
+        subject.capture_count.should == 2
+      end
+    end
+  end
+
+  describe '#&' do
+
+    let(:children) { [Match[/[a-z]+/], Match[/\d+/]] }
+
+    it 'returns a new sequence with the given parser appended' do
+      (subject & Match[/:/]).should ==
+        Sequence[Match[/[a-z]+/], Match[/\d+/], Match[/:/]]
+    end
+  end
+
+  describe '#>>' do
+
+    let(:children) { [Match[/[a-z]+/], Match[/\d+/]] }
+
+    it 'returns an attributed sequence with the given semantic action' do
+      (subject >> SemanticAction['_']).should ==
+        AttributedSequence[Match[/[a-z]+/], Match[/\d+/], SemanticAction['_']]
     end
   end
 

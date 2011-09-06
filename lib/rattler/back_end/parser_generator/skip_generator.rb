@@ -12,20 +12,6 @@ module Rattler::BackEnd::ParserGenerator
       generate skip.child, :skip, scope
     end
 
-    def gen_dispatch_action(skip, code, scope = ParserScope.empty)
-      expr :block do
-        gen_intermediate_skip skip, scope
-        (@g << ' &&').newline << code.bind(scope, '[]')
-      end
-    end
-
-    def gen_direct_action(skip, code, scope = ParserScope.empty)
-      expr :block do
-        gen_intermediate_skip skip, scope
-        (@g << ' &&').newline << '(' << code.bind(scope) << ')'
-      end
-    end
-
     def gen_intermediate(skip, scope = ParserScope.empty)
       gen_intermediate_skip skip, scope
     end

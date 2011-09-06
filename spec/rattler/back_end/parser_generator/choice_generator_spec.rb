@@ -88,68 +88,6 @@ end
     end
   end
 
-  describe '#gen_dispatch_action' do
-
-    let(:code) { NodeCode.new('Atom', 'parsed') }
-
-    context 'when nested' do
-      it 'generates nested choice matching code with a dispatch action' do
-        nested_code(:choice_level => 2) {|g| g.gen_dispatch_action choice, code }.
-          should == (<<-CODE).strip
-begin
-  (r = begin
-    @scanner.scan(/[[:alpha:]]+/) ||
-    @scanner.scan(/[[:digit:]]+/)
-  end) && Atom.parsed([r])
-end
-          CODE
-      end
-    end
-
-    context 'when top-level' do
-      it 'generates top-level choice matching code with a dispatch action' do
-        top_level_code(:choice_level => 0) {|g| g.gen_dispatch_action choice, code }.
-          should == (<<-CODE).strip
-(r = begin
-  @scanner.scan(/[[:alpha:]]+/) ||
-  @scanner.scan(/[[:digit:]]+/)
-end) && Atom.parsed([r])
-          CODE
-      end
-    end
-  end
-
-  describe '#gen_direct_action' do
-
-    let(:code) { ActionCode.new('|_| _.size') }
-
-    context 'when nested' do
-      it 'generates nested choice matching code with a direct action' do
-        nested_code(:choice_level => 2) {|g| g.gen_direct_action choice, code }.
-          should == (<<-CODE).strip
-begin
-  (r = begin
-    @scanner.scan(/[[:alpha:]]+/) ||
-    @scanner.scan(/[[:digit:]]+/)
-  end) && (r.size)
-end
-          CODE
-      end
-    end
-
-    context 'when top-level' do
-      it 'generates nested choice matching code with a direct action' do
-        top_level_code(:choice_level => 0) {|g| g.gen_direct_action choice, code }.
-          should == (<<-CODE).strip
-(r = begin
-  @scanner.scan(/[[:alpha:]]+/) ||
-  @scanner.scan(/[[:digit:]]+/)
-end) && (r.size)
-          CODE
-      end
-    end
-  end
-
   describe '#gen_token' do
 
     context 'when nested' do

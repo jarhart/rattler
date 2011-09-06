@@ -41,14 +41,7 @@ module Rattler::BackEnd::Optimizer
 
     def capture_incompatible?(child)
       (child.capturing? and not eligible_child? child) or
-      semantic? child
-    end
-
-    def semantic?(parser)
-      case parser
-      when SemanticAction then true
-      when Assert, Disallow, Skip then semantic? parser.child
-      end
+      child.semantic?
     end
 
     def create_patterns(parsers)

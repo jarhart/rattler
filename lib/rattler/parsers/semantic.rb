@@ -12,6 +12,10 @@ module Rattler::Parsers
       @bindable_code ||= create_bindable_code
     end
 
+    def semantic?
+      true
+    end
+
     private
 
     def apply(scope)

@@ -46,6 +46,46 @@ shared_examples_for 'a compiled parser with an assert' do
     end }
     it { should parse('abc123  ').succeeding.like reference_parser }
     it { should parse('   ').failing.like reference_parser }
+
+    context 'with a semantic action' do
+
+      context 'when the expression has parameters' do
+        let(:grammar) { define_grammar do
+          rule(:a) { assert(match(/\d+/) & semantic_action('|a| a.to_i * 2')) }
+        end }
+        it { should parse('451a').succeeding.like reference_parser }
+        it { should parse('    ').failing.like reference_parser }
+      end
+
+      context 'when the expression uses "_"' do
+
+        context 'given a single capture' do
+          let(:grammar) { define_grammar do
+            rule(:a) { assert(match(/\d+/) & semantic_action('_ * 2')) }
+          end }
+          it { should parse('451a').succeeding.like reference_parser }
+          it { should parse('    ').failing.like reference_parser }
+        end
+
+        context 'given multiple captures' do
+          let(:grammar) { define_grammar do
+            rule(:a) { assert(
+              match(/\d+/) & skip(/\s+/) & match(/\d+/) & semantic_action('_')
+            ) }
+          end }
+          it { should parse('23 42').succeeding.like reference_parser }
+          it { should parse('     ').failing.like reference_parser }
+        end
+      end
+
+      context 'when the expression uses labels' do
+        let(:grammar) { define_grammar do
+          rule(:a) { assert(label(:a, /\d+/) & semantic_action('a.to_i * 2')) }
+        end }
+        it { should parse('451a').succeeding.like reference_parser }
+        it { should parse('    ').failing.like reference_parser }
+      end
+    end
   end
 
   context 'with a nested optional rule' do
@@ -161,12 +201,74 @@ shared_examples_for 'a compiled parser with an assert' do
     it { should parse('   ').failing.like reference_parser }
   end
 
-  context 'with a nested dispatch-action rule' do
+  context 'with a nested semantic action' do
     let(:grammar) { define_grammar do
-      rule(:word) { assert(dispatch_action(/\w+/)) }
+      rule(:a) { assert(semantic_action('42')) }
     end }
-    it { should parse('abc123  ').succeeding.like reference_parser }
-    it { should parse('   ').failing.like reference_parser }
+    it { should parse('anything').succeeding.like reference_parser }
+  end
+
+  context 'with a nested attributed sequence' do
+
+    context 'with a single capture and a semantic action' do
+
+      context 'when the action uses a parameter' do
+        let(:grammar) { define_grammar do
+          rule(:a) { assert(match(/\d+/) >> semantic_action('|a| a.to_i')) }
+        end }
+        it { should parse('451a').succeeding.like reference_parser }
+        it { should parse('    ').failing.like reference_parser }
+      end
+
+      context 'when the action uses "_"' do
+        let(:grammar) { define_grammar do
+          rule(:a) { assert(match(/\d+/) >> semantic_action('_.to_i')) }
+        end }
+        it { should parse('451a').succeeding.like reference_parser }
+        it { should parse('    ').failing.like reference_parser }
+      end
+    end
+
+    context 'with multiple captures and a semantic action' do
+
+      context 'when the action uses parameters' do
+        let(:grammar) { define_grammar do
+          rule(:a) { assert(
+            (match(/[a-z]+/) & match(/\d+/)) >> semantic_action('|a,b| b+a')
+          ) }
+        end }
+        it { should parse('abc123').succeeding.like reference_parser }
+        it { should parse('      ').failing.like reference_parser }
+      end
+
+      context 'when the action uses "_"' do
+        let(:grammar) { define_grammar do
+          rule(:a) { assert(
+            (match(/[a-z]+/) & match(/\d+/)) >> semantic_action('_.reverse')
+          ) }
+        end }
+        it { should parse('abc123').succeeding.like reference_parser }
+        it { should parse('      ').failing.like reference_parser }
+      end
+    end
+
+    context 'with a single labeled capture and a semantic action' do
+      let(:grammar) { define_grammar do
+        rule(:e) { assert(label(:a, /\d+/) >> semantic_action('a.to_i')) }
+      end }
+      it { should parse('451a').succeeding.like reference_parser }
+      it { should parse('    ').failing.like reference_parser }
+    end
+
+    context 'with multiple labeled captures and a semantic action' do
+      let(:grammar) { define_grammar do
+        rule(:e) { assert(
+          (label(:a, /[a-z]+/) & label(:b, /\d+/)) >> semantic_action('b + a')
+        ) }
+      end }
+      it { should parse('abc123').succeeding.like reference_parser }
+      it { should parse('      ').failing.like reference_parser }
+    end
   end
 
   context 'with a nested token rule' do

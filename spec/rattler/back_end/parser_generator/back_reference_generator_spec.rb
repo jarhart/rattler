@@ -63,60 +63,6 @@ describe BackReferenceGenerator do
     end
   end
 
-  describe '#gen_dispatch_action' do
-
-    let(:code) { NodeCode.new('Word', 'parsed') }
-
-    context 'when nested' do
-      it 'generates nested regex matching code with a dispatch action' do
-        nested_code {|g| g.gen_dispatch_action ref, code, scope }.
-          should == (<<-CODE).strip
-begin
-  (r = @scanner.scan(/\#{r0_2}/)) &&
-  Word.parsed([r], :labeled => {:a => r0_2})
-end
-          CODE
-      end
-    end
-
-    context 'when top-level' do
-      it 'generates top level regex matching code with a dispatch action' do
-        top_level_code {|g| g.gen_dispatch_action ref, code, scope }.
-          should == (<<-CODE).strip
-(r = @scanner.scan(/\#{r0_2}/)) &&
-Word.parsed([r], :labeled => {:a => r0_2})
-          CODE
-      end
-    end
-  end
-
-  describe '#gen_direct_action' do
-
-    let(:code) { ActionCode.new('|_| _.to_sym') }
-
-    context 'when nested' do
-      it 'generates nested regex matching code with a direct action' do
-        nested_code {|g| g.gen_direct_action ref, code, scope }.
-          should == (<<-CODE).strip
-begin
-  (r = @scanner.scan(/\#{r0_2}/)) &&
-  (r.to_sym)
-end
-          CODE
-      end
-    end
-
-    context 'when top-level' do
-      it 'generates top level regex matching code with a direct action' do
-        top_level_code {|g| g.gen_direct_action ref, code, scope }.
-          should == (<<-CODE).strip
-(r = @scanner.scan(/\#{r0_2}/)) &&
-(r.to_sym)
-          CODE
-      end
-    end
-  end
-
   describe '#gen_token' do
 
     context 'when nested' do

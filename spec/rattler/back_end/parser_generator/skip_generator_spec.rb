@@ -60,60 +60,6 @@ describe SkipGenerator do
     end
   end
 
-  describe '#gen_dispatch_action' do
-
-    let(:code) { NodeCode.new('Word', 'parsed') }
-
-    context 'when nested' do
-      it 'generates nested matching code with a dispatch action' do
-        nested_code {|g| g.gen_dispatch_action skip, code }.
-          should == (<<-CODE).strip
-begin
-  @scanner.skip(/\\w+/) &&
-  Word.parsed([])
-end
-          CODE
-      end
-    end
-
-    context 'when top-level' do
-      it 'generates top level matching code with a dispatch action' do
-        top_level_code {|g| g.gen_dispatch_action skip, code }.
-          should == (<<-CODE).strip
-@scanner.skip(/\\w+/) &&
-Word.parsed([])
-          CODE
-      end
-    end
-  end
-
-  describe '#gen_direct_action' do
-
-    let(:code) { ActionCode.new('[]') }
-
-    context 'when nested' do
-      it 'generates nested matching code with a direct action' do
-        nested_code {|g| g.gen_direct_action skip, code }.
-          should == (<<-CODE).strip
-begin
-  @scanner.skip(/\\w+/) &&
-  ([])
-end
-          CODE
-      end
-    end
-
-    context 'when top-level' do
-      it 'generates top level matching code with a direct action' do
-        top_level_code {|g| g.gen_direct_action skip, code }.
-          should == (<<-CODE).strip
-@scanner.skip(/\\w+/) &&
-([])
-          CODE
-      end
-    end
-  end
-
   describe '#gen_token' do
 
     context 'when nested' do

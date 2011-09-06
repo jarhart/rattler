@@ -79,16 +79,8 @@ module Rattler::Grammar
       ListParser[term_parser, sep_parser, 1, nil]
     end
 
-    def semantic_assert(expr)
-      Assert[SemanticAction[expr]]
-    end
-
-    def semantic_disallow(expr)
-      Disallow[SemanticAction[expr]]
-    end
-
-    def side_effect(expr)
-      Skip[SemanticAction[expr]]
+    def attributed(o, action)
+      (o + [action]).reduce {|s, a| s >> a }
     end
 
     def optional(parser)

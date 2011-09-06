@@ -8,8 +8,7 @@ require 'rattler'
 
 module Rattler::BackEnd::Optimizer
   #
-  # Token, skip, and symantic action wrappers only have meaning in a capturing
-  # context.
+  # Token and skip wrappers only have meaning in a capturing context.
   #
   # @author Jason Arhart
   #
@@ -21,7 +20,7 @@ module Rattler::BackEnd::Optimizer
 
     def _applies_to?(parser, context)
       context.matching? and
-      [Token, Skip, DispatchAction, DirectAction].any? {|_| parser.is_a? _ }
+      [Token, Skip].any? {|_| parser.is_a? _ }
     end
 
     def _apply(parser, context)

@@ -2,8 +2,7 @@ require File.expand_path(File.dirname(__FILE__) + '/../../spec_helper')
 require File.expand_path('assert_compiler_examples', File.dirname(__FILE__))
 require File.expand_path('disallow_compiler_examples', File.dirname(__FILE__))
 require File.expand_path('semantic_action_compiler_examples', File.dirname(__FILE__))
-require File.expand_path('dispatch_action_compiler_examples', File.dirname(__FILE__))
-require File.expand_path('direct_action_compiler_examples', File.dirname(__FILE__))
+require File.expand_path('attributed_sequence_compiler_examples', File.dirname(__FILE__))
 require File.expand_path('token_compiler_examples', File.dirname(__FILE__))
 require File.expand_path('skip_compiler_examples', File.dirname(__FILE__))
 
@@ -12,9 +11,8 @@ shared_examples_for 'a compiled parser' do
 
   it_behaves_like 'a compiled parser with an assert'
   it_behaves_like 'a compiled parser with a disallow'
-  it_behaves_like 'a compiled parser with a dispatch action'
-  it_behaves_like 'a compiled parser with a direct action'
   it_behaves_like 'a compiled parser with a semantic action'
+  it_behaves_like 'a compiled parser with an attributed sequence'
   it_behaves_like 'a compiled parser with a token'
   it_behaves_like 'a compiled parser with a skip'
 
@@ -227,6 +225,24 @@ shared_examples_for 'a compiled parser' do
       it { should parse('foo ').succeeding.like reference_parser }
       it { should parse('abcde ').succeeding.like reference_parser }
       it { should parse('a ').failing.like reference_parser }
+    end
+
+    context 'with a choice of capturing or non-capturing parsers' do
+      let(:grammar) { define_grammar do
+        rule :foo do
+          repeat(match(/a/) | skip(/b/), 2, 4)
+        end
+      end }
+      it { should parse('abac').succeeding.like reference_parser }
+    end
+
+    context 'with an attributed sequence with an action returning true' do
+      let(:gramamr) { define_grammar do
+        rule :foo do
+          repeat(match(/\w/) >> semantic_action('true'), 2, 4)
+        end
+      end }
+      it { should parse('abc ').succeeding.like reference_parser }
     end
   end
 

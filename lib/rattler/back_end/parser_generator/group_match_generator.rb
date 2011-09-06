@@ -12,20 +12,6 @@ module Rattler::BackEnd::ParserGenerator
       expr(:block) { gen_capture group_match, result_expr(group_match) }
     end
 
-    def gen_dispatch_action(group_match, code, scope = ParserScope.empty)
-      expr :block do
-        gen_capture group_match,
-          code.bind(scope, "[#{group_exprs(group_match).join ', '}]")
-      end
-    end
-
-    def gen_direct_action(group_match, code, scope = ParserScope.empty)
-      expr :block do
-        expr = code.bind(scope.capture(*group_exprs(group_match)))
-        gen_capture group_match, "(#{expr})"
-      end
-    end
-
     private
 
     def gen_capture(group_match, expr)
@@ -34,7 +20,7 @@ module Rattler::BackEnd::ParserGenerator
     end
 
     def result_expr(group_match)
-      if group_match.num_groups == 1
+      if group_match.capture_count == 1
         group_exprs(group_match).first
       else
         "[#{group_exprs(group_match).join ', '}]"

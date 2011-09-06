@@ -107,6 +107,71 @@ end
         end
       end
     end
+
+    context 'with an Apply parser' do
+
+      let(:bounds) { [0, nil] }
+      let(:nested) { Apply[:a] }
+
+      it 'generates repeat code that selects only the captures for the result' do
+        top_level_code {|g| g.gen_basic repeat }.should == <<-CODE.strip
+a = []
+while r = match(:a)
+  a << r
+end
+select_captures(a)
+        CODE
+      end
+    end
+
+    context 'with a choice of capturing or non-capturing parsers' do
+
+      let(:bounds) { [0, nil] }
+      let(:nested) { Choice[
+        Match[/a/],
+        Skip[Match[/b/]]
+      ] }
+
+      it 'generates repeat code that selects only the captures for the result' do
+        top_level_code {|g| g.gen_basic repeat }.should == <<-CODE.strip
+a = []
+while r = begin
+  @scanner.scan(/a/) ||
+  (@scanner.skip(/b/) && true)
+end
+  a << r
+end
+select_captures(a)
+        CODE
+      end
+    end
+
+    context 'with an attributed sequence with a semantic action' do
+
+      let(:bounds) { [0, nil] }
+      let(:nested) do
+        AttributedSequence[Match[/\w/], SemanticAction['_']]
+      end
+
+      it 'generates repeat code that selects only the captures for the result' do
+        top_level_code {|g| g.gen_basic repeat }.should == <<-'CODE'.strip
+a = []
+while r = begin
+  p0 = @scanner.pos
+  begin
+    (r0_0 = @scanner.scan(/\w/)) &&
+    (r0_0)
+  end || begin
+    @scanner.pos = p0
+    false
+  end
+end
+  a << r
+end
+select_captures(a)
+        CODE
+      end
+    end
   end
 
   describe '#gen_assert' do

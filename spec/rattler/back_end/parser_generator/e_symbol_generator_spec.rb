@@ -52,44 +52,6 @@ describe ESymbolGenerator do
     end
   end
 
-  describe '#gen_dispatch_action' do
-
-    let(:code) { NodeCode.new('Word', 'parsed') }
-
-    context 'when nested' do
-      it 'generates nested eof matching code with a dispatch action' do
-        nested_code {|g| g.gen_dispatch_action ESymbol[], code }.
-          should == 'Word.parsed([])'
-      end
-    end
-
-    context 'when top-level' do
-      it 'generates top level eof matching code with a dispatch action' do
-        top_level_code {|g| g.gen_dispatch_action ESymbol[], code }.
-          should == 'Word.parsed([])'
-      end
-    end
-  end
-
-  describe '#gen_direct_action' do
-
-    let(:code) { ActionCode.new(':foo') }
-
-    context 'when nested' do
-      it 'generates nested eof matching code with a direct action' do
-        nested_code {|g| g.gen_direct_action ESymbol[], code }.
-          should == '(:foo)'
-      end
-    end
-
-    context 'when top-level' do
-      it 'generates top level eof matching code with a direct action' do
-        top_level_code {|g| g.gen_direct_action ESymbol[], code }.
-          should == ':foo'
-      end
-    end
-  end
-
   describe '#gen_token' do
 
     context 'when nested' do

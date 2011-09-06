@@ -41,7 +41,7 @@ module Rattler::Parsers
         break if upper_bound? and a.size >= upper_bound
       end
       if a.size >= lower_bound
-        capturing? ? a : true
+        capturing? ? select_captures(a) : true
       else
         scanner.pos = start_pos
         false

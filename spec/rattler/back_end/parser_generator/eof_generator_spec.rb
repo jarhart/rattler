@@ -52,44 +52,6 @@ describe EofGenerator do
     end
   end
 
-  describe '#gen_dispatch_action' do
-
-    let(:code) { NodeCode.new('Word', 'parsed') }
-
-    context 'when nested' do
-      it 'generates nested eof matching code with a dispatch action' do
-        nested_code {|g| g.gen_dispatch_action Eof[], code }.
-          should == '(Word.parsed([]) if @scanner.eos?)'
-      end
-    end
-
-    context 'when top-level' do
-      it 'generates top level eof matching code with a dispatch action' do
-        top_level_code {|g| g.gen_dispatch_action Eof[], code }.
-          should == 'Word.parsed([]) if @scanner.eos?'
-      end
-    end
-  end
-
-  describe '#gen_direct_action' do
-
-    let(:code) { ActionCode.new(':eof') }
-
-    context 'when nested' do
-      it 'generates nested eof matching code with a direct action' do
-        nested_code {|g| g.gen_direct_action Eof[], code }.
-          should == '((:eof) if @scanner.eos?)'
-      end
-    end
-
-    context 'when top-level' do
-      it 'generates top level eof matching code with a direct action' do
-        top_level_code {|g| g.gen_direct_action Eof[], code }.
-          should == '(:eof) if @scanner.eos?'
-      end
-    end
-  end
-
   describe '#gen_token' do
 
     context 'when nested' do

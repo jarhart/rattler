@@ -36,6 +36,13 @@ module Rattler::Parsers
       false
     end
 
+    def capturing_decidable?
+      @capturing_decidable ||=
+        children.all? {|_| _.capturing_decidable? } and
+        ( children.all? {|_| _.capturing? } or
+          children.none? {|_| _.capturing? } )
+    end
+
     # Return a new parser that tries this parser first and if it fails tries
     # +other+.
     #

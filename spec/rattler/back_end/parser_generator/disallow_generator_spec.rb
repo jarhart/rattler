@@ -58,60 +58,6 @@ describe DisallowGenerator do
     end
   end
 
-  describe '#gen_dispatch_action' do
-
-    let(:code) { NodeCode.new('Word', 'parsed') }
-
-    context 'when nested' do
-      it 'generates nested negative lookahead code with a dispatch action' do
-        nested_code {|g| g.gen_dispatch_action disallow, code }.
-          should == (<<-CODE).strip
-begin
-  @scanner.skip(/(?!\\d)/) &&
-  Word.parsed([])
-end
-          CODE
-      end
-    end
-
-    context 'when top-level' do
-      it 'generates top level negative lookahead code with a dispatch action' do
-        top_level_code {|g| g.gen_dispatch_action disallow, code }.
-          should == (<<-CODE).strip
-@scanner.skip(/(?!\\d)/) &&
-Word.parsed([])
-          CODE
-      end
-    end
-  end
-
-  describe '#gen_direct_action' do
-
-    let(:code) { ActionCode.new(':t') }
-
-    context 'when nested' do
-      it 'generates nested negative lookahead code with a direct action' do
-        nested_code {|g| g.gen_direct_action disallow, code }.
-          should == (<<-CODE).strip
-begin
-  @scanner.skip(/(?!\\d)/) &&
-  (:t)
-end
-          CODE
-      end
-    end
-
-    context 'when top-level' do
-      it 'generates top level negative lookahead code with a direct action' do
-        top_level_code {|g| g.gen_direct_action disallow, code }.
-          should == (<<-CODE).strip
-@scanner.skip(/(?!\\d)/) &&
-(:t)
-          CODE
-      end
-    end
-  end
-
   describe '#gen_token' do
 
     context 'when nested' do
