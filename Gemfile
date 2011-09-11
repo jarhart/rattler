@@ -14,9 +14,9 @@ group :development do
   gem "aruba", "~> 0.4.0"
   gem "rcov", "~> 0.9.10", :platforms => [:mri_18, :mingw_18]
   gem "yard", "~> 0.7.0"
-  gem "guard", "~> 0.6.3"
-  gem "guard-rspec", "~> 0.4.3"
-  gem "guard-cucumber", "~> 0.6.1"
+  gem "guard", "~> 0.6.0"
+  gem "guard-rspec", "~> 0.4.0"
+  gem "guard-cucumber", "~> 0.6.0"
 
   # uncomment to test the CLI
   # gem "rattler", :path => "."

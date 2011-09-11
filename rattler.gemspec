@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Jason Arhart"]
-  s.date = %q{2011-08-29}
+  s.date = %q{2011-09-10}
   s.default_executable = %q{rtlr}
   s.description = %q{Simple language recognition tool for Ruby based on packrat parsing}
   s.email = %q{jarhart@gmail.com}
@@ -52,12 +52,11 @@ Gem::Specification.new do |s|
     "lib/rattler/back_end/parser_generator.rb",
     "lib/rattler/back_end/parser_generator/apply_generator.rb",
     "lib/rattler/back_end/parser_generator/assert_generator.rb",
+    "lib/rattler/back_end/parser_generator/attributed_sequence_generator.rb",
     "lib/rattler/back_end/parser_generator/back_reference_generator.rb",
     "lib/rattler/back_end/parser_generator/choice_generator.rb",
     "lib/rattler/back_end/parser_generator/delegating_generator.rb",
-    "lib/rattler/back_end/parser_generator/direct_action_generator.rb",
     "lib/rattler/back_end/parser_generator/disallow_generator.rb",
-    "lib/rattler/back_end/parser_generator/dispatch_action_generator.rb",
     "lib/rattler/back_end/parser_generator/e_symbol_generator.rb",
     "lib/rattler/back_end/parser_generator/eof_generator.rb",
     "lib/rattler/back_end/parser_generator/expr_generator.rb",
@@ -73,6 +72,7 @@ Gem::Specification.new do |s|
     "lib/rattler/back_end/parser_generator/list_generator.rb",
     "lib/rattler/back_end/parser_generator/match_generator.rb",
     "lib/rattler/back_end/parser_generator/nested.rb",
+    "lib/rattler/back_end/parser_generator/node_action_generator.rb",
     "lib/rattler/back_end/parser_generator/one_or_more_generating.rb",
     "lib/rattler/back_end/parser_generator/optional_generating.rb",
     "lib/rattler/back_end/parser_generator/predicate_propogating.rb",
@@ -80,10 +80,12 @@ Gem::Specification.new do |s|
     "lib/rattler/back_end/parser_generator/rule_generator.rb",
     "lib/rattler/back_end/parser_generator/rule_set_generator.rb",
     "lib/rattler/back_end/parser_generator/semantic_action_generator.rb",
+    "lib/rattler/back_end/parser_generator/sequence_generating.rb",
     "lib/rattler/back_end/parser_generator/sequence_generator.rb",
     "lib/rattler/back_end/parser_generator/skip_generator.rb",
     "lib/rattler/back_end/parser_generator/skip_propogating.rb",
     "lib/rattler/back_end/parser_generator/sub_generating.rb",
+    "lib/rattler/back_end/parser_generator/super_generator.rb",
     "lib/rattler/back_end/parser_generator/token_generator.rb",
     "lib/rattler/back_end/parser_generator/token_propogating.rb",
     "lib/rattler/back_end/parser_generator/top_level.rb",
@@ -101,20 +103,19 @@ Gem::Specification.new do |s|
     "lib/rattler/parsers/apply.rb",
     "lib/rattler/parsers/assert.rb",
     "lib/rattler/parsers/atomic.rb",
+    "lib/rattler/parsers/attributed_sequence.rb",
     "lib/rattler/parsers/back_reference.rb",
     "lib/rattler/parsers/choice.rb",
     "lib/rattler/parsers/combinator_parser.rb",
     "lib/rattler/parsers/combining.rb",
-    "lib/rattler/parsers/direct_action.rb",
     "lib/rattler/parsers/disallow.rb",
-    "lib/rattler/parsers/dispatch_action.rb",
     "lib/rattler/parsers/e_symbol.rb",
-    "lib/rattler/parsers/effect_code.rb",
     "lib/rattler/parsers/eof.rb",
     "lib/rattler/parsers/fail.rb",
     "lib/rattler/parsers/label.rb",
     "lib/rattler/parsers/list_parser.rb",
     "lib/rattler/parsers/match.rb",
+    "lib/rattler/parsers/node_action.rb",
     "lib/rattler/parsers/node_code.rb",
     "lib/rattler/parsers/parser.rb",
     "lib/rattler/parsers/parser_dsl.rb",
@@ -125,10 +126,12 @@ Gem::Specification.new do |s|
     "lib/rattler/parsers/rule_set.rb",
     "lib/rattler/parsers/semantic.rb",
     "lib/rattler/parsers/semantic_action.rb",
-    "lib/rattler/parsers/semantic_attribute.rb",
     "lib/rattler/parsers/sequence.rb",
+    "lib/rattler/parsers/sequencing.rb",
     "lib/rattler/parsers/skip.rb",
+    "lib/rattler/parsers/super.rb",
     "lib/rattler/parsers/token.rb",
+    "lib/rattler/rake_task.rb",
     "lib/rattler/runner.rb",
     "lib/rattler/runtime.rb",
     "lib/rattler/runtime/extended_packrat_parser.rb",
@@ -165,6 +168,7 @@ Gem::Specification.new do |s|
     "features/grammar/e_symbol.feature",
     "features/grammar/eof.feature",
     "features/grammar/fail.feature",
+    "features/grammar/include.feature",
     "features/grammar/labels.feature",
     "features/grammar/list_matching.feature",
     "features/grammar/literal.feature",
@@ -185,6 +189,7 @@ Gem::Specification.new do |s|
     "features/grammar/side_effect.feature",
     "features/grammar/skip_operator.feature",
     "features/grammar/start_rule.feature",
+    "features/grammar/super.feature",
     "features/grammar/token.feature",
     "features/grammar/whitespace.feature",
     "features/grammar/word_literal.feature",
@@ -193,10 +198,9 @@ Gem::Specification.new do |s|
     "features/step_definitions/grammar_steps.rb",
     "features/support/env.rb",
     "spec/rattler/back_end/assert_compiler_examples.rb",
+    "spec/rattler/back_end/attributed_sequence_compiler_examples.rb",
     "spec/rattler/back_end/compiler_spec.rb",
-    "spec/rattler/back_end/direct_action_compiler_examples.rb",
     "spec/rattler/back_end/disallow_compiler_examples.rb",
-    "spec/rattler/back_end/dispatch_action_compiler_examples.rb",
     "spec/rattler/back_end/optimizer/flatten_choice_spec.rb",
     "spec/rattler/back_end/optimizer/flatten_sequence_spec.rb",
     "spec/rattler/back_end/optimizer/inline_regular_rules_spec.rb",
@@ -208,16 +212,16 @@ Gem::Specification.new do |s|
     "spec/rattler/back_end/optimizer/join_predicate_or_bare_match_spec.rb",
     "spec/rattler/back_end/optimizer/join_predicate_or_nested_match_spec.rb",
     "spec/rattler/back_end/optimizer/reduce_repeat_match_spec.rb",
+    "spec/rattler/back_end/optimizer/remove_meaningless_wrapper_spec.rb",
     "spec/rattler/back_end/optimizer/simplify_redundant_repeat_spec.rb",
     "spec/rattler/back_end/optimizer/simplify_token_match_spec.rb",
     "spec/rattler/back_end/optimizer_spec.rb",
     "spec/rattler/back_end/parser_generator/apply_generator_spec.rb",
     "spec/rattler/back_end/parser_generator/assert_generator_spec.rb",
+    "spec/rattler/back_end/parser_generator/attributed_sequence_generator_spec.rb",
     "spec/rattler/back_end/parser_generator/back_reference_generator_spec.rb",
     "spec/rattler/back_end/parser_generator/choice_generator_spec.rb",
-    "spec/rattler/back_end/parser_generator/direct_action_generator_spec.rb",
     "spec/rattler/back_end/parser_generator/disallow_generator_spec.rb",
-    "spec/rattler/back_end/parser_generator/dispatch_action_generator_spec.rb",
     "spec/rattler/back_end/parser_generator/e_symbol_generator_spec.rb",
     "spec/rattler/back_end/parser_generator/eof_generator_spec.rb",
     "spec/rattler/back_end/parser_generator/fail_generator_spec.rb",
@@ -228,6 +232,7 @@ Gem::Specification.new do |s|
     "spec/rattler/back_end/parser_generator/list1_generator_examples.rb",
     "spec/rattler/back_end/parser_generator/list_generator_spec.rb",
     "spec/rattler/back_end/parser_generator/match_generator_spec.rb",
+    "spec/rattler/back_end/parser_generator/node_action_generator_spec.rb",
     "spec/rattler/back_end/parser_generator/one_or_more_generator_examples.rb",
     "spec/rattler/back_end/parser_generator/optional_generator_examples.rb",
     "spec/rattler/back_end/parser_generator/repeat_generator_spec.rb",
@@ -236,14 +241,12 @@ Gem::Specification.new do |s|
     "spec/rattler/back_end/parser_generator/semantic_action_generator_spec.rb",
     "spec/rattler/back_end/parser_generator/sequence_generator_spec.rb",
     "spec/rattler/back_end/parser_generator/skip_generator_spec.rb",
+    "spec/rattler/back_end/parser_generator/super_generator_spec.rb",
     "spec/rattler/back_end/parser_generator/token_generator_spec.rb",
     "spec/rattler/back_end/parser_generator/zero_or_more_generator_examples.rb",
     "spec/rattler/back_end/ruby_generator_spec.rb",
     "spec/rattler/back_end/semantic_action_compiler_examples.rb",
-    "spec/rattler/back_end/semantic_assert_compiler_examples.rb",
-    "spec/rattler/back_end/semantic_disallow_compiler_examples.rb",
     "spec/rattler/back_end/shared_compiler_examples.rb",
-    "spec/rattler/back_end/side_effect_compiler_examples.rb",
     "spec/rattler/back_end/skip_compiler_examples.rb",
     "spec/rattler/back_end/token_compiler_examples.rb",
     "spec/rattler/grammar/analysis_spec.rb",
@@ -252,19 +255,18 @@ Gem::Specification.new do |s|
     "spec/rattler/parsers/action_code_spec.rb",
     "spec/rattler/parsers/apply_spec.rb",
     "spec/rattler/parsers/assert_spec.rb",
+    "spec/rattler/parsers/attributed_sequence_spec.rb",
     "spec/rattler/parsers/back_reference_spec.rb",
     "spec/rattler/parsers/choice_spec.rb",
     "spec/rattler/parsers/combinator_parser_spec.rb",
-    "spec/rattler/parsers/direct_action_spec.rb",
     "spec/rattler/parsers/disallow_spec.rb",
-    "spec/rattler/parsers/dispatch_action_spec.rb",
     "spec/rattler/parsers/e_symbol_spec.rb",
     "spec/rattler/parsers/eof_spec.rb",
     "spec/rattler/parsers/fail_spec.rb",
     "spec/rattler/parsers/label_spec.rb",
     "spec/rattler/parsers/list_parser_spec.rb",
     "spec/rattler/parsers/match_spec.rb",
-    "spec/rattler/parsers/node_code_spec.rb",
+    "spec/rattler/parsers/node_action_spec.rb",
     "spec/rattler/parsers/parser_dsl_spec.rb",
     "spec/rattler/parsers/parser_scope_spec.rb",
     "spec/rattler/parsers/repeat_spec.rb",
@@ -272,6 +274,7 @@ Gem::Specification.new do |s|
     "spec/rattler/parsers/semantic_action_spec.rb",
     "spec/rattler/parsers/sequence_spec.rb",
     "spec/rattler/parsers/skip_spec.rb",
+    "spec/rattler/parsers/super_spec.rb",
     "spec/rattler/parsers/token_spec.rb",
     "spec/rattler/runtime/extended_packrat_parser_spec.rb",
     "spec/rattler/runtime/packrat_parser_spec.rb",
@@ -301,10 +304,13 @@ Gem::Specification.new do |s|
       s.add_development_dependency(%q<rspec>, ["~> 2.6.0"])
       s.add_development_dependency(%q<cucumber>, ["~> 1.0.0"])
       s.add_development_dependency(%q<aruba>, ["~> 0.4.0"])
+      s.add_development_dependency(%q<rcov>, ["~> 0.9.10"])
       s.add_development_dependency(%q<yard>, ["~> 0.7.0"])
-      s.add_development_dependency(%q<guard>, ["~> 0.6.2"])
-      s.add_development_dependency(%q<guard-rspec>, ["~> 0.4.3"])
-      s.add_development_dependency(%q<guard-cucumber>, ["~> 0.6.1"])
+      s.add_development_dependency(%q<guard>, ["~> 0.6.0"])
+      s.add_development_dependency(%q<guard-rspec>, ["~> 0.4.0"])
+      s.add_development_dependency(%q<guard-cucumber>, ["~> 0.6.0"])
+      s.add_development_dependency(%q<rb-fchange>, [">= 0"])
+      s.add_development_dependency(%q<rb-notifu>, [">= 0"])
     else
       s.add_dependency(%q<bundler>, ["~> 1.0.0"])
       s.add_dependency(%q<ruby-graphviz>, ["~> 1.0.0"])
@@ -312,10 +318,13 @@ Gem::Specification.new do |s|
       s.add_dependency(%q<rspec>, ["~> 2.6.0"])
       s.add_dependency(%q<cucumber>, ["~> 1.0.0"])
       s.add_dependency(%q<aruba>, ["~> 0.4.0"])
+      s.add_dependency(%q<rcov>, ["~> 0.9.10"])
       s.add_dependency(%q<yard>, ["~> 0.7.0"])
-      s.add_dependency(%q<guard>, ["~> 0.6.2"])
-      s.add_dependency(%q<guard-rspec>, ["~> 0.4.3"])
-      s.add_dependency(%q<guard-cucumber>, ["~> 0.6.1"])
+      s.add_dependency(%q<guard>, ["~> 0.6.0"])
+      s.add_dependency(%q<guard-rspec>, ["~> 0.4.0"])
+      s.add_dependency(%q<guard-cucumber>, ["~> 0.6.0"])
+      s.add_dependency(%q<rb-fchange>, [">= 0"])
+      s.add_dependency(%q<rb-notifu>, [">= 0"])
     end
   else
     s.add_dependency(%q<bundler>, ["~> 1.0.0"])
@@ -324,10 +333,13 @@ Gem::Specification.new do |s|
     s.add_dependency(%q<rspec>, ["~> 2.6.0"])
     s.add_dependency(%q<cucumber>, ["~> 1.0.0"])
     s.add_dependency(%q<aruba>, ["~> 0.4.0"])
+    s.add_dependency(%q<rcov>, ["~> 0.9.10"])
     s.add_dependency(%q<yard>, ["~> 0.7.0"])
-    s.add_dependency(%q<guard>, ["~> 0.6.2"])
-    s.add_dependency(%q<guard-rspec>, ["~> 0.4.3"])
-    s.add_dependency(%q<guard-cucumber>, ["~> 0.6.1"])
+    s.add_dependency(%q<guard>, ["~> 0.6.0"])
+    s.add_dependency(%q<guard-rspec>, ["~> 0.4.0"])
+    s.add_dependency(%q<guard-cucumber>, ["~> 0.6.0"])
+    s.add_dependency(%q<rb-fchange>, [">= 0"])
+    s.add_dependency(%q<rb-notifu>, [">= 0"])
   end
 end
 
