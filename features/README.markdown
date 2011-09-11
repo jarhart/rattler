@@ -42,6 +42,8 @@ Rattler Extended Matching Syntax
 * [EOF Symbol](http://www.relishapp.com/jarhart/rattler/docs/grammar/eof-symbol)
 * ["Empty" Symbol](http://www.relishapp.com/jarhart/rattler/docs/grammar/e-symbol)
 * [Fail Expressions](http://www.relishapp.com/jarhart/rattler/docs/grammar/fail-expressions)
+* [Include Another Grammar](http://www.relishapp.com/jarhart/rattler/docs/grammar/include)
+* ["super" Keyword](http://www.relishapp.com/jarhart/rattler/docs/grammar/super-keyword)
 
 Semantics
 
