@@ -18,6 +18,7 @@ module Rattler::Grammar
       @left_references = {}
       @direct_references = {}
       @direct_left_references = {}
+      @has_super = {}
     end
 
     def regular?(rule_name)
@@ -25,6 +26,7 @@ module Rattler::Grammar
     end
 
     def recursive?(rule_name)
+      has_super? rule_name or
       referenced_from? rule_name, rule_name
     end
 
@@ -46,6 +48,21 @@ module Rattler::Grammar
     end
 
     private
+
+    def has_super?(rule_name)
+      @has_super[rule_name] ||= expr_has_super?(@rules[rule_name].expr)
+    end
+
+    def expr_has_super?(expr)
+      case expr
+      when Super
+        true
+      when Rattler::Parsers::Parser
+        expr.any? {|_| expr_has_super? _ }
+      else
+        false
+      end
+    end
 
     def references_from(rule_name)
       @references[rule_name] ||= trace_references rule_name, :direct_references

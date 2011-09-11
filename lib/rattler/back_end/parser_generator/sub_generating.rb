@@ -85,6 +85,9 @@ module Rattler::BackEnd::ParserGenerator
       when Skip
         cache_generator SkipGenerator, context
 
+      when Super
+        cache_generator SuperGenerator, context
+
       when Label
         cache_generator LabelGenerator, context
 

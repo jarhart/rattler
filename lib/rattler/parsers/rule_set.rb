@@ -28,7 +28,15 @@ module Rattler::Parsers
     end
 
     def rule(name)
-      @by_name[name]
+      @by_name[name] || inherited_rule(name)
+    end
+
+    def inherited_rule(name)
+      includes.inject(nil) {|r,s| r || s.rule(name) }
+    end
+
+    def includes
+      attrs[:includes] || []
     end
 
     def [](*args)

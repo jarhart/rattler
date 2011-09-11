@@ -96,7 +96,7 @@ module Rattler::Grammar
     end
 
     def rule(name, parser)
-      Rule[name, (@ws ? parser.with_ws(@ws) : parser), {:inline => @inline}]
+      Rule[name, finish_expr(parser, name), {:inline => @inline}]
     end
 
     def literal(e)
@@ -116,6 +116,24 @@ module Rattler::Grammar
         Match[/[[:alnum:]_]/]
       else
         char_class("[[:#{name.downcase}:]]")
+      end
+    end
+
+    def finish_expr(parser, rule_name)
+      parser = finish_super(parser, rule_name)
+      @ws ? parser.with_ws(@ws) : parser
+    end
+
+    def finish_super(parser, rule_name)
+      case parser
+      when Super
+        parser.with_attrs(:rule_name => rule_name)
+      when Eof, ESymbol
+        parser
+      when Parser
+        parser.with_children(parser.map {|_| finish_super(_, rule_name) })
+      else
+        parser
       end
     end
 

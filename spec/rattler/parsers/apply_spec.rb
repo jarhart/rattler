@@ -29,6 +29,12 @@ describe Apply do
     end
   end
 
+  describe '#capturing_decidable?' do
+    it 'is false' do
+      subject.should_not be_capturing_decidable
+    end
+  end
+
   describe '#with_ws' do
     it 'returns self' do
       subject.with_ws(Match[/\s*/]).should == subject

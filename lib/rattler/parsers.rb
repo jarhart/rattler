@@ -35,6 +35,7 @@ module Rattler
     autoload :AttributedSequence, 'rattler/parsers/attributed_sequence'
     autoload :Token, 'rattler/parsers/token'
     autoload :Skip, 'rattler/parsers/skip'
+    autoload :Super, 'rattler/parsers/super'
     autoload :Label, 'rattler/parsers/label'
     autoload :BackReference, 'rattler/parsers/back_reference'
     autoload :Fail, 'rattler/parsers/fail'

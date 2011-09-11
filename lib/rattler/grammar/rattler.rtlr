@@ -107,6 +107,7 @@ include Rattler::Parsers
 
   atom              <-  ~`EOF`                                                  <Eof>
                       / ~`E`                                                    <ESymbol>
+                      / ~`super`                                                { Super[:pending] }
                       / posix_class                                             { posix_class _ }
                       / identifier !'<-'                                        <Apply>
                       / literal                                                 { literal _ }

@@ -41,6 +41,7 @@ module Rattler::BackEnd
     autoload :AttributedSequenceGenerator, 'rattler/back_end/parser_generator/attributed_sequence_generator'
     autoload :TokenGenerator, 'rattler/back_end/parser_generator/token_generator'
     autoload :SkipGenerator, 'rattler/back_end/parser_generator/skip_generator'
+    autoload :SuperGenerator, 'rattler/back_end/parser_generator/super_generator'
     autoload :LabelGenerator, 'rattler/back_end/parser_generator/label_generator'
     autoload :BackReferenceGenerator, 'rattler/back_end/parser_generator/back_reference_generator'
     autoload :FailGenerator, 'rattler/back_end/parser_generator/fail_generator'

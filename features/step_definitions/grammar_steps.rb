@@ -1,8 +1,12 @@
-Given /grammar with\:/ do |source|
+Given /grammar with:$/ do |source|
   @parser_class = Rattler.compile_parser(source)
 end
 
-Given /class definition\:/ do |source|
+Given /grammar called "([^\"]*)" with:$/ do |name, source|
+  Rattler.compile((::Grammars[name.to_sym] = Module.new), source)
+end
+
+Given /class definition:$/ do |source|
   eval(source, TOPLEVEL_BINDING)
 end
 

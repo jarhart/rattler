@@ -1095,6 +1095,16 @@ module Rattler
         begin
           p0 = @scanner.pos
           begin
+            @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>(?>super)(?![[:alnum:]_]))/) &&
+            (Super[:pending])
+          end || begin
+            @scanner.pos = p0
+            false
+          end
+        end ||
+        begin
+          p0 = @scanner.pos
+          begin
             (r0_0 = begin
               begin
                 @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)((?>ALNUM)(?![[:alnum:]_]))/) &&

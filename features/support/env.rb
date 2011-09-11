@@ -13,6 +13,11 @@ require 'rattler'
 require 'rspec/expectations'
 require 'aruba/cucumber'
 
+::Grammars = {}
+def Object.const_missing(name)
+  ::Grammars[name] || super
+end
+
 Before do
   @aruba_timeout_seconds = 5
 end

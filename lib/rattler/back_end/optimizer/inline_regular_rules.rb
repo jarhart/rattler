@@ -39,7 +39,7 @@ module Rattler::BackEnd::Optimizer
 
     def inline_allowed?(rule_name, context)
       context.standalone? or
-      context.rules[rule_name].attrs[:inline]
+      (rule = context.rules[rule_name] and rule.attrs[:inline])
     end
 
   end

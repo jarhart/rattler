@@ -46,6 +46,17 @@ describe Rattler::Grammar::Analysis do
         subject.recursive?(:a).should be_false
       end
     end
+
+    context 'given a rule with a Super' do
+
+      let (:rule_set) { RuleSet[
+        Rule[:a, Sequence[Match[/a/], Super[:a]]]
+      ] }
+
+      it 'returns true' do
+        subject.recursive?(:a).should be_true
+      end
+    end
   end
 
   describe '#left_recursive?' do

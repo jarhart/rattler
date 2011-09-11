@@ -51,6 +51,15 @@ describe InlineRegularRules do
           subject.applies_to?(Apply[:a], standalone).should be_false
         end
       end
+
+      context 'given a reference to a rule with a Super' do
+
+        let(:rule_a) { Rule[:a, Sequence[Match[/a/], Super[:a]]] }
+
+        it 'returns false' do
+          subject.applies_to?(Apply[:a], standalone).should be_false
+        end
+      end
     end
 
     context 'without the :standalone option set' do
