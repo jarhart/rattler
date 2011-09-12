@@ -186,8 +186,39 @@ module Rattler::Util
       ']'
     end
 
+    # @private
+    def pretty_print(q) #:nodoc:
+      pretty_print_name(q)
+      q.group(1, '[', ']') do
+        q.breakable('')
+        q.seplist(children) {|_| q.pp _ }
+        q.comma_breakable unless children.empty? or pretty_keys.empty?
+        q.seplist(pretty_keys) do |k|
+          q.pp k
+          q.text '=>'
+          q.pp attrs[k]
+        end
+      end
+    end
+
+    # @private
+    def pretty_print_cycle(q) #:nodoc:
+      pretty_print_name(q)
+    end
+
     def to_graphviz
       Rattler::Util::GraphViz.digraph(self)
+    end
+
+    private
+
+    def pretty_print_name(q)
+      q.text(self.class.name)
+      q.text("<#{self.name.inspect}>") if attrs.has_key?(:name)
+    end
+
+    def pretty_keys
+      @pretty_keys ||= attrs.keys.reject {|_| _ == :name }.sort_by {|_| _.to_s }
     end
 
   end

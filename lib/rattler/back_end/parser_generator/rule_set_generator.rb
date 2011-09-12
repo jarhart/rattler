@@ -72,12 +72,21 @@ module Rattler::BackEnd::ParserGenerator
         (@g << "# @private").newline
         module_block("module #{name} #:nodoc:") { yield }
       end
+      gen_cli(:GrammarCLI, grammar_name)
     end
 
     def gen_parser_def(parser_name, base_name)
       nest_modules(parser_name.split('::')) do |name|
         (@g << "# @private").newline
         module_block("class #{name} < #{base_name} #:nodoc:") { yield }
+      end
+      gen_cli(:ParserCLI, parser_name)
+    end
+
+    def gen_cli(cli, module_name)
+      @g.newline.newline.block('if __FILE__ == $0') do
+        %w{rubygems rattler}.each {|_| (@g << "require '#{_}'").newline }
+        @g << "Rattler::Util::#{cli}.run(#{module_name})"
       end
     end
 

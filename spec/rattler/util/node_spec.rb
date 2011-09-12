@@ -1,4 +1,5 @@
 require File.expand_path(File.dirname(__FILE__) + '/../../spec_helper')
+require 'pp'
 
 include Rattler::Util
 
@@ -338,6 +339,67 @@ describe Node do
     context 'given a meaningless name' do
       it 'returns false' do
         subject.should_not respond_to(:fred)
+      end
+    end
+  end
+
+  describe '#pretty_print' do
+
+    context 'for an empty node' do
+
+      subject { Node.new }
+
+      it 'prints the class name + "[]"' do
+        subject.pretty_inspect.should == "Rattler::Util::Node[]\n"
+      end
+    end
+
+    context 'for a node with a name' do
+
+      subject { Node.new(:name => 'foo') }
+
+      it 'prints the name in angle brackets after the class name' do
+        subject.pretty_inspect.should == "Rattler::Util::Node<\"foo\">[]\n"
+      end
+    end
+
+    context 'for a node with attributes' do
+
+      subject { Node.new(:a => 'foo', :b => 'bar') }
+
+      it 'prints the attributes in square brackets' do
+        subject.pretty_inspect.should ==
+        "Rattler::Util::Node[:a=>\"foo\", :b=>\"bar\"]\n"
+      end
+    end
+
+    context 'for a node with a name and attributes' do
+
+      subject { Node.new(:name => 'foo', :foo => 'bar') }
+
+      it 'omits the name from the square brackets' do
+        subject.pretty_inspect.should ==
+          "Rattler::Util::Node<\"foo\">[:foo=>\"bar\"]\n"
+      end
+    end
+
+    context 'for a node with children' do
+
+      subject { Node.new('foo', 'bar') }
+
+      it 'prints the children in square brackets' do
+        subject.pretty_inspect.should ==
+          "Rattler::Util::Node[\"foo\", \"bar\"]\n"
+      end
+    end
+
+    context 'for a node with children and attributes' do
+
+      subject { Node.new('aa', 'bb', :foo => 'bar') }
+
+      it 'prints the children then the attributes in square brackets' do
+        subject.pretty_inspect.should ==
+          "Rattler::Util::Node[\"aa\", \"bb\", :foo=>\"bar\"]\n"
       end
     end
   end

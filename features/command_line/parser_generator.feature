@@ -1,7 +1,8 @@
 Feature: Parser Generator
 
   The "rtlr" command is used to generate a grammar module or parser class from
-  a Rattler grammar file.
+  a Rattler grammar file.  The generated file is itself a parser script that
+  makes it easy to try out the parser.
   
   @command-line
   Scenario: Getting help
@@ -49,6 +50,12 @@ Feature: Parser Generator
           end
           
         end
+
+        if __FILE__ == $0
+          require 'rubygems'
+          require 'rattler'
+          Rattler::Util::GrammarCLI.run(BinaryGrammar)
+        end
         """
   
   @command-line
@@ -82,5 +89,11 @@ Feature: Parser Generator
             a0
           end
           
+        end
+        
+        if __FILE__ == $0
+          require 'rubygems'
+          require 'rattler'
+          Rattler::Util::ParserCLI.run(BinaryParser)
         end
         """
