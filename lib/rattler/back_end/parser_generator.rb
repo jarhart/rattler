@@ -14,6 +14,7 @@ module Rattler::BackEnd
   #
   module ParserGenerator
 
+    autoload :GrammarGenerator, 'rattler/back_end/parser_generator/grammar_generator'
     autoload :RuleSetGenerator, 'rattler/back_end/parser_generator/rule_set_generator'
     autoload :RuleGenerator, 'rattler/back_end/parser_generator/rule_generator'
     autoload :ExprGenerator, 'rattler/back_end/parser_generator/expr_generator'
@@ -85,7 +86,7 @@ module Rattler::BackEnd
       unless opts[:no_optimize]
         parser = ::Rattler::BackEnd::Optimizer.optimize(parser, opts)
       end
-      RuleSetGenerator.new(g).generate(parser, opts)
+      GrammarGenerator.new(g).generate(parser, opts)
       g
     end
 
