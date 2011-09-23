@@ -1,4 +1,4 @@
-Feature: Parser Generator
+Feature: rtlr
 
   The "rtlr" command is used to generate a grammar module or parser class from
   a Rattler grammar file.  The generated file is itself a parser script that

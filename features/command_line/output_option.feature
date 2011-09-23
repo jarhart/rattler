@@ -1,7 +1,8 @@
 Feature: --output option
 
   Use the --output (or -o) option to specify a different output file name, or
-  "-" for STDOUT.
+  "-" for STDOUT. By default the output filename is the grammar or parser name
+  converted from camel-case to underscore.
 
   @command-line
   Scenario: Specify a different file name

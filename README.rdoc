@@ -18,27 +18,19 @@ dynamically from strings.
 
 === Documentation
 
-The best documentation is currently the {cucumber features}[http://www.relishapp.com/jarhart/rattler]
+The best documentation is the {cucumber features}[http://www.relishapp.com/jarhart/rattler]
 
 You may also wish to browse the {API Docs}[http://rubydoc.info/gems/rattler/0.5.0/frames]
 
 == FEATURES:
 
-* Uses readable PEG-like grammars
-* Supports directly and indirectly left-recursive grammars
+* Languages are described using readable PEG-based grammars
+* Directly and indirectly left-recursive grammars can be parsed
 * Whitespace can be specified in one place and skipped automatically
-* Automatic and custom parse error reporting
-* Optimizing parser generator generates efficient pure-ruby parsers
-* Compatible with Ruby 1.8.7 and 1.9.2, tested with MRI and JRuby on Linux and
-  Windows and with Rubinius on Linux
-
-== PROBLEMS/LIMITATIONS:
-
-* Only strings can be parsed, so files have to be read completely before parsing
-* There are many holes in the tests so there are undoubtedly many bugs
-* Support for composable grammars is not yet implemented
-* Semantics of automatic whitespace skipping could be refined
-* Incomplete documentation
+* Useful parse error messages are created automatically
+* Custom parse error messages can be specified easily
+* Generates efficient optimized pure-ruby parsers
+* Works with MRI 1.8.7 and 1.9.2, JRuby and Rubinius
 
 == EXAMPLES:
 
