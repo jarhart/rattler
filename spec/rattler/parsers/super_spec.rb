@@ -36,4 +36,10 @@ describe Super do
     end
   end
 
+  describe '#with_ws' do
+    it 'returns self' do
+      subject.with_ws(Match[/\s*/]).should == subject
+    end
+  end
+
 end
