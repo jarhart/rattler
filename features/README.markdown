@@ -12,7 +12,7 @@ A language syntax is specified in a grammar using the Rattler syntax. Parser
 classes and modules can be generated statically using the "rtlr" command or
 dynamically from strings.
 
-# Features
+## Features
 
 * Languages are described using readable PEG-based grammars
 * Directly and indirectly left-recursive grammars can be parsed
