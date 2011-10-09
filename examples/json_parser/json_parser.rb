@@ -1,3 +1,4 @@
+require 'rattler'
 require File.expand_path('json_helper', File.dirname(__FILE__))
 
 # @private
@@ -73,8 +74,17 @@ class JsonParser < Rattler::Runtime::PackratParser #:nodoc:
     p0 = @scanner.pos
     begin
       (r0_0 = begin
-        @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\/\*)(?>(?>(?!\*\/)(?>.))*)(?>\*\/)|(?>\/\/)(?>(?>[^\n])*))*)((?>")(?>(?>(?!"|\\|[[:cntrl:]])(?>.)|(?>\\)(?>["\\\/bfnrt]|(?>u)(?>[[:xdigit:]])(?>[[:xdigit:]])(?>[[:xdigit:]])(?>[[:xdigit:]])))*)(?>"))/) &&
-        (string @scanner[1])
+        p1 = @scanner.pos
+        begin
+          (r1_0 = begin
+            @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\/\*)(?>(?>(?!\*\/)(?>.))*)(?>\*\/)|(?>\/\/)(?>(?>[^\n])*))*)((?>")(?>(?>(?!"|\\|[[:cntrl:]])(?>.)|(?>\\)(?>["\\\/bfnrt]|(?>u)(?>[[:xdigit:]])(?>[[:xdigit:]])(?>[[:xdigit:]])(?>[[:xdigit:]])))*)(?>"))/) &&
+            @scanner[1]
+          end) &&
+          (string r1_0)
+        end || begin
+          @scanner.pos = p1
+          false
+        end
       end) &&
       @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\/\*)(?>(?>(?!\*\/)(?>.))*)(?>\*\/)|(?>\/\/)(?>(?>[^\n])*))*)(?>:)/) &&
       (r0_1 = match(:value)) &&
@@ -97,7 +107,7 @@ class JsonParser < Rattler::Runtime::PackratParser #:nodoc:
       @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\/\*)(?>(?>(?!\*\/)(?>.))*)(?>\*\/)|(?>\/\/)(?>(?>[^\n])*))*)(?>\[)/) &&
       (r0_0 = match(:elements)) &&
       @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\/\*)(?>(?>(?!\*\/)(?>.))*)(?>\*\/)|(?>\/\/)(?>(?>[^\n])*))*)(?>\])/) &&
-      r0_0
+      (array r0_0)
     end || begin
       @scanner.pos = p0
       false
@@ -132,26 +142,77 @@ class JsonParser < Rattler::Runtime::PackratParser #:nodoc:
     match(:object) ||
     match(:array) ||
     begin
-      @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\/\*)(?>(?>(?!\*\/)(?>.))*)(?>\*\/)|(?>\/\/)(?>(?>[^\n])*))*)((?>(?>(?>\-)?)(?>(?>0)(?![[:digit:]])|(?>[1-9])(?>(?>[[:digit:]])*)))(?>(?>(?>\.)(?>(?>[[:digit:]])+))?)(?>(?>(?>[eE])(?>(?>[+-])?)(?>(?>[[:digit:]])+))?))/) &&
-      (number @scanner[1])
+      p0 = @scanner.pos
+      begin
+        (r0_0 = begin
+          @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\/\*)(?>(?>(?!\*\/)(?>.))*)(?>\*\/)|(?>\/\/)(?>(?>[^\n])*))*)((?>(?>(?>\-)?)(?>(?>0)(?![[:digit:]])|(?>[1-9])(?>(?>[[:digit:]])*)))(?>(?>(?>\.)(?>(?>[[:digit:]])+))?)(?>(?>(?>[eE])(?>(?>[+-])?)(?>(?>[[:digit:]])+))?))/) &&
+          @scanner[1]
+        end) &&
+        (number r0_0)
+      end || begin
+        @scanner.pos = p0
+        false
+      end
     end ||
     begin
-      @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\/\*)(?>(?>(?!\*\/)(?>.))*)(?>\*\/)|(?>\/\/)(?>(?>[^\n])*))*)((?>")(?>(?>(?!"|\\|[[:cntrl:]])(?>.)|(?>\\)(?>["\\\/bfnrt]|(?>u)(?>[[:xdigit:]])(?>[[:xdigit:]])(?>[[:xdigit:]])(?>[[:xdigit:]])))*)(?>"))/) &&
-      (string @scanner[1])
+      p0 = @scanner.pos
+      begin
+        (r0_0 = begin
+          @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\/\*)(?>(?>(?!\*\/)(?>.))*)(?>\*\/)|(?>\/\/)(?>(?>[^\n])*))*)((?>")(?>(?>(?!"|\\|[[:cntrl:]])(?>.)|(?>\\)(?>["\\\/bfnrt]|(?>u)(?>[[:xdigit:]])(?>[[:xdigit:]])(?>[[:xdigit:]])(?>[[:xdigit:]])))*)(?>"))/) &&
+          @scanner[1]
+        end) &&
+        (string r0_0)
+      end || begin
+        @scanner.pos = p0
+        false
+      end
     end ||
     begin
-      @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\/\*)(?>(?>(?!\*\/)(?>.))*)(?>\*\/)|(?>\/\/)(?>(?>[^\n])*))*)((?>true)(?![[:alnum:]_]))/) &&
-      (:true)
+      p0 = @scanner.pos
+      begin
+        (r0_0 = begin
+          @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\/\*)(?>(?>(?!\*\/)(?>.))*)(?>\*\/)|(?>\/\/)(?>(?>[^\n])*))*)((?>true)(?![[:alnum:]_]))/) &&
+          @scanner[1]
+        end) &&
+        (:true)
+      end || begin
+        @scanner.pos = p0
+        false
+      end
     end ||
     begin
-      @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\/\*)(?>(?>(?!\*\/)(?>.))*)(?>\*\/)|(?>\/\/)(?>(?>[^\n])*))*)((?>false)(?![[:alnum:]_]))/) &&
-      (:false)
+      p0 = @scanner.pos
+      begin
+        (r0_0 = begin
+          @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\/\*)(?>(?>(?!\*\/)(?>.))*)(?>\*\/)|(?>\/\/)(?>(?>[^\n])*))*)((?>false)(?![[:alnum:]_]))/) &&
+          @scanner[1]
+        end) &&
+        (:false)
+      end || begin
+        @scanner.pos = p0
+        false
+      end
     end ||
     begin
-      @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\/\*)(?>(?>(?!\*\/)(?>.))*)(?>\*\/)|(?>\/\/)(?>(?>[^\n])*))*)((?>null)(?![[:alnum:]_]))/) &&
-      (:null)
+      p0 = @scanner.pos
+      begin
+        (r0_0 = begin
+          @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\/\*)(?>(?>(?!\*\/)(?>.))*)(?>\*\/)|(?>\/\/)(?>(?>[^\n])*))*)((?>null)(?![[:alnum:]_]))/) &&
+          @scanner[1]
+        end) &&
+        (:null)
+      end || begin
+        @scanner.pos = p0
+        false
+      end
     end ||
     (fail! { "value expected" })
   end
   
+end
+
+if __FILE__ == $0
+  require 'rubygems'
+  require 'rattler'
+  Rattler::Util::ParserCLI.run(JsonParser)
 end

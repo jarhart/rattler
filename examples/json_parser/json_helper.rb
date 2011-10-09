@@ -4,6 +4,10 @@ module JsonHelper
     Hash[*members.map {|k, v| [k, decode(v)] }.flatten(1)]
   end
 
+  def array(a)
+    a.map {|_| decode _ }
+  end
+
   def string(expr)
     eval "%q#{expr}", TOPLEVEL_BINDING
   end
@@ -17,7 +21,6 @@ module JsonHelper
     when :true then true
     when :false then false
     when :null then nil
-    when Array then v.map {|_| decode _ }
     else v
     end
   end

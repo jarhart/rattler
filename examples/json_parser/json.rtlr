@@ -1,6 +1,7 @@
 # JSON parser based on the grammar at http://www.json.org
 
-require File.expand_path('json_helper', File.dirname(__FILE__))
+require 'rattler'
+require_relative 'json_helper'
 
 parser JsonParser < Rattler::Runtime::PackratParser
 
@@ -16,7 +17,7 @@ include JsonHelper
 
   pair      <-  string ~':' value
 
-  array     <-  ~'[' elements ~']'
+  array     <-  ~'[' elements ~']'                                  { array _ }
 
   elements  <-  value *, ','
 
