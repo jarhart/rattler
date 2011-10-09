@@ -10,7 +10,10 @@ include Rattler::Parsers
 
   heading           <-  requires module_decl? includes                          { heading *_ }
 
-  requires          <-  (~`require` @(!eol .)+ ~eol)*                           { { :requires => _ } }
+  requires          <-  require_statement*                                      { { :requires => _ } }
+
+  require_statement <-  ~`require` @(!eol .)+ ~eol
+                      / ~`require_relative` @(!eol .)+ ~eol                     { expand_relative _ }
 
   module_decl       <-  ~`parser` constant (~'<' constant)? ~eol                { parser_decl *_ }
                       / ~`grammar` constant ~eol                                { { :grammar_name => _ } }

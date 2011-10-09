@@ -23,6 +23,18 @@ module Rattler::Grammar
 
     private
 
+    def expand_relative(e)
+      "File.expand_path(#{e}, File.dirname(__FILE__))"
+    end
+
+    def heading(requires, modules, includes)
+      requires.merge(modules.first || {}).merge(includes)
+    end
+
+    def parser_decl(name, base)
+      {:parser_name => name, :base_name => base.first}
+    end
+
     def start_ws(e)
       @directive_stack.push :type => :ws, :value => @ws
       set_ws e
@@ -61,14 +73,6 @@ module Rattler::Grammar
         end
         true
       end
-    end
-
-    def heading(requires, modules, includes)
-      requires.merge(modules.first || {}).merge(includes)
-    end
-
-    def parser_decl(name, base)
-      {:parser_name => name, :base_name => base.first}
     end
 
     def list0(term_parser, sep_parser)

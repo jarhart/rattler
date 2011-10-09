@@ -25,12 +25,29 @@ module Rattler
                   (r2_0 = begin
                     a0 = []
                     while r = begin
-                      @scanner.skip(/(?>(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>(?>require)(?![[:alnum:]_])))(?>(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)((?>(?!(?>(?>[[:blank:]])*)(?>\z|;|(?>(?>\r)?)(?>\n)|(?>\#)(?>(?>[^\n])*)))(?>.))+))(?>(?>(?>[[:blank:]])*)(?>\z|;|(?>(?>\r)?)(?>\n)|(?>\#)(?>(?>[^\n])*)))/) &&
-                      @scanner[1]
+                      begin
+                        @scanner.skip(/(?>(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>(?>require)(?![[:alnum:]_])))(?>(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)((?>(?!(?>(?>[[:blank:]])*)(?>\z|;|(?>(?>\r)?)(?>\n)|(?>\#)(?>(?>[^\n])*)))(?>.))+))(?>(?>(?>[[:blank:]])*)(?>\z|;|(?>(?>\r)?)(?>\n)|(?>\#)(?>(?>[^\n])*)))/) &&
+                        @scanner[1]
+                      end ||
+                      begin
+                        p3 = @scanner.pos
+                        begin
+                          @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>(?>require_relative)(?![[:alnum:]_]))/) &&
+                          (r3_0 = begin
+                            @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)((?>(?!(?>(?>[[:blank:]])*)(?>\z|;|(?>(?>\r)?)(?>\n)|(?>\#)(?>(?>[^\n])*)))(?>.))+)/) &&
+                            @scanner[1]
+                          end) &&
+                          @scanner.skip(/(?>(?>[[:blank:]])*)(?>\z|;|(?>(?>\r)?)(?>\n)|(?>\#)(?>(?>[^\n])*))/) &&
+                          (expand_relative r3_0)
+                        end || begin
+                          @scanner.pos = p3
+                          false
+                        end
+                      end
                     end
                       a0 << r
                     end
-                    a0
+                    select_captures(a0)
                   end) &&
                   ({ :requires => r2_0 })
                 end || begin
@@ -1320,4 +1337,10 @@ module Rattler
       
     end
   end
+end
+
+if __FILE__ == $0
+  require 'rubygems'
+  require 'rattler'
+  Rattler::Util::GrammarCLI.run(Rattler::Grammar::Metagrammar)
 end

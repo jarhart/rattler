@@ -432,7 +432,7 @@
             <key>require_statement</key>
             <dict>
                 <key>begin</key>
-                <string>^\s*(require)\b(?!\s*&lt;-)</string>
+                <string>^\s*(require|require_relative)\b(?!\s*&lt;-)</string>
                 <key>beginCaptures</key>
                 <dict>
                     <key>1</key>
