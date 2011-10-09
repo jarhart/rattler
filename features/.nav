@@ -1,4 +1,6 @@
 - getting_started.markdown (Getting Started)
+- examples:
+  - json_parser.markdown (JSON Parser)
 - command_line:
   - rtlr.feature
   - lib_option.feature
