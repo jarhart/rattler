@@ -4,7 +4,7 @@ require 'optparse'
 module Rattler::Util
   class ParserCLI
 
-    @@graph_formats = %w{jpg png tif tga bmp svg pdf ps ps2}
+    @@graph_formats = %w{jpg png svg pdf ps ps2 eps}
 
     def self.run(parser_class)
       self.new(parser_class).run
