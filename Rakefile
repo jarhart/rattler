@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 require 'rubygems'
 require 'bundler'
 begin
@@ -62,9 +64,6 @@ if RUBY_VERSION.to_f == 1.8
       t.rcov_opts =  ['--exclude', 'gems/*,features,spec']
     end
   end
-
-  desc 'Run all tests with code coverage'
-  task :rcov => ['rcov:spec', 'rcov:cucumber']
 end
 
 require 'yard'
@@ -76,6 +75,7 @@ task :metagrammar => [:archive_metagrammar, :generate_metagrammar]
 desc "delete generated files"
 task :clobber do
   sh 'find . -name "*.rbc" -exec rm {} \;'
+  sh 'rm -rf .rbx'
   sh 'rm -rf pkg'
   sh 'rm -rf doc'
   sh 'rm -rf coverage'
