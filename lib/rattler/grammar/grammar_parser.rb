@@ -27,8 +27,11 @@ module Rattler::Grammar
       "File.expand_path(#{e}, File.dirname(__FILE__))"
     end
 
-    def heading(requires, modules, includes)
-      requires.merge(modules.first || {}).merge(includes)
+    def heading(requires, modules, includes, start)
+      requires.
+        merge(modules.first || {}).
+        merge(includes).
+        merge(start.first || {})
     end
 
     def parser_decl(name, base)

@@ -8,7 +8,7 @@ include Rattler::Parsers
 
   grammar           <-  heading rules EOF                                       <Grammar>
 
-  heading           <-  requires module_decl? includes                          { heading *_ }
+  heading           <-  requires module_decl? includes start_directive?         { heading *_ }
 
   requires          <-  require_statement*                                      { { :requires => _ } }
 
@@ -20,7 +20,9 @@ include Rattler::Parsers
 
   includes          <-  (~`include` constant ~eol)*                             { { :includes => _ } }
 
-  rules             <-  (directive / rule / block_close)+                       <RuleSet>
+  start_directive   <-  ~`%start` identifier                                    { { :start_rule => _ } }
+
+  rules             <-  (directive / rule / block_close)*                       <RuleSet>
 
   directive         <-  ws_directive / wc_directive / inline_directive
 

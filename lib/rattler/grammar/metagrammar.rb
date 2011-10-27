@@ -110,7 +110,30 @@ module Rattler
                   false
                 end
               end) &&
-              (heading r1_0, r1_1, r1_2)
+              (r1_3 = ((r = begin
+                p2 = @scanner.pos
+                begin
+                  @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>(?>%start)(?![[:alnum:]_]))/) &&
+                  (r2_0 = begin
+                    p3 = @scanner.pos
+                    begin
+                      @scanner.skip(/(?!(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>(?>EOF)(?![[:alnum:]_])))/) &&
+                      begin
+                        @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)((?>[[:alpha:]])(?>(?>[[:alnum:]_])*))/) &&
+                        @scanner[1]
+                      end
+                    end || begin
+                      @scanner.pos = p3
+                      false
+                    end
+                  end) &&
+                  ({ :start_rule => r2_0 })
+                end || begin
+                  @scanner.pos = p2
+                  false
+                end
+              end) ? [r] : [])) &&
+              (heading r1_0, r1_1, r1_2, r1_3)
             end || begin
               @scanner.pos = p1
               false
@@ -258,7 +281,7 @@ module Rattler
                 end
                   a0 << r
                 end
-                select_captures(a0) unless a0.empty?
+                select_captures(a0)
               end) &&
               RuleSet.parsed(select_captures([r1_0]))
             end || begin

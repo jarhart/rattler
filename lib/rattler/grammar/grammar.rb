@@ -42,11 +42,17 @@ module Rattler::Grammar
       super @@default_opts.merge(opts)
 
       case attrs[:start_rule]
-      when Symbol then attrs[:start_rule] = rules[start_rule]
-      when nil    then attrs[:start_rule] = rules.first
+      when Symbol, String
+        attrs[:start_rule] = rules[start_rule.to_sym]
+      when nil
+        attrs[:start_rule] = rules.first
       end
 
-      @rules = rules.with_attrs(:start_rule => start_rule.name)
+      @rules = if start_rule.nil?
+        rules
+      else
+        rules.with_attrs(:start_rule => start_rule.name)
+      end
 
       attrs[:name] ||= grammar_name || parser_name
     end
