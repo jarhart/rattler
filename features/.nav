@@ -42,3 +42,7 @@
   - negative_semantic_predicate.feature
   - side_effect.feature
   - labels.feature
+- grammar_heading:
+  - grammar_declaration.feature
+  - require.feature
+  - include.feature

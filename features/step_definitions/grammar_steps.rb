@@ -1,5 +1,5 @@
 Given /grammar with:$/ do |source|
-  @parser_class = Rattler.compile_parser(source)
+  @source = source
 end
 
 Given /grammar called "([^\"]*)" with:$/ do |name, source|
@@ -10,8 +10,14 @@ Given /class definition:$/ do |source|
   eval(source, TOPLEVEL_BINDING)
 end
 
+When /generate parser code$/ do
+  model = Rattler::Grammar.parse!(@source)
+  @parser_code = Rattler::BackEnd::ParserGenerator.code_for(model)
+end
+
 When /parse ([^[:alpha:]].*)$/ do |expr|
-  @parser = @parser_class.new(eval(expr, TOPLEVEL_BINDING))
+  parser_class = Rattler.compile_parser(@source)
+  @parser = parser_class.new(eval(expr, TOPLEVEL_BINDING))
 end
 
 When /parse position is (.+)$/ do |expr|
@@ -44,4 +50,8 @@ end
 
 Then /^\$x should be (.+)$/ do |expr|
   $x.should == eval(expr, TOPLEVEL_BINDING)
+end
+
+Then /^the code should contain:$/ do |partial_content|
+  @parser_code.should include(partial_content)
 end
