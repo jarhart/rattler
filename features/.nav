@@ -46,3 +46,4 @@
   - grammar_declaration.feature
   - require.feature
   - include.feature
+  - explicit_start_rule.feature
