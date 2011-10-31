@@ -15,9 +15,13 @@ dynamically from strings.
 ## Features
 
 * Languages are described using readable PEG-based grammars
-* Directly and indirectly left-recursive grammars can be parsed
+* Directly and indirectly left-recursive grammars can be used
 * Whitespace can be specified in one place and skipped automatically
 * Useful parse error messages are created automatically
 * Custom parse error messages can be specified easily
 * Generates efficient optimized pure-ruby parsers
 * Works with MRI 1.8.7 and 1.9.2, JRuby and Rubinius
+
+[Source](https://github.com/jarhart/rattler)
+
+[API Docs](http://rubydoc.info/gems/rattler/0.5.0/frames)
