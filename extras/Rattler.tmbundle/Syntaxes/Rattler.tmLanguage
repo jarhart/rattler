@@ -407,6 +407,13 @@
                 <key>end</key>
                 <string>(?={|&lt;|\b\w+\s*&lt;-)</string>
             </dict>
+            <key>fragments_directive</key>
+            <dict>
+                <key>name</key>
+                <string>keyword.other.rattler</string>
+                <key>match</key>
+                <string>%fragments\b</string>
+            </dict>
             <key>directives</key>
             <dict>
                 <key>patterns</key>
@@ -422,6 +429,10 @@
                     <dict>
                         <key>include</key>
                         <string>#inline_directive</string>
+                    </dict>
+                    <dict>
+                        <key>include</key>
+                        <string>#fragments_directive</string>
                     </dict>
                     <dict>
                         <key>include</key>

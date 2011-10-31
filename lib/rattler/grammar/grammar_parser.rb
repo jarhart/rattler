@@ -67,12 +67,23 @@ module Rattler::Grammar
       @inline = true
     end
 
+    def start_fragments
+      @directive_stack.push :type => :fragments, :value => [@ws, @inline]
+      set_fragments
+    end
+
+    def set_fragments
+      @ws = nil
+      @inline = true
+    end
+
     def end_block
       if d = @directive_stack.pop
         case d[:type]
-        when :wc      then @wc = d[:value]
-        when :ws      then @ws = d[:value]
-        when :inline  then @inline = d[:value]
+        when :wc        then @wc = d[:value]
+        when :ws        then @ws = d[:value]
+        when :inline    then @inline = d[:value]
+        when :fragments then @ws, @inline = d[:value]
         end
         true
       end

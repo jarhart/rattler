@@ -247,6 +247,27 @@ module Rattler
                   begin
                     p2 = @scanner.pos
                     begin
+                      @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>(?>%fragments)(?![[:alnum:]_]))/) &&
+                      @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>\{)/) &&
+                      (start_fragments)
+                    end || begin
+                      @scanner.pos = p2
+                      false
+                    end
+                  end ||
+                  begin
+                    p2 = @scanner.pos
+                    begin
+                      @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>(?>%fragments)(?![[:alnum:]_]))/) &&
+                      (set_fragments)
+                    end || begin
+                      @scanner.pos = p2
+                      false
+                    end
+                  end ||
+                  begin
+                    p2 = @scanner.pos
+                    begin
                       (r2_0 = begin
                         p3 = @scanner.pos
                         begin
