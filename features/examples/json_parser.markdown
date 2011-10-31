@@ -12,48 +12,46 @@ into Ruby hashes, arrays, and values.
 
     include JsonHelper
 
-    %whitespace (SPACE+ / comment)* {
+    %whitespace (SPACE+ / comment)*
 
-      json_text <-  (object / array) EOF
+    json_text <-  (object / array) EOF
 
-      object    <-  ~'{' members ~'}'                       { object _ }
+    object    <-  ~'{' members ~'}'                         { object _ }
 
-      members   <-  pair *, ','
+    members   <-  pair *, ','
 
-      pair      <-  string ~':' value
+    pair      <-  string ~':' value
 
-      array     <-  ~'[' elements ~']'                      { array _ }
+    array     <-  ~'[' elements ~']'                        { array _ }
 
-      elements  <-  value *, ','
+    elements  <-  value *, ','
 
-      value     <-  object
-                  / array
-                  / number
-                  / string
-                  / `true`                                  { :true }
-                  / `false`                                 { :false }
-                  / `null`                                  { :null }
-                  / fail "value expected"
+    value     <-  object
+                / array
+                / number
+                / string
+                / `true`                                    { :true }
+                / `false`                                   { :false }
+                / `null`                                    { :null }
+                / fail "value expected"
 
-      string    <-  @('"' char* '"')                        { string _ }
+    string    <-  @('"' char* '"')                          { string _ }
 
-      number    <-  @(int frac? exp?)                       { number _ }
-    }
+    number    <-  @(int frac? exp?)                         { number _ }
 
-    %inline {
+    %fragments
 
-      char      <-  !('"' / '\\' / CNTRL) .
-                  / '\\' (["\\/bfnrt] / 'u' XDIGIT XDIGIT XDIGIT XDIGIT)
+    char      <-  !('"' / '\\' / CNTRL) .
+                / '\\' (["\\/bfnrt] / 'u' XDIGIT XDIGIT XDIGIT XDIGIT)
 
-      int       <-  '-'? ('0' !DIGIT / [1-9] DIGIT*)
+    int       <-  '-'? ('0' !DIGIT / [1-9] DIGIT*)
 
-      frac      <-  '.' DIGIT+
+    frac      <-  '.' DIGIT+
 
-      exp       <-  [eE] [+-]? DIGIT+
+    exp       <-  [eE] [+-]? DIGIT+
 
-      comment   <-  '/*' (! '*/' .)* '*/'
-                  / '//' [^\n]*
-    }
+    comment   <-  '/*' (! '*/' .)* '*/'
+                / '//' [^\n]*
 
 Because `true`, `false`, and `nil` all have special meaning to Rattler's
 parsers, we encode these as symbols, then decode the symbols when we match
