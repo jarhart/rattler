@@ -33,7 +33,7 @@ Then /parse should fail/ do
 end
 
 Then /parse result should be FAIL$/ do
-  Then "parse should fail"
+  step "parse should fail"
 end
 
 Then /parse position should be (.+)$/ do |expr|
