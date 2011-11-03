@@ -27,7 +27,7 @@ module Rattler::BackEnd::Optimizer
 
     def _apply(parser, context)
       parser.with_children(parser.map do |_|
-        optimize _, child_context(parser, context)
+        optimizations.apply _, child_context(parser, context)
       end)
     end
 
@@ -40,6 +40,10 @@ module Rattler::BackEnd::Optimizer
       else
         context
       end
+    end
+
+    def optimizations
+      ::Rattler::BackEnd::Optimizer.optimizations
     end
 
   end

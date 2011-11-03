@@ -21,8 +21,8 @@ module Rattler::BackEnd
     class << self
       def optimizations
         @optimizations ||=
-          OptimizeChildren >>
           InlineRegularRules >>
+          OptimizeChildren >>
           SimplifyRedundantRepeat >>
           RemoveMeaninglessWrapper >>
           SimplifyTokenMatch >>

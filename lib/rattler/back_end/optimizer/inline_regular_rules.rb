@@ -27,7 +27,7 @@ module Rattler::BackEnd::Optimizer
     end
 
     def _apply(parser, context)
-      optimize context.rules[parser.rule_name].expr, context
+      context.rules[parser.rule_name].expr
     end
 
     private

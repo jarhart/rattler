@@ -80,15 +80,5 @@ module Rattler::BackEnd::Optimizer
       end
     end
 
-    private
-
-    def optimize(parser, context)
-      optimizations.apply(parser, context)
-    end
-
-    def optimizations
-      ::Rattler::BackEnd::Optimizer.optimizations
-    end
-
   end
 end
