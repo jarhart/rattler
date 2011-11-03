@@ -9,9 +9,9 @@ group :development do
   gem "aruba", "~> 0.4.0"
   gem "rcov", "~> 0.9.10", :platforms => [:mri_18, :mingw_18]
   gem "yard", "~> 0.7.0"
-  gem "guard", "~> 0.7.0"
-  gem "guard-rspec", "~> 0.4.0"
-  gem "guard-cucumber", "~> 0.6.0"
+  gem "guard", "~> 0.8.0"
+  gem "guard-rspec", "~> 0.5.0"
+  gem "guard-cucumber", "~> 0.7.0"
 
   # uncomment to test the CLI
   # gem "rattler", :path => "."
@@ -20,6 +20,7 @@ group :development do
   # gem "rb-fsevent"
 
   # uncomment one of the following for guard notifications on OS X
+  # gem "ruby_gntp"
   # gem "growl_notify"
   # gem "growl"
 
@@ -32,5 +33,6 @@ group :development do
   platforms :mswin, :mingw do
     gem "rb-fchange"
     gem "rb-notifu"
+    gem "win32console"
   end
 end
