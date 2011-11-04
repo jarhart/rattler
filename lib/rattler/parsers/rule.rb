@@ -42,9 +42,7 @@ module Rattler::Parsers
       false
     end
 
-    def with_expr(new_expr)
-      Rule[name, new_expr, attrs]
-    end
+    alias_method :with_expr, :with_children
 
     # @param (see Parser#with_ws)
     # @return (see Parser#with_ws)

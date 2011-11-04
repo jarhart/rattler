@@ -19,28 +19,12 @@ module Rattler::BackEnd
   module Optimizer
 
     class << self
-      def optimizations
-        @optimizations ||=
-          InlineRegularRules >>
-          OptimizeChildren >>
-          SimplifyRedundantRepeat >>
-          RemoveMeaninglessWrapper >>
-          SimplifyTokenMatch >>
-          FlattenSequence >>
-          FlattenChoice >>
-          ReduceRepeatMatch >>
-          JoinPredicateMatch >>
-          JoinPredicateOrMatch >>
-          JoinMatchSequence >>
-          JoinMatchChoice
-      end
 
       def optimize(model, opts={})
         case model
         when ::Rattler::Grammar::Grammar then optimize_grammar model, opts
         when ::Rattler::Parsers::RuleSet then optimize_rule_set model, opts
-        when ::Rattler::Parsers::Rule then optimize_rule model, default_context(opts)
-        else optimize_expr model, default_context(opts)
+        else optimizations.apply model, default_context(opts)
         end
       end
 
@@ -56,23 +40,16 @@ module Rattler::BackEnd
 
       def optimize_rule_set(rule_set, opts)
         context = default_context(opts).with(:rules => rule_set)
-        rule_set = rule_set.map_rules {|_| optimize_rule _, context }
+        rule_set = rule_set.map_rules {|_| optimizations.apply _, context }
         context = context.with(:rules => rule_set)
         rule_set.select_rules {|_| context.relavent? _ }
-      end
-
-      def optimize_rule(rule, context)
-        rule.with_expr optimizations.apply(rule.expr, context)
-      end
-
-      def optimize_expr(expr, context)
-        optimizations.apply rule.expr, context
       end
 
     end
 
     autoload :OptimizationContext, 'rattler/back_end/optimizer/optimization_context'
     autoload :Optimization, 'rattler/back_end/optimizer/optimization'
+    autoload :Optimizations, 'rattler/back_end/optimizer/optimizations'
     autoload :OptimizeChildren, 'rattler/back_end/optimizer/optimize_children'
     autoload :InlineRegularRules, 'rattler/back_end/optimizer/inline_regular_rules'
     autoload :SpecializeRepeat, 'rattler/back_end/optimizer/specialize_repeat'
@@ -97,4 +74,7 @@ module Rattler::BackEnd
     autoload :CompositeReducing, 'rattler/back_end/optimizer/composite_reducing'
 
   end
+
+  Optimizer.extend Optimizer::Optimizations
+
 end

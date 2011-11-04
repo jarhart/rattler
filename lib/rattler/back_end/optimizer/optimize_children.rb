@@ -14,6 +14,7 @@ module Rattler::BackEnd::Optimizer
   #
   class OptimizeChildren < Optimization
 
+    include Optimizations
     include Rattler::Parsers
 
     protected
@@ -40,10 +41,6 @@ module Rattler::BackEnd::Optimizer
       else
         context
       end
-    end
-
-    def optimizations
-      ::Rattler::BackEnd::Optimizer.optimizations
     end
 
   end
