@@ -1,9 +1,9 @@
 require File.expand_path(File.dirname(__FILE__) + '/../../spec_helper')
 
+include Rattler::Runtime
+
 describe NodeAction do
   include CombinatorParserSpecHelper
-
-  include Rattler::Runtime
 
   describe '#parse' do
 
