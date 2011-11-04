@@ -1,20 +1,14 @@
-#
-# = rattler/back_end/optimizer/optimization.rb
-#
-# Author:: Jason Arhart
-# Documentation:: Author
-#
 require 'rattler'
 
-module Rattler::BackEnd::Optimizer
+module Rattler::BackEnd
   #
-  # An +OptimizationSequence+ sequences a pair of optimzations so that applying
-  # the sequence applies the first optimization, then applies the second
-  # optimzation to the result.
+  # An +TransformationSequence+ is a transformation that sequences a pair of
+  # transformations so that applying the sequence applies the first
+  # transformation, then applies the second transformation to the result.
   #
   # @author Jason Arhart
   #
-  class OptimizationSequence < Optimization
+  class TransformationSequence < Transformation
 
     def initialize(init, last)
       super()
