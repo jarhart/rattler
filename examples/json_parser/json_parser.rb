@@ -13,6 +13,11 @@ class JsonParser < Rattler::Runtime::PackratParser #:nodoc:
   
   # @private
   def match_json_text #:nodoc:
+    apply :match_json_text!
+  end
+  
+  # @private
+  def match_json_text! #:nodoc:
     p0 = @scanner.pos
     begin
       (r0_0 = begin
@@ -29,7 +34,7 @@ class JsonParser < Rattler::Runtime::PackratParser #:nodoc:
   
   # @private
   def match_object #:nodoc:
-    memoize :match_object!
+    apply :match_object!
   end
   
   # @private
@@ -48,7 +53,7 @@ class JsonParser < Rattler::Runtime::PackratParser #:nodoc:
   
   # @private
   def match_members #:nodoc:
-    memoize :match_members!
+    apply :match_members!
   end
   
   # @private
@@ -66,26 +71,14 @@ class JsonParser < Rattler::Runtime::PackratParser #:nodoc:
   
   # @private
   def match_pair #:nodoc:
-    memoize :match_pair!
+    apply :match_pair!
   end
   
   # @private
   def match_pair! #:nodoc:
     p0 = @scanner.pos
     begin
-      (r0_0 = begin
-        p1 = @scanner.pos
-        begin
-          (r1_0 = begin
-            @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\/\*)(?>(?>(?!\*\/)(?>.))*)(?>\*\/)|(?>\/\/)(?>(?>[^\n])*))*)((?>")(?>(?>(?!"|\\|[[:cntrl:]])(?>.)|(?>\\)(?>["\\\/bfnrt]|(?>u)(?>[[:xdigit:]])(?>[[:xdigit:]])(?>[[:xdigit:]])(?>[[:xdigit:]])))*)(?>"))/) &&
-            @scanner[1]
-          end) &&
-          (string r1_0)
-        end || begin
-          @scanner.pos = p1
-          false
-        end
-      end) &&
+      (r0_0 = match(:string)) &&
       @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\/\*)(?>(?>(?!\*\/)(?>.))*)(?>\*\/)|(?>\/\/)(?>(?>[^\n])*))*)(?>:)/) &&
       (r0_1 = match(:value)) &&
       select_captures([r0_0, r0_1])
@@ -97,7 +90,7 @@ class JsonParser < Rattler::Runtime::PackratParser #:nodoc:
   
   # @private
   def match_array #:nodoc:
-    memoize :match_array!
+    apply :match_array!
   end
   
   # @private
@@ -116,7 +109,7 @@ class JsonParser < Rattler::Runtime::PackratParser #:nodoc:
   
   # @private
   def match_elements #:nodoc:
-    memoize :match_elements!
+    apply :match_elements!
   end
   
   # @private
@@ -134,39 +127,15 @@ class JsonParser < Rattler::Runtime::PackratParser #:nodoc:
   
   # @private
   def match_value #:nodoc:
-    memoize :match_value!
+    apply :match_value!
   end
   
   # @private
   def match_value! #:nodoc:
     match(:object) ||
     match(:array) ||
-    begin
-      p0 = @scanner.pos
-      begin
-        (r0_0 = begin
-          @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\/\*)(?>(?>(?!\*\/)(?>.))*)(?>\*\/)|(?>\/\/)(?>(?>[^\n])*))*)((?>(?>(?>\-)?)(?>(?>0)(?![[:digit:]])|(?>[1-9])(?>(?>[[:digit:]])*)))(?>(?>(?>\.)(?>(?>[[:digit:]])+))?)(?>(?>(?>[eE])(?>(?>[+-])?)(?>(?>[[:digit:]])+))?))/) &&
-          @scanner[1]
-        end) &&
-        (number r0_0)
-      end || begin
-        @scanner.pos = p0
-        false
-      end
-    end ||
-    begin
-      p0 = @scanner.pos
-      begin
-        (r0_0 = begin
-          @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\/\*)(?>(?>(?!\*\/)(?>.))*)(?>\*\/)|(?>\/\/)(?>(?>[^\n])*))*)((?>")(?>(?>(?!"|\\|[[:cntrl:]])(?>.)|(?>\\)(?>["\\\/bfnrt]|(?>u)(?>[[:xdigit:]])(?>[[:xdigit:]])(?>[[:xdigit:]])(?>[[:xdigit:]])))*)(?>"))/) &&
-          @scanner[1]
-        end) &&
-        (string r0_0)
-      end || begin
-        @scanner.pos = p0
-        false
-      end
-    end ||
+    match(:number) ||
+    match(:string) ||
     begin
       p0 = @scanner.pos
       begin
@@ -207,6 +176,46 @@ class JsonParser < Rattler::Runtime::PackratParser #:nodoc:
       end
     end ||
     (fail! { "value expected" })
+  end
+  
+  # @private
+  def match_string #:nodoc:
+    apply :match_string!
+  end
+  
+  # @private
+  def match_string! #:nodoc:
+    p0 = @scanner.pos
+    begin
+      (r0_0 = begin
+        @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\/\*)(?>(?>(?!\*\/)(?>.))*)(?>\*\/)|(?>\/\/)(?>(?>[^\n])*))*)((?>")(?>(?>(?!"|\\|[[:cntrl:]])(?>.)|(?>\\)(?>["\\\/bfnrt]|(?>u)(?>[[:xdigit:]])(?>[[:xdigit:]])(?>[[:xdigit:]])(?>[[:xdigit:]])))*)(?>"))/) &&
+        @scanner[1]
+      end) &&
+      (string r0_0)
+    end || begin
+      @scanner.pos = p0
+      false
+    end
+  end
+  
+  # @private
+  def match_number #:nodoc:
+    apply :match_number!
+  end
+  
+  # @private
+  def match_number! #:nodoc:
+    p0 = @scanner.pos
+    begin
+      (r0_0 = begin
+        @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\/\*)(?>(?>(?!\*\/)(?>.))*)(?>\*\/)|(?>\/\/)(?>(?>[^\n])*))*)((?>(?>(?>\-)?)(?>(?>0)(?![[:digit:]])|(?>[1-9])(?>(?>[[:digit:]])*)))(?>(?>(?>\.)(?>(?>[[:digit:]])+))?)(?>(?>(?>[eE])(?>(?>[+-])?)(?>(?>[[:digit:]])+))?))/) &&
+        @scanner[1]
+      end) &&
+      (number r0_0)
+    end || begin
+      @scanner.pos = p0
+      false
+    end
   end
   
 end
