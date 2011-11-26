@@ -13,6 +13,10 @@ module Rattler::BackEnd::ParserGenerator
       end
     end
 
+    def gen_skip(fail, scope = ParserScope.empty)
+      gen_basic fail, scope
+    end
+
     private
 
     def gen_fail_expr(message)
