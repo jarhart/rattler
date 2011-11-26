@@ -20,7 +20,10 @@ Feature: Fragments
     Then the code should contain:
       """
       def match_number! #:nodoc:
-        @scanner.skip(/(?>(?>[[:space:]])+)((?>(?>(?>\-)?)(?>(?>[[:digit:]])+))(?>(?>(?>\.)(?>(?>[[:digit:]])+))?))/) &&
-        @scanner[1]
+        begin
+          @scanner.skip(/(?>(?>[[:space:]])+)((?>(?>(?>\-)?)(?>(?>[[:digit:]])+))(?>(?>(?>\.)(?>(?>[[:digit:]])+))?))/) &&
+          @scanner[1]
+        end ||
+        fail { :number }
       end
       """

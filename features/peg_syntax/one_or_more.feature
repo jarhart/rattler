@@ -32,7 +32,7 @@ Feature: One-Or-More
     | input | result | pos |
     | "-"   | true   | 1   |
     | "---" | true   | 3   |
-    | "foo" | false  | 0   |
+    | "foo" | FAIL   | 0   |
   
   Scenario Outline: Choice of capturing or non-capturing
     Given a grammar with:

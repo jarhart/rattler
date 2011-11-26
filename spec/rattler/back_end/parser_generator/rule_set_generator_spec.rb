@@ -32,7 +32,8 @@ end
 # @private
 def match_a! #:nodoc:
   @scanner.scan("a") ||
-  match(:b)
+  match(:b) ||
+  fail! { :a }
 end
 
 # @private
@@ -42,7 +43,8 @@ end
 
 # @private
 def match_b! #:nodoc:
-  @scanner.scan("b")
+  @scanner.scan("b") ||
+  fail { :b }
 end
         CODE
       end
@@ -67,7 +69,8 @@ end
 
 # @private
 def match_a! #:nodoc:
-  @scanner.scan("a")
+  @scanner.scan("a") ||
+  fail { :a }
 end
         CODE
       end

@@ -19,7 +19,7 @@ module Rattler::BackEnd
     autoload :RuleGenerator, 'rattler/back_end/parser_generator/rule_generator'
     autoload :ExprGenerator, 'rattler/back_end/parser_generator/expr_generator'
     autoload :GeneratorHelper, 'rattler/back_end/parser_generator/generator_helper'
-    autoload :TopLevelGenerator, 'rattler/back_end/parser_generator/expr_generator'
+    autoload :NestedExprGenerator, 'rattler/back_end/parser_generator/expr_generator'
     autoload :SubGenerating, 'rattler/back_end/parser_generator/sub_generating'
     autoload :NestedSubGenerating, 'rattler/back_end/parser_generator/sub_generating'
     autoload :TopLevelSubGenerating, 'rattler/back_end/parser_generator/sub_generating'

@@ -34,6 +34,7 @@
   - fail.feature
   - include.feature
   - super.feature
+  - fragments.feature
 - semantics:
   - semantic_action.feature
   - node_action.feature
@@ -47,3 +48,6 @@
   - require.feature
   - include.feature
   - explicit_start_rule.feature
+- error_reporting:
+  - automatic_error_messages.feature
+  - custom_error_messages.feature

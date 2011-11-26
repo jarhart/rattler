@@ -7,8 +7,6 @@ module Rattler::BackEnd::ParserGenerator
 
     include Rattler::Parsers
 
-    protected
-
     def generate(parser, as=:basic, *args)
       gen_with generator(parser), parser, as, *args
     end
@@ -20,6 +18,8 @@ module Rattler::BackEnd::ParserGenerator
     def gen_top_level(parser, as=:basic, *args)
       gen_with generator(parser, :top_level), parser, as, *args
     end
+
+    protected
 
     def propogate_gen(parser, type, scope)
       if nested?

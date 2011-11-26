@@ -20,7 +20,7 @@ module Rattler::BackEnd::ParserGenerator
     def gen_rules(rules, opts={})
       gen_start_rule rules.start_rule if rules.start_rule
       @g.intersperse(rules, :newlines => 2) do |rule|
-        @rule_generator.gen_rule rule
+        @rule_generator.generate rule
       end
     end
 

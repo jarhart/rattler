@@ -46,11 +46,14 @@ Feature: rtlr
           
           # @private
           def match_expr! #:nodoc:
-            a0 = []
-            while r = @scanner.scan(/[01]/)
-              a0 << r
-            end
-            a0
+            begin
+              a0 = []
+              while r = @scanner.scan(/[01]/)
+                a0 << r
+              end
+              a0
+            end ||
+            fail { :expr }
           end
           
         end
@@ -91,11 +94,14 @@ Feature: rtlr
           
           # @private
           def match_expr! #:nodoc:
-            a0 = []
-            while r = @scanner.scan(/[01]/)
-              a0 << r
-            end
-            a0
+            begin
+              a0 = []
+              while r = @scanner.scan(/[01]/)
+                a0 << r
+              end
+              a0
+            end ||
+            fail { :expr }
           end
           
         end

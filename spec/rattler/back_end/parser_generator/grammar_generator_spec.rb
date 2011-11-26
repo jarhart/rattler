@@ -33,7 +33,8 @@ module ExprGrammar #:nodoc:
 
   # @private
   def match_a! #:nodoc:
-    @scanner.scan("a")
+    @scanner.scan("a") ||
+    fail { :a }
   end
 
 end
@@ -71,7 +72,8 @@ class ExprParser < Rattler::Runtime::PackratParser #:nodoc:
 
   # @private
   def match_a! #:nodoc:
-    @scanner.scan("a")
+    @scanner.scan("a") ||
+    fail { :a }
   end
 
 end

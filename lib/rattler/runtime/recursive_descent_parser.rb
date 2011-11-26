@@ -38,7 +38,7 @@ module Rattler::Runtime
     # @return (see #apply)
     #
     def match(rule_name)
-      send @rule_method_names[rule_name] or fail { rule_name }
+      send @rule_method_names[rule_name]
     end
 
     def method_missing(symbol, *args)

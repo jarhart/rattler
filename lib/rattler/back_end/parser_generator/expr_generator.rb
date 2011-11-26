@@ -68,12 +68,8 @@ module Rattler::BackEnd::ParserGenerator
   end
 
   # @private
-  class TopLevelGenerator < ExprGenerator #:nodoc:
-    include TopLevelSubGenerating
-
-    def generate(parser)
-      super
-    end
+  class NestedExprGenerator < ExprGenerator #:nodoc:
+    include NestedSubGenerating
   end
 
 end

@@ -100,6 +100,7 @@ prefixed          <-  ~'&' prefixable                                           
                     / ~'@' prefixable                                           <Token>
 
 prefixable        <-  suffixed / primary
+                    / fail 'primary expected'
 
 suffixed          <-  primary ~'?'                                              { optional _ }
                     / primary ~'*' !','                                         { zero_or_more _ }
@@ -123,7 +124,6 @@ atom              <-  ~`EOF`                                                    
                     / class                                                     { char_class _ }
                     / back_reference                                            <BackReference>
                     / ~'.'                                                      { Match[/./] }
-                    / fail 'atom expected'
 
 %inline
 
@@ -141,7 +141,6 @@ posix_class       <-  `ALNUM`
                     / `UPPER`
                     / `XDIGIT`
                     / `WORD`
-                    / fail 'posix_class expected'
 
 literal           <-  @('"' ('\\' . / [^"])* '"')
                     / @("'" ('\\' . / [^'])* "'")
