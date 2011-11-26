@@ -48,8 +48,6 @@ module Rattler::Runtime
       end
     end
 
-    alias_method :memoize, :apply
-
     alias_method :eval_rule, :send
 
     private

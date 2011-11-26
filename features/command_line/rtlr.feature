@@ -15,7 +15,6 @@ Feature: rtlr
           -d, --dest DIRECTORY             Specify an explicit destination directory
           -o, --output FILENAME            Specify a different output filename ("-" = STDOUT)
           -f, --force                      Force overwrite if the output file exists
-          -s, --standalone                 Optimize for use as a standalone parser
           -n, --no-optimize                Disable optimization
 
           -h, --help                       Show this message
@@ -28,7 +27,7 @@ Feature: rtlr
       grammar BinaryGrammar
       expr <- [01]*
       """
-    When I run `rtlr binary.rtlr --standalone`
+    When I run `rtlr binary.rtlr`
     Then the output should contain "binary.rtlr -> binary_grammar.rb"
       And the file "binary_grammar.rb" should contain:
         """
@@ -42,6 +41,11 @@ Feature: rtlr
           
           # @private
           def match_expr #:nodoc:
+            apply :match_expr!
+          end
+          
+          # @private
+          def match_expr! #:nodoc:
             a0 = []
             while r = @scanner.scan(/[01]/)
               a0 << r
@@ -66,7 +70,7 @@ Feature: rtlr
       parser BinaryParser < Rattler::Runtime::PackratParser
       expr <- [01]*
       """
-    When I run `rtlr binary.rtlr --standalone`
+    When I run `rtlr binary.rtlr`
     Then the output should contain "binary.rtlr -> binary_parser.rb"
       And the file "binary_parser.rb" should contain:
         """
@@ -82,6 +86,11 @@ Feature: rtlr
           
           # @private
           def match_expr #:nodoc:
+            apply :match_expr!
+          end
+          
+          # @private
+          def match_expr! #:nodoc:
             a0 = []
             while r = @scanner.scan(/[01]/)
               a0 << r

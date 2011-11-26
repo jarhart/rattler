@@ -48,8 +48,6 @@ module Rattler::Runtime
       end
     end
 
-    alias_method :memoize_lr, :apply
-
     private
 
     # @private

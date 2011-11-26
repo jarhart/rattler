@@ -84,7 +84,7 @@ end
 require 'rattler/rake_task'
 Rattler::RakeTask.new :generate_metagrammar do |t|
   t.grammar = File.join *%w(lib rattler grammar rattler.rtlr)
-  t.rtlr_opts = ['-l', 'lib', '-f', '-s']
+  t.rtlr_opts = ['-l', 'lib', '-f']
 end
 
 task :archive_metagrammar do

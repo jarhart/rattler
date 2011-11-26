@@ -30,7 +30,6 @@ module Rattler
     #
     # @param [Array] args the command-line arguments
     def initialize(args)
-      @standalone = false
       @optimize = true
       options.parse!(args)
       if args.size == 1
@@ -80,11 +79,6 @@ module Rattler
           @force = f
         end
 
-        opts.on '-s', '--standalone',
-                'Optimize for use as a standalone parser' do |s|
-          @standalone = s
-        end
-
         opts.on '-n', '--no-optimize',
                 'Disable optimization' do |n|
           @optimize = n
@@ -128,7 +122,7 @@ module Rattler
     end
 
     def generator_options
-      { :standalone => @standalone, :no_optimize => !@optimize }
+      { :no_optimize => !@optimize }
     end
 
     def open_output(g)

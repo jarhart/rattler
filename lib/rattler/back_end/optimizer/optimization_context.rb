@@ -43,12 +43,15 @@ module Rattler::BackEnd::Optimizer
       @attrs[:type] == :matching
     end
 
-    def standalone?
-      start_rule && @attrs[:standalone]
+    def inlineable?(rule_name)
+      if rule = rules[rule_name]
+        rule.attrs[:inline] and
+        analysis.regular? rule_name
+      end
     end
 
     def relavent?(rule)
-      (not standalone? and not rule.attrs[:inline]) or
+      !rule.attrs[:inline] or
       analysis.referenced?(rule.name)
     end
 
