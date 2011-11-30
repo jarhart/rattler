@@ -72,10 +72,7 @@ terms             <-  terms term                                                
 
 term              <-  fail_expr / labeled / labelable
 
-fail_expr         <-  (`fail` / `fail_rule` / `fail_parse`) fail_arg            <Fail>
-
-fail_arg          <-  ~'(' literal ~')'
-                    / literal
+fail_expr         <-  fail_keyword fail_arg                                     <Fail>
 
 labeled           <-  var_name ~':' labelable                                   <Label>
 
@@ -92,7 +89,7 @@ list              <-  list_term ~('*' ',') list_term                            
 
 list_term         <-  prefixed
                     / prefixable
-                    / fail 'term expected'
+                    / expected 'term'
 
 prefixed          <-  ~'&' prefixable                                           <Assert>
                     / ~'!' prefixable                                           <Disallow>
@@ -100,7 +97,7 @@ prefixed          <-  ~'&' prefixable                                           
                     / ~'@' prefixable                                           <Token>
 
 prefixable        <-  suffixed / primary
-                    / fail 'primary expected'
+                    / expected 'primary'
 
 suffixed          <-  primary ~'?'                                              { optional _ }
                     / primary ~'*' !','                                         { zero_or_more _ }
@@ -126,6 +123,11 @@ atom              <-  ~`EOF`                                                    
                     / ~'.'                                                      { Match[/./] }
 
 %inline
+
+fail_keyword      <-  `fail` / `fail_rule` / `fail_parse` / `expected`
+
+fail_arg          <-  ~'(' literal ~')'
+                    / literal
 
 posix_class       <-  `ALNUM`
                     / `ALPHA`

@@ -788,30 +788,88 @@ module Rattler
               begin
                 @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)((?>fail_parse)(?![[:alnum:]_]))/) &&
                 @scanner[1]
+              end ||
+              begin
+                @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)((?>expected)(?![[:alnum:]_]))/) &&
+                @scanner[1]
               end
             end) &&
-            (r0_1 = match(:fail_arg)) &&
-            Fail.parsed(select_captures([r0_0, r0_1]))
-          end || begin
-            @scanner.pos = p0
-            false
-          end
-        end ||
-        fail { :fail_expr }
-      end
-      
-      # @private
-      def match_fail_arg #:nodoc:
-        apply :match_fail_arg!
-      end
-      
-      # @private
-      def match_fail_arg! #:nodoc:
-        begin
-          p0 = @scanner.pos
-          begin
-            @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>\()/) &&
-            (r0_0 = begin
+            (r0_1 = begin
+              begin
+                p1 = @scanner.pos
+                begin
+                  @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>\()/) &&
+                  (r1_0 = begin
+                    begin
+                      @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)((?>")(?>(?>(?>\\)(?>.)|[^"])*)(?>"))/) &&
+                      @scanner[1]
+                    end ||
+                    begin
+                      @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)((?>')(?>(?>(?>\\)(?>.)|[^'])*)(?>'))/) &&
+                      @scanner[1]
+                    end ||
+                    begin
+                      @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)((?>%\()(?>(?>(?>\\)(?>.)|[^)])*)(?>\)))/) &&
+                      @scanner[1]
+                    end ||
+                    begin
+                      @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)((?>%\{)(?>(?>(?>\\)(?>.)|[^}])*)(?>\}))/) &&
+                      @scanner[1]
+                    end ||
+                    begin
+                      @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)((?>%\[)(?>(?>(?>\\)(?>.)|[^\]])*)(?>\]))/) &&
+                      @scanner[1]
+                    end ||
+                    begin
+                      @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)((?>%<)(?>(?>(?>\\)(?>.)|[^>])*)(?>>))/) &&
+                      @scanner[1]
+                    end ||
+                    begin
+                      p2 = @scanner.pos
+                      begin
+                        @scanner.skip(/(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*/) &&
+                        begin
+                          p3 = @scanner.pos
+                          begin
+                            @scanner.skip(/%/) &&
+                            (r3_0 = @scanner.scan(/[[:punct:]]/)) &&
+                            begin
+                              while begin
+                                @scanner.skip(/(?>\\)(?>.)/) ||
+                                begin
+                                  p4 = @scanner.pos
+                                  begin
+                                    @scanner.skip(/(?!#{r3_0})/) &&
+                                    @scanner.skip(/./) &&
+                                    true
+                                  end || begin
+                                    @scanner.pos = p4
+                                    false
+                                  end
+                                end
+                              end; end
+                              true
+                            end &&
+                            @scanner.skip(/#{r3_0}/) &&
+                            @scanner.string[p3...(@scanner.pos)]
+                          end || begin
+                            @scanner.pos = p3
+                            false
+                          end
+                        end
+                      end || begin
+                        @scanner.pos = p2
+                        false
+                      end
+                    end
+                  end) &&
+                  @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>\))/) &&
+                  r1_0
+                end || begin
+                  @scanner.pos = p1
+                  false
+                end
+              end ||
               begin
                 @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)((?>")(?>(?>(?>\\)(?>.)|[^"])*)(?>"))/) &&
                 @scanner[1]
@@ -875,76 +933,13 @@ module Rattler
                 end
               end
             end) &&
-            @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>\))/) &&
-            r0_0
+            Fail.parsed([r0_0, r0_1])
           end || begin
             @scanner.pos = p0
             false
           end
         end ||
-        begin
-          @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)((?>")(?>(?>(?>\\)(?>.)|[^"])*)(?>"))/) &&
-          @scanner[1]
-        end ||
-        begin
-          @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)((?>')(?>(?>(?>\\)(?>.)|[^'])*)(?>'))/) &&
-          @scanner[1]
-        end ||
-        begin
-          @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)((?>%\()(?>(?>(?>\\)(?>.)|[^)])*)(?>\)))/) &&
-          @scanner[1]
-        end ||
-        begin
-          @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)((?>%\{)(?>(?>(?>\\)(?>.)|[^}])*)(?>\}))/) &&
-          @scanner[1]
-        end ||
-        begin
-          @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)((?>%\[)(?>(?>(?>\\)(?>.)|[^\]])*)(?>\]))/) &&
-          @scanner[1]
-        end ||
-        begin
-          @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)((?>%<)(?>(?>(?>\\)(?>.)|[^>])*)(?>>))/) &&
-          @scanner[1]
-        end ||
-        begin
-          p0 = @scanner.pos
-          begin
-            @scanner.skip(/(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*/) &&
-            begin
-              p1 = @scanner.pos
-              begin
-                @scanner.skip(/%/) &&
-                (r1_0 = @scanner.scan(/[[:punct:]]/)) &&
-                begin
-                  while begin
-                    @scanner.skip(/(?>\\)(?>.)/) ||
-                    begin
-                      p2 = @scanner.pos
-                      begin
-                        @scanner.skip(/(?!#{r1_0})/) &&
-                        @scanner.skip(/./) &&
-                        true
-                      end || begin
-                        @scanner.pos = p2
-                        false
-                      end
-                    end
-                  end; end
-                  true
-                end &&
-                @scanner.skip(/#{r1_0}/) &&
-                @scanner.string[p1...(@scanner.pos)]
-              end || begin
-                @scanner.pos = p1
-                false
-              end
-            end
-          end || begin
-            @scanner.pos = p0
-            false
-          end
-        end ||
-        fail { :fail_arg }
+        fail { :fail_expr }
       end
       
       # @private
@@ -1094,7 +1089,7 @@ module Rattler
       def match_list_term! #:nodoc:
         match(:prefixed) ||
         match(:prefixable) ||
-        (fail! { "term expected" })
+        (fail! { :term })
       end
       
       # @private
@@ -1160,7 +1155,7 @@ module Rattler
       def match_prefixable! #:nodoc:
         match(:suffixed) ||
         match(:primary) ||
-        (fail! { "primary expected" })
+        (fail! { :primary })
       end
       
       # @private

@@ -18,12 +18,13 @@ module Rattler::Parsers
 
     # @private
     def self.parsed(results, *_) #:nodoc:
-      keyword, message_expr = results
-      message = eval(message_expr)
+      keyword, arg_expr = results
+      arg = eval(arg_expr)
       case keyword
-      when 'fail'       then self[:expr, message]
-      when 'fail_rule'  then self[:rule, message]
-      when 'fail_parse' then self[:parse, message]
+      when 'fail'       then self[:expr, arg]
+      when 'fail_rule'  then self[:rule, arg]
+      when 'fail_parse' then self[:parse, arg]
+      when 'expected'   then self[:expr, arg.to_sym]
       end
     end
 

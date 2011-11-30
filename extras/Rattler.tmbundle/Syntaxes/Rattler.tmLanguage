@@ -56,7 +56,7 @@
                 <key>name</key>
                 <string>keyword.control.pseudo-rule.ruby</string>
                 <key>match</key>
-                <string>\b(super|fail)\b</string>
+                <string>\b(super|fail|fail_rule|fail_parse|expected)\b</string>
             </dict>
             <key>grammar_declaration</key>
             <dict>
