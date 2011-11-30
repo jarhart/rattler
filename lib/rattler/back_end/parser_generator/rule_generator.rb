@@ -26,8 +26,12 @@ module Rattler::BackEnd::ParserGenerator
       (@g << "# @private").newline
       @g.block "def match_#{rule.name}! #:nodoc:" do
         gen_child rule.child
-        gen_fail rule unless explicit_fail? rule.child
+        gen_fail rule if add_implicit_fail? rule
       end
+    end
+
+    def add_implicit_fail?(rule)
+      not (rule.attrs[:inline] or has_explicit_fail?(rule.child))
     end
 
     def gen_child(child)
@@ -47,15 +51,15 @@ module Rattler::BackEnd::ParserGenerator
       end
     end
 
-    def force_fail_message?(child)
-      child.is_a? Choice and
-      child.any? {|_| _.is_a? Apply or force_fail_message? _ }
+    def force_fail_message?(expr)
+      expr.is_a? Choice and
+      expr.any? {|_| _.is_a? Apply or force_fail_message? _ }
     end
 
-    def explicit_fail?(child)
-      case child
+    def has_explicit_fail?(expr)
+      case expr
       when Fail then true
-      when Choice then child.any? {|_| explicit_fail? _ }
+      when Choice then expr.any? {|_| has_explicit_fail? _ }
       end
     end
 
