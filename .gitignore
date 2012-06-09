@@ -28,7 +28,6 @@ pkg
 .eprj
 
 ## PROJECT::SPECIFIC
-Gemfile.lock
 archive
 tmp
 
