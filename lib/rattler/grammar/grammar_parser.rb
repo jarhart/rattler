@@ -102,15 +102,15 @@ module Rattler::Grammar
     end
 
     def optional(parser)
-      Repeat[parser, 0, 1]
+      parser.optional
     end
 
     def zero_or_more(parser)
-      Repeat[parser, 0, nil]
+      parser.zero_or_more
     end
 
     def one_or_more(parser)
-      Repeat[parser, 1, nil]
+      parser.one_or_more
     end
 
     def rule(name, parser)

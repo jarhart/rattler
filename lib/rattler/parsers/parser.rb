@@ -79,19 +79,19 @@ module Rattler::Parsers
     # @return a new parser that tries this parser but returns +true+ if it
     #   fails
     def optional
-      Optional[self]
+      Repeat[self, 0, 1]
     end
 
     # @return a new parser that tries this parser until it fails and returns
     #   all of the results
     def zero_or_more
-      ZeroOrMore[self]
+      Repeat[self, 0, nil]
     end
 
     # @return a new parser that tries this parser until it fails and returns
     #   all of the results if it succeeded at least once and fails otherwise
     def one_or_more
-      OneOrMore[self]
+      Repeat[self, 1, nil]
     end
 
     # @return a new parser that skips over what this parser matches
