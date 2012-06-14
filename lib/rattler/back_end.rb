@@ -18,7 +18,5 @@ module Rattler
     autoload :ParserGenerator, 'rattler/back_end/parser_generator'
     autoload :RubyGenerator, 'rattler/back_end/ruby_generator'
     autoload :Optimizer, 'rattler/back_end/optimizer'
-    autoload :Transformation, 'rattler/back_end/transformation'
-    autoload :TransformationSequence, 'rattler/back_end/transformation_sequence'
   end
 end

@@ -49,6 +49,7 @@ module Rattler::BackEnd
 
     autoload :OptimizationContext, 'rattler/back_end/optimizer/optimization_context'
     autoload :Optimization, 'rattler/back_end/optimizer/optimization'
+    autoload :OptimizationSequence, 'rattler/back_end/optimizer/optimization_sequence'
     autoload :Optimizations, 'rattler/back_end/optimizer/optimizations'
     autoload :OptimizeChildren, 'rattler/back_end/optimizer/optimize_children'
     autoload :InlineRegularRules, 'rattler/back_end/optimizer/inline_regular_rules'
