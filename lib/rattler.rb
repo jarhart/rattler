@@ -40,12 +40,12 @@ module Rattler
     def define_rules(&block)
       Rattler::Parsers.define(&block)
     end
-    
-    # Define a parser with the given block and compile it into a parser class
+
+    # Define a parser with the given grammar and compile it into a parser class
     # using the given options
     #
     # @return [Class] a new parser class
-    def compile_parser(*args, &block)
+    def compile_parser(*args)
       options = @@defaults
       grammar = nil
       for arg in args
@@ -57,23 +57,21 @@ module Rattler
       base_class = options.fetch(:class) do
         Rattler::Runtime::const_get @@parser_types[options[:type]]
       end
-      Rattler::BackEnd::Compiler.compile_parser(base_class,
-        grammar || Rattler::Parsers.define(&block))
+      Rattler::BackEnd::Compiler.compile_parser(base_class, grammar)
     end
-    
-    # Define a parser with the given block and compile it into match methods in
-    # the given module
-    def compile(mod, grammar=nil, &block)
-      grammar_or_rules = grammar || Rattler::Parsers.define(&block)
-      Rattler::BackEnd::Compiler.compile(mod, grammar_or_rules)
+
+    # Define a parser with the given grammar and compile it into match methods
+    # in the given module
+    def compile(mod, grammar)
+      Rattler::BackEnd::Compiler.compile(mod, grammar)
     end
-    
+
   end
-  
+
   include HelperMethods
-  
+
   class <<self
     include HelperMethods
   end
-  
+
 end

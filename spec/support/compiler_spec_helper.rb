@@ -2,10 +2,6 @@ require 'strscan'
 
 module CompilerSpecHelper
 
-  def define_grammar(&block)
-    Rattler::Grammar::Grammar.new(Rattler::Parsers.define(&block))
-  end
-
   def combinator_parser(g)
     Rattler::Parsers::CombinatorParser.as_class(g.rules.first, g.rules)
   end

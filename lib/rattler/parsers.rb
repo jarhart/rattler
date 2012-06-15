@@ -39,7 +39,6 @@ module Rattler
     autoload :Label, 'rattler/parsers/label'
     autoload :BackReference, 'rattler/parsers/back_reference'
     autoload :Fail, 'rattler/parsers/fail'
-    autoload :ParserDSL, 'rattler/parsers/parser_dsl'
     autoload :Predicate, 'rattler/parsers/predicate'
     autoload :Atomic, 'rattler/parsers/atomic'
     autoload :Combining, 'rattler/parsers/combining'
@@ -47,16 +46,5 @@ module Rattler
     autoload :ParserScope, 'rattler/parsers/parser_scope'
     autoload :ActionCode, 'rattler/parsers/action_code'
     autoload :NodeCode, 'rattler/parsers/node_code'
-
-    class <<self
-      # Define parse rules with the given block
-      #
-      # @return [Rules] a set of parse rules
-      #
-      def define(&block)
-        ParserDSL.rules(&block)
-      end
-    end
-
   end
 end

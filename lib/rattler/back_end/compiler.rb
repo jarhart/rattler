@@ -104,7 +104,7 @@ module Rattler::BackEnd
     end
 
     # Compile +grammar+ into match methods in the module.
-    # @param [String] grammar the grammar source to compile
+    # @param [String] source the grammar source to compile
     # @return [Module] the module
     def compile_grammar(source, opts={})
       compile_model(Rattler::Grammar.parse!(source), opts)

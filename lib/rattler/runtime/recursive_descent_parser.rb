@@ -18,7 +18,13 @@ module Rattler::Runtime
   #
   class RecursiveDescentParser < Parser
     include ParserHelper
-    include Rattler::Grammar::GrammarDSL
+
+    class <<self
+      private
+      def grammar(source=nil, &block)
+        Rattler.compile(self, source, &block)
+      end
+    end
 
     # Create a new recursive descent parser to parse +source+.
     #

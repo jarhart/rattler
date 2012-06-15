@@ -8,6 +8,7 @@ require File.expand_path('skip_compiler_examples', File.dirname(__FILE__))
 
 shared_examples_for 'a compiled parser' do
   include CompilerSpecHelper
+  include RuntimeParserSpecHelper
 
   it_behaves_like 'a compiled parser with an assert'
   it_behaves_like 'a compiled parser with a disallow'
@@ -20,11 +21,13 @@ shared_examples_for 'a compiled parser' do
 
   let(:reference_parser) { combinator_parser grammar }
 
+  let(:grammar) { Rattler::Grammar::Grammar[Rattler::Parsers::RuleSet[*rules]] }
+
   ########## match ##########
   context 'with a match rule' do
-    let(:grammar) { define_grammar do
-      rule(:digit) { match /\d/ }
-    end }
+    let(:rules) { [
+      rule(:digit) { match(/\d/) }
+    ] }
     it { should parse('451').succeeding.twice.like reference_parser }
     it { should parse(' 4').failing.like reference_parser }
     it { should parse('foo').failing.like reference_parser }
@@ -32,50 +35,46 @@ shared_examples_for 'a compiled parser' do
 
   ########## choice ##########
   context 'with a choice rule' do
-    let(:grammar) { define_grammar do
+    let(:rules) { [
       rule(:atom) { match(/[[:alpha:]]+/) | match(/[[:digit:]]+/) }
-    end }
+    ] }
     it { should parse('abc123').succeeding.twice.like reference_parser }
     it { should parse('==').failing.like reference_parser }
 
     context 'with non-capturing parsers' do
-      let(:grammar) { define_grammar do
-        rule :foo do
-          skip(/\s+/) | skip(/\{[^\}]*\}/)
-        end
-      end }
+      let(:rules) { [
+        rule(:foo) { skip(/\s+/) | skip(/\{[^\}]*\}/) }
+      ] }
       it { should parse('   foo').succeeding.like reference_parser }
       it { should parse('{foo}').succeeding.like reference_parser }
     end
 
     context 'with nested choices' do
-      let(:grammar) { define_grammar do
-        rule(:foo) do
+      let(:rules) { [
+        rule(:foo) {
           ( (match('a') | match('b')) \
           | (match('c') | match('d')) )
-        end
-      end }
+        }
+      ] }
       it { should parse('abcd').succeeding(4).times.like reference_parser }
       it { should parse('123').failing.like reference_parser }
     end
 
     context 'with nested sequences' do
-      let(:grammar) { define_grammar do
-        rule(:foo) do
+      let(:rules) { [
+        rule(:foo) {
           ( match('a') & match('b') \
           | match('c') & match('d') )
-        end
-      end }
+        }
+      ] }
       it { should parse('abcd').succeeding.twice.like reference_parser }
       it { should parse('123').failing.like reference_parser }
     end
 
     context 'with nested optional parsers' do
-      let(:grammar) { define_grammar do
-        rule(:foo) do
-          optional('a') | optional('b')
-        end
-      end }
+      let(:rules) { [
+        rule(:foo) { match('a').optional | match('b').optional }
+      ] }
       it { should parse('abcd').succeeding(3).times.like reference_parser }
       it { should parse('123').succeeding.like reference_parser }
     end
@@ -83,70 +82,60 @@ shared_examples_for 'a compiled parser' do
 
   ########## sequence ##########
   context 'with a sequence rule' do
-    let(:grammar) { define_grammar do
-      rule :assignment do
+    let(:rules) { [
+      rule(:assignment) {
         match(/[[:alpha:]]+/) & match('=') & match(/[[:digit:]]+/)
-      end
-    end }
+      }
+    ] }
     it { should parse('val=42 ').succeeding.like reference_parser }
     it { should parse('val=x ').failing.like reference_parser }
 
     context 'with non-capturing parsers' do
-      let(:grammar) { define_grammar do
-        rule :foo do
+      let(:rules) { [
+        rule(:foo) {
           match(/[[:alpha:]]+/) & skip(/\s+/) & match(/[[:digit:]]+/)
-        end
-      end }
+        }
+      ] }
       it { should parse('foo 42').succeeding.like reference_parser }
     end
 
     context 'with only one capturing parser' do
-      let(:grammar) { define_grammar do
-        rule :foo do
-          skip(/\s+/) & match(/\w+/)
-        end
-      end }
+      let(:rules) { [
+        rule(:foo) { skip(/\s+/) & match(/\w+/) }
+      ] }
       it { should parse('  abc123').succeeding.like reference_parser }
     end
 
     context 'with no capturing parsers' do
-      let(:grammar) { define_grammar do
-        rule :foo do
-          skip(/\s*/) & skip(/#[^\n]+/)
-        end
-      end }
+      let(:rules) { [
+        rule(:foo) { skip(/\s*/) & skip(/#[^\n]+/) }
+      ] }
       it { should parse(' # foo').succeeding.like reference_parser }
     end
 
     context 'with an apply referencing a non-capturing rule' do
-      let(:grammar) { define_grammar do
-        rule :foo do
+      let(:rules) { [
+        rule(:foo) {
           match(/[[:alpha:]]+/) & match(:ws) & match(/[[:digit:]]+/)
-        end
-        rule :ws do
-          skip(/\s+/)
-        end
-      end }
+        },
+        rule(:ws) { skip(/\s+/) }
+      ] }
       it { should parse('foo 42').succeeding.like reference_parser }
     end
   end
 
   ########## optional ##########
   context 'with an optional rule' do
-    let(:grammar) { define_grammar do
-      rule :foo do
-        optional(/\w+/)
-      end
-    end }
+    let(:rules) { [
+      rule(:foo) { match(/\w+/).optional }
+    ] }
     it { should parse('foo ').succeeding.like reference_parser }
     it { should parse('    ').succeeding.like reference_parser }
 
     context 'with a non-capturing parser' do
-      let(:grammar) { define_grammar do
-        rule :foo do
-          optional(skip(/\w+/))
-        end
-      end }
+      let(:rules) { [
+        rule(:foo) { skip(/\w+/).optional }
+      ] }
       it { should parse('foo ').succeeding.like reference_parser }
       it { should parse('    ').succeeding.like reference_parser }
     end
@@ -154,20 +143,16 @@ shared_examples_for 'a compiled parser' do
 
   ########## zero-or-more ##########
   context 'with an zero-or-more rule' do
-    let(:grammar) { define_grammar do
-      rule :foo do
-        zero_or_more(/\w/)
-      end
-    end }
+    let(:rules) { [
+      rule(:foo) { match(/\w/).zero_or_more }
+    ] }
     it { should parse('foo ').succeeding.like reference_parser }
     it { should parse('    ').succeeding.like reference_parser }
 
     context 'with a non-capturing parser' do
-      let(:grammar) { define_grammar do
-        rule :foo do
-          zero_or_more(skip(/\w/))
-        end
-      end }
+      let(:rules) { [
+        rule(:foo) { skip(/\w/).zero_or_more }
+      ] }
       it { should parse('foo ').succeeding.like reference_parser }
       it { should parse('    ').succeeding.like reference_parser }
     end
@@ -175,20 +160,16 @@ shared_examples_for 'a compiled parser' do
 
   ########## one-or-more ##########
   context 'with an one-or-more rule' do
-    let(:grammar) { define_grammar do
-      rule :foo do
-        one_or_more(/\w/)
-      end
-    end }
+    let(:rules) { [
+      rule(:foo) { match(/\w/).one_or_more }
+    ] }
     it { should parse('foo ').succeeding.like reference_parser }
     it { should parse('    ').failing.like reference_parser }
 
     context 'with a non-capturing parser' do
-      let(:grammar) { define_grammar do
-        rule :foo do
-          one_or_more(skip(/\w/))
-        end
-      end }
+      let(:rules) { [
+        rule(:foo) { skip(/\w/).one_or_more }
+      ] }
       it { should parse('foo ').succeeding.like reference_parser }
       it { should parse('    ').failing.like reference_parser }
     end
@@ -196,73 +177,59 @@ shared_examples_for 'a compiled parser' do
 
   ########## repeat ##########
   context 'with a repeat rule' do
-    let(:grammar) { define_grammar do
-      rule :foo do
-        repeat(/\w/, 2, 4)
-      end
-    end }
+    let(:rules) { [
+      rule(:foo) { match(/\w/).repeat(2, 4) }
+    ] }
     it { should parse('foo ').succeeding.like reference_parser }
     it { should parse('abcde ').succeeding.like reference_parser }
     it { should parse('a ').failing.like reference_parser }
 
     context 'with no upper bound' do
-      let(:grammar) { define_grammar do
-        rule :foo do
-          repeat(/\w/, 2, nil)
-        end
-      end }
+      let(:rules) { [
+        rule(:foo) { match(/\w/).repeat(2, nil) }
+      ] }
       it { should parse('foo ').succeeding.like reference_parser }
       it { should parse('abcde ').succeeding.like reference_parser }
       it { should parse('a ').failing.like reference_parser }
     end
 
     context 'with a non-capturing parser' do
-      let(:grammar) { define_grammar do
-        rule :foo do
-          repeat(skip(/\w/), 2, 4)
-        end
-      end }
+      let(:rules) { [
+        rule(:foo) { skip(/\w/).repeat(2, 4) }
+      ] }
       it { should parse('foo ').succeeding.like reference_parser }
       it { should parse('abcde ').succeeding.like reference_parser }
       it { should parse('a ').failing.like reference_parser }
     end
 
     context 'with a choice of capturing or non-capturing parsers' do
-      let(:grammar) { define_grammar do
-        rule :foo do
-          repeat(match(/a/) | skip(/b/), 2, 4)
-        end
-      end }
+      let(:rules) { [
+        rule(:foo) { (match(/a/) | skip(/b/)).repeat(2, 4) }
+      ] }
       it { should parse('abac').succeeding.like reference_parser }
     end
 
     context 'with an attributed sequence with an action returning true' do
-      let(:gramamr) { define_grammar do
-        rule :foo do
-          repeat(match(/\w/) >> semantic_action('true'), 2, 4)
-        end
-      end }
+      let(:rules) { [
+        rule(:foo) { (match(/\w/) >> semantic_action('true')).repeat(2, 4) }
+      ] }
       it { should parse('abc ').succeeding.like reference_parser }
     end
   end
 
   ########## list ##########
   context 'given a list rule' do
-    let(:grammar) { define_grammar do
-      rule :foo do
-        list(/\w+/, /[,;]/, 2, nil)
-      end
-    end }
+    let(:rules) { [
+      rule(:foo) { match(/\w+/).list(match(/[,;]/), 2, nil) }
+    ] }
     it { should parse('foo  ').failing.like reference_parser }
     it { should parse('foo,bar;baz  ').succeeding.like reference_parser }
     it { should parse('foo,bar,  ').succeeding.like reference_parser }
 
     context 'with an upper bound' do
-      let(:grammar) { define_grammar do
-        rule :foo do
-          list(/\w+/, /[,;]/, 2, 4)
-        end
-      end }
+      let(:rules) { [
+        rule(:foo) { match(/\w+/).list(match(/[,;]/), 2, 4) }
+      ] }
       it { should parse('foo  ').failing.like reference_parser }
       it { should parse('foo,bar;baz  ').succeeding.like reference_parser }
       it { should parse('a,b,c,d,e  ').succeeding.like reference_parser }
@@ -270,21 +237,17 @@ shared_examples_for 'a compiled parser' do
     end
 
     context 'with a non-capturing parser' do
-      let(:grammar) { define_grammar do
-        rule :foo do
-          list(skip(/\w+/), /[,;]/, 2, nil)
-        end
-      end }
+      let(:rules) { [
+        rule(:foo) { skip(/\w+/).list(match(/[,;]/), 2, nil) }
+      ] }
       it { should parse('foo  ').failing.like reference_parser }
       it { should parse('foo,bar;baz  ').succeeding.like reference_parser }
       it { should parse('foo,bar,  ').succeeding.like reference_parser }
 
       context 'with an upper bound' do
-        let(:grammar) { define_grammar do
-          rule :foo do
-            list(skip(/\w+/), /[,;]/, 2, 4)
-          end
-        end }
+        let(:rules) { [
+          rule(:foo) { skip(/\w+/).list(match(/[,;]/), 2, 4) }
+        ] }
         it { should parse('foo  ').failing.like reference_parser }
         it { should parse('foo,bar;baz  ').succeeding.like reference_parser }
         it { should parse('a,b,c,d,e  ').succeeding.like reference_parser }
@@ -292,22 +255,18 @@ shared_examples_for 'a compiled parser' do
       end
 
       context 'with "zero-or-more" bounds' do
-        let(:grammar) { define_grammar do
-          rule :foo do
-            list(skip(/\w+/), /[,;]/, 0, nil)
-          end
-        end }
+        let(:rules) { [
+          rule(:foo) { skip(/\w+/).list(match(/[,;]/), 0, nil) }
+        ] }
         it { should parse('  ').succeeding.like reference_parser }
         it { should parse('foo  ').succeeding.like reference_parser }
         it { should parse('foo,bar;baz  ').succeeding.like reference_parser }
       end
 
       context 'with "one-or-more" bounds' do
-        let(:grammar) { define_grammar do
-          rule :foo do
-            list(skip(/\w+/), /[,;]/, 1, nil)
-          end
-        end }
+        let(:rules) { [
+          rule(:foo) { skip(/\w+/).list(match(/[,;]/), 1, nil) }
+        ] }
         it { should parse('  ').failing.like reference_parser }
         it { should parse('foo  ').succeeding.like reference_parser }
         it { should parse('foo,bar;baz  ').succeeding.like reference_parser }
@@ -317,19 +276,19 @@ shared_examples_for 'a compiled parser' do
 
   ########## apply ##########
   context 'given an apply rule' do
-    let(:grammar) { define_grammar do
-      rule(:digit) { match /\d/ }
+    let(:rules) { [
+      rule(:digit) { match /\d/ },
       rule(:foo) { match :digit }
-    end }
+    ] }
     it { should parse('451 ').twice.succeeding.like reference_parser }
     it { should parse('hi').failing.like reference_parser }
   end
 
   ########## eof ##########
   context 'given eof' do
-    let(:grammar) { define_grammar do
+    let(:rules) { [
       rule(:foo) { eof }
-    end }
+    ] }
     it { should parse('').succeeding.like reference_parser }
     it { should parse('foo').from(3).succeeding.like reference_parser }
     it { should parse('foo').failing.like reference_parser }
@@ -337,9 +296,9 @@ shared_examples_for 'a compiled parser' do
 
   ########## E ##########
   context 'given "E" symbol' do
-    let(:grammar) { define_grammar do
+    let(:rules) { [
       rule(:foo) { e }
-    end }
+    ] }
     it { should parse('').succeeding.like reference_parser }
     it { should parse('foo').succeeding.like reference_parser }
   end

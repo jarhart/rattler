@@ -3,11 +3,13 @@ require File.expand_path(File.dirname(__FILE__) + '/../../spec_helper')
 shared_examples_for 'a recursive descent parser' do
   include RuntimeParserSpecHelper
 
+  let(:grammar) { Rattler::Grammar::Grammar[Rattler::Parsers::RuleSet[*rules]] }
+
   describe '#parse' do
 
-    let(:grammar) { define_grammar do
+    let(:rules) { [
       rule(:word) { match(/\w+/) }
-    end }
+    ] }
 
     it 'applies the start rule to the source' do
       parsing('Hello World!').should result_in('Hello').at(5)
@@ -25,11 +27,13 @@ shared_examples_for 'a generated recursive descent parser' do
     Rattler::BackEnd::Compiler.compile_parser described_class, grammar
   end
 
+  let(:grammar) { Rattler::Grammar::Grammar[Rattler::Parsers::RuleSet[*rules]] }
+
   describe '#match' do
 
-    let(:grammar) { define_grammar do
+    let(:rules) { [
       rule(:word) { match(/\w+/) }
-    end }
+    ] }
 
     it 'dispatches to the correct match method' do
       matching('Hello World!').as(:word).should result_in('Hello').at(5)
@@ -42,12 +46,12 @@ shared_examples_for 'a generated recursive descent parser' do
 
     context 'given recursive rules' do
 
-      let(:grammar) { define_grammar do
-        rule :a do
+      let(:rules) { [
+        rule(:a) {
           ( match(/\d/) & match(:a) \
           | match(/\d/)             )
-        end
-      end }
+        }
+      ] }
 
       it 'applies the rules recursively' do
         matching('1234abc').as(:a).should result_in(['1', ['2', ['3', '4']]]).at(4)
@@ -66,19 +70,21 @@ shared_examples_for 'a generated packrat parser' do
     Rattler::BackEnd::Compiler.compile_parser described_class, grammar
   end
 
+  let(:grammar) { Rattler::Grammar::Grammar[Rattler::Parsers::RuleSet[*rules]] }
+
   describe '#match' do
 
     context 'given recursive rules' do
 
-      let(:grammar) { define_grammar do
-        rule :a do
+      let(:rules) { [
+        rule(:a) {
           ( match(:b) & match('a') \
           | match(:b) & eof )
-        end
-        rule :b do
+        },
+        rule(:b) {
           match('b') & disallow(:a)
-        end
-      end }
+        }
+      ] }
 
       let(:example) { matching('bag').as(:a) }
 

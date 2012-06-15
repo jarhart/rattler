@@ -3,6 +3,7 @@ require File.expand_path(File.dirname(__FILE__) + '/shared_compiler_examples')
 
 describe Rattler::BackEnd::Compiler do
   include CompilerSpecHelper
+  include RuntimeParserSpecHelper
 
   describe '.compile_parser result' do
 
@@ -17,12 +18,14 @@ describe Rattler::BackEnd::Compiler do
 
   describe '.compile_parser' do
 
+    let(:grammar) { Rattler::Grammar::Grammar[Rattler::Parsers::RuleSet[*rules]] }
+
     context 'given parse rules' do
 
-      let(:grammar) { define_grammar do
-        rule(:word) { match /\w+/ }
-        rule(:space) { match /\s*/ }
-      end }
+      let(:rules) { [
+        rule(:word) { match(/\w+/) },
+        rule(:space) { match(/\s*/) }
+      ] }
 
       let(:parser_base) { Rattler::Runtime::RecursiveDescentParser }
 

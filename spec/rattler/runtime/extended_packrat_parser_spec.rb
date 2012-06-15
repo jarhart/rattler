@@ -10,15 +10,17 @@ describe Rattler::Runtime::ExtendedPackratParser do
     Rattler::BackEnd::Compiler.compile_parser described_class, grammar
   end
 
+  let(:grammar) { Rattler::Grammar::Grammar[Rattler::Parsers::RuleSet[*rules]] }
+
   describe '#match' do
 
     context 'given a directly left-recursive rule' do
-      let(:grammar) { define_grammar do
-        rule :a do
+      let(:rules) { [
+        rule(:a) {
           ( match(:a) & match(/\d/) \
           | match(/\d/)             )
-        end
-      end }
+        }
+      ] }
 
       it 'parses correctly' do
         parsing('12345a').should result_in([[[['1', '2'], '3'], '4'], '5']).at(5)
@@ -26,10 +28,10 @@ describe Rattler::Runtime::ExtendedPackratParser do
     end
 
     context 'given indirectly left-recursive rules' do
-      let(:grammar) { define_grammar do
-        rule(:a) { match(:b) | match(/\d/) }
+      let(:rules) { [
+        rule(:a) { match(:b) | match(/\d/) },
         rule(:b) { match(:a) & match(/\d/) }
-      end }
+      ] }
 
       it 'parses correctly' do
         parsing('12345a').should result_in([[[['1', '2'], '3'], '4'], '5']).at(5)
