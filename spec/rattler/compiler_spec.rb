@@ -1,7 +1,7 @@
-require File.expand_path(File.dirname(__FILE__) + '/../../spec_helper')
-require File.expand_path(File.dirname(__FILE__) + '/shared_compiler_examples')
+require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
+require File.expand_path(File.dirname(__FILE__) + '/compiler/shared_compiler_examples')
 
-describe Rattler::Compiler::Compiler do
+describe Rattler::Compiler do
   include CompilerSpecHelper
   include RuntimeParserSpecHelper
 
@@ -36,7 +36,28 @@ describe Rattler::Compiler::Compiler do
         result.should have_method(:match_space)
       end
     end
+  end
 
+  describe '.compile' do
+
+    let(:grammar) { Rattler::Grammar::Grammar[Rattler::Parsers::RuleSet[*rules]] }
+
+    context 'given parse rules' do
+
+      let(:rules) { [
+        rule(:word) { match(/\w+/) },
+        rule(:space) { match(/\s*/) }
+      ] }
+
+      let(:target_module) { Module.new }
+
+      before { described_class.compile(target_module, grammar) }
+
+      it 'compiles a match_xxx method for each rule' do
+        target_module.should have_method(:match_word)
+        target_module.should have_method(:match_space)
+      end
+    end
   end
 
   def have_method(rule_name)

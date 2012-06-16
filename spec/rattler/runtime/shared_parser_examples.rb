@@ -24,7 +24,7 @@ shared_examples_for 'a generated recursive descent parser' do
   it_behaves_like 'a recursive descent parser'
 
   let(:parser_class) do
-    Rattler::Compiler::Compiler.compile_parser described_class, grammar
+    Rattler::Compiler.compile_parser described_class, grammar
   end
 
   let(:grammar) { Rattler::Grammar::Grammar[Rattler::Parsers::RuleSet[*rules]] }
@@ -67,7 +67,7 @@ shared_examples_for 'a generated packrat parser' do
   it_behaves_like 'a generated recursive descent parser'
 
   let(:parser_class) do
-    Rattler::Compiler::Compiler.compile_parser described_class, grammar
+    Rattler::Compiler.compile_parser described_class, grammar
   end
 
   let(:grammar) { Rattler::Grammar::Grammar[Rattler::Parsers::RuleSet[*rules]] }

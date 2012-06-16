@@ -46,24 +46,22 @@ module Rattler
     #
     # @return [Class] a new parser class
     def compile_parser(*args)
-      options = @@defaults
+      options = @@defaults.dup
       grammar = nil
       for arg in args
         case arg
-        when Hash then options = options.merge(arg)
+        when Hash then options.merge!(arg)
         when String then grammar = arg
         end
       end
-      base_class = options.fetch(:class) do
-        Rattler::Runtime::const_get @@parser_types[options[:type]]
-      end
-      Rattler::Compiler::Compiler.compile_parser(base_class, grammar)
+      base_class = options.delete(:class) ||
+        (Rattler::Runtime::const_get @@parser_types[options[:type]])
+      Rattler::Compiler.compile_parser(base_class, grammar, options)
     end
 
-    # Define a parser with the given grammar and compile it into match methods
-    # in the given module
-    def compile(mod, grammar)
-      Rattler::Compiler::Compiler.compile(mod, grammar)
+    # (see Rattler::Compiler::ModuleMethods#compile)
+    def compile(mod, grammar_or_parser, opts={})
+      Rattler::Compiler.compile(mod, grammar_or_parser, opts)
     end
 
   end
