@@ -7,7 +7,7 @@ describe Rattler::Runtime::ExtendedPackratParser do
   it_behaves_like 'a generated packrat parser'
 
   let :parser_class do
-    Rattler::BackEnd::Compiler.compile_parser described_class, grammar
+    Rattler::Compiler::Compiler.compile_parser described_class, grammar
   end
 
   let(:grammar) { Rattler::Grammar::Grammar[Rattler::Parsers::RuleSet[*rules]] }

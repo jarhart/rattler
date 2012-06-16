@@ -118,7 +118,7 @@ module Rattler
     end
 
     def code_for(g)
-      Rattler::BackEnd::ParserGenerator.code_for g, generator_options
+      Rattler::Compiler::ParserGenerator.code_for g, generator_options
     end
 
     def generator_options

@@ -13,7 +13,7 @@ module Rattler
   autoload :Runtime, 'rattler/runtime'
   autoload :Grammar, 'rattler/grammar'  
   autoload :Parsers, 'rattler/parsers'
-  autoload :BackEnd, 'rattler/back_end'
+  autoload :Compiler, 'rattler/compiler'
   autoload :Util, 'rattler/util'
   
   # Convenience methods for defining parsers
@@ -57,13 +57,13 @@ module Rattler
       base_class = options.fetch(:class) do
         Rattler::Runtime::const_get @@parser_types[options[:type]]
       end
-      Rattler::BackEnd::Compiler.compile_parser(base_class, grammar)
+      Rattler::Compiler::Compiler.compile_parser(base_class, grammar)
     end
 
     # Define a parser with the given grammar and compile it into match methods
     # in the given module
     def compile(mod, grammar)
-      Rattler::BackEnd::Compiler.compile(mod, grammar)
+      Rattler::Compiler::Compiler.compile(mod, grammar)
     end
 
   end
