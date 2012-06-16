@@ -4,9 +4,9 @@
 # Author:: Jason Arhart
 # Documentation:: Author
 #
-require 'rattler/grammar'
+require 'rattler/compiler'
 
-module Rattler::Grammar
+module Rattler::Compiler
   # @private
   class GrammarParser < Rattler::Runtime::ExtendedPackratParser #:nodoc:
 

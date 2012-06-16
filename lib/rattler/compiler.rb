@@ -5,6 +5,8 @@ module Rattler
   # The +Compiler+ module contains the classes and methods used to turn
   # parser models into ruby code.
   module Compiler
+    autoload :GrammarParser, 'rattler/compiler/grammar_parser'
+    autoload :Metagrammar, 'rattler/compiler/metagrammar'
     autoload :ParserGenerator, 'rattler/compiler/parser_generator'
     autoload :RubyGenerator, 'rattler/compiler/ruby_generator'
     autoload :Optimizer, 'rattler/compiler/optimizer'
@@ -23,7 +25,7 @@ module Rattler
       #
       # @overload compile(base, parser, opts)
       #   @param [Class] base the base class for the new parser class
-      #   @param [Rattler::Grammar::Grammar,Rattler::Parsers::RuleSet,Rattler::Parsers::Rule]
+      #   @param [Rattler::Parsers::Grammar,Rattler::Parsers::RuleSet,Rattler::Parsers::Rule]
       #     parser the parser model to compile
       #   @return [Class] a new sublcass of +base+ with compiled match methods
       #
@@ -41,7 +43,7 @@ module Rattler
       #
       # @overload compile(mod, parser, opts)
       #   @param [Module] mod the target module for the match methods
-      #   @param [Rattler::Grammar::Grammar,Rattler::Parsers::RuleSet,Rattler::Parsers::Rule]
+      #   @param [Rattler::Parsers::Grammar,Rattler::Parsers::RuleSet,Rattler::Parsers::Rule]
       #     parser the parser model to compile
       #   @return [Module] +mod+
       #
@@ -55,8 +57,8 @@ module Rattler
 
       def parser_model(arg)
         case arg
-        when Rattler::Grammar::Grammar, RuleSet, Rule then arg
-        else Rattler::Grammar.parse!(arg.to_str)
+        when Grammar, RuleSet, Rule then arg
+        else GrammarParser.parse!(arg.to_str)
         end
       end
     end

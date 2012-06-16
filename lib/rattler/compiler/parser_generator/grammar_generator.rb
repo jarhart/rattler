@@ -6,8 +6,8 @@ module Rattler::Compiler::ParserGenerator
 
     def generate(parser, opts={})
       case parser
-      when Rattler::Grammar::Grammar then gen_parser(parser, opts)
-      when Rattler::Parsers::RuleSet then gen_rules(parser, opts)
+      when Grammar then gen_parser(parser, opts)
+      when RuleSet then gen_rules(parser, opts)
       end
       self
     end

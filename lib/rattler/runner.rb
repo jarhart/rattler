@@ -93,7 +93,7 @@ module Rattler
     end
 
     def parser
-      @parser ||= Rattler::Grammar::GrammarParser.new(@srcfname.read)
+      @parser ||= Rattler::Compiler::GrammarParser.new(@srcfname.read)
     end
 
     def analyze

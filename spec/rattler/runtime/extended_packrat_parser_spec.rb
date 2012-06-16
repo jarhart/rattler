@@ -10,7 +10,7 @@ describe Rattler::Runtime::ExtendedPackratParser do
     Rattler::Compiler.compile_parser described_class, grammar
   end
 
-  let(:grammar) { Rattler::Grammar::Grammar[Rattler::Parsers::RuleSet[*rules]] }
+  let(:grammar) { Rattler::Parsers::Grammar[Rattler::Parsers::RuleSet[*rules]] }
 
   describe '#match' do
 

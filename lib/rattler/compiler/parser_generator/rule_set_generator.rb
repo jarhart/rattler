@@ -4,7 +4,6 @@ module Rattler::Compiler::ParserGenerator
   # @private
   class RuleSetGenerator #:nodoc:
 
-    Grammar = Rattler::Grammar::Grammar
     include Rattler::Parsers
 
     def initialize(g)

@@ -2,23 +2,18 @@ require File.expand_path(File.dirname(__FILE__) + '/../../spec_helper')
 
 include Rattler::Parsers
 
-describe Rattler::Grammar::Grammar do
+describe Grammar do
 
   let(:rules) { RuleSet[rule_a, rule_b] }
 
-  let :rule_a do
-    Rule[:a, Choice[
-      Match['a'],
-      Apply[:b]
-    ]]
-  end
+  let(:rule_a) { Rule[:a, Match['a'] | Apply[:b]] }
 
   let(:rule_b) { Rule[:b, Match['b']] }
 
   describe '#start_rule' do
     context 'when no start_rule option was specified' do
 
-      subject { Rattler::Grammar::Grammar.new(rules) }
+      subject { Grammar.new(rules) }
 
       it 'returns the first rule' do
         subject.start_rule.should == rule_a
@@ -27,7 +22,7 @@ describe Rattler::Grammar::Grammar do
 
     context 'when an explicit start_rule option was specified' do
 
-      subject { Rattler::Grammar::Grammar.new(rules, :start_rule => :b) }
+      subject { Grammar.new(rules, :start_rule => :b) }
 
       it 'uses the specified start_rule option' do
         subject.start_rule.should == rule_b
@@ -38,7 +33,7 @@ describe Rattler::Grammar::Grammar do
   describe '#rules' do
     context 'when no start_rule option was specified' do
 
-      subject { Rattler::Grammar::Grammar.new(rules) }
+      subject { Grammar.new(rules) }
 
       it 'returns rules with the default start_rule' do
         subject.rules.start_rule.should == :a
@@ -47,7 +42,7 @@ describe Rattler::Grammar::Grammar do
 
     context 'when an explicit start_rule option was specified' do
 
-      subject { Rattler::Grammar::Grammar.new(rules, :start_rule => :b) }
+      subject { Grammar.new(rules, :start_rule => :b) }
 
       it 'returns rules with the specified start_rule option' do
         subject.rules.start_rule.should == :b

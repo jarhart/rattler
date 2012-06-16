@@ -1,16 +1,8 @@
-#
-# = rattler/grammar/grammar.rb
-#
-# Author:: Jason Arhart
-# Documentation:: Author
-#
-require 'rattler/grammar'
+require 'rattler/parsers'
 
-module Rattler::Grammar
-  #
+module Rattler::Parsers
+
   # +Grammar+ represents a parsed grammar
-  #
-  # @author Jason Arhart
   class Grammar < Rattler::Util::Node
 
     # The name of the default parser base class
@@ -57,16 +49,24 @@ module Rattler::Grammar
       attrs[:name] ||= grammar_name || parser_name
     end
 
+    # @return [RuleSet] the parse rules that define the
+    #   grammar
     attr_reader :rules
 
+    # @param [Symbol] name the name of a parse rule in the grammar
+    # @return [Rule] the parse rule referenced by +name+
     def rule(name)
       rules[name]
     end
 
+    # @return [Analysis] a static analysis of the grammar rules
     def analysis
       rules.analysis
     end
 
+    # @param [RuleSet] new_rules
+    # @return [Grammar] a new grammar with the parse rules replaced by
+    #   +new_rules+
     def with_rules(new_rules)
       self.class.new new_rules, attrs
     end

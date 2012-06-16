@@ -22,7 +22,7 @@ module Rattler::Compiler
 
       def optimize(model, opts={})
         case model
-        when ::Rattler::Grammar::Grammar then optimize_grammar model, opts
+        when ::Rattler::Parsers::Grammar then optimize_grammar model, opts
         when ::Rattler::Parsers::RuleSet then optimize_rule_set model, opts
         else optimizations.apply model, default_context(opts)
         end

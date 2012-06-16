@@ -8,7 +8,7 @@ shared_examples_for 'a compiled parser with a semantic action' do
 
   let(:reference_parser) { combinator_parser grammar }
 
-  let(:grammar) { Rattler::Grammar::Grammar[Rattler::Parsers::RuleSet[*rules]] }
+  let(:grammar) { Rattler::Parsers::Grammar[Rattler::Parsers::RuleSet[*rules]] }
 
   context 'when the expression has no parameters' do
     let(:rules) { [

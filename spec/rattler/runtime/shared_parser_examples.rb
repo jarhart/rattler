@@ -3,7 +3,7 @@ require File.expand_path(File.dirname(__FILE__) + '/../../spec_helper')
 shared_examples_for 'a recursive descent parser' do
   include RuntimeParserSpecHelper
 
-  let(:grammar) { Rattler::Grammar::Grammar[Rattler::Parsers::RuleSet[*rules]] }
+  let(:grammar) { Rattler::Parsers::Grammar[Rattler::Parsers::RuleSet[*rules]] }
 
   describe '#parse' do
 
@@ -27,7 +27,7 @@ shared_examples_for 'a generated recursive descent parser' do
     Rattler::Compiler.compile_parser described_class, grammar
   end
 
-  let(:grammar) { Rattler::Grammar::Grammar[Rattler::Parsers::RuleSet[*rules]] }
+  let(:grammar) { Rattler::Parsers::Grammar[Rattler::Parsers::RuleSet[*rules]] }
 
   describe '#match' do
 
@@ -70,7 +70,7 @@ shared_examples_for 'a generated packrat parser' do
     Rattler::Compiler.compile_parser described_class, grammar
   end
 
-  let(:grammar) { Rattler::Grammar::Grammar[Rattler::Parsers::RuleSet[*rules]] }
+  let(:grammar) { Rattler::Parsers::Grammar[Rattler::Parsers::RuleSet[*rules]] }
 
   describe '#match' do
 

@@ -1,7 +1,7 @@
-require 'rattler/grammar'
+require 'rattler/compiler'
 
 module Rattler
-  module Grammar
+  module Compiler
     # @private
     module Metagrammar #:nodoc:
       
@@ -25,7 +25,7 @@ module Rattler
             (r0_0 = match(:heading)) &&
             (r0_1 = match(:rules)) &&
             @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)\z/) &&
-            Grammar.parsed(select_captures([r0_0, r0_1]))
+            Rattler::Parsers::Grammar.parsed(select_captures([r0_0, r0_1]))
           end || begin
             @scanner.pos = p0
             false
@@ -1552,5 +1552,5 @@ end
 if __FILE__ == $0
   require 'rubygems'
   require 'rattler'
-  Rattler::Util::GrammarCLI.run(Rattler::Grammar::Metagrammar)
+  Rattler::Util::GrammarCLI.run(Rattler::Compiler::Metagrammar)
 end

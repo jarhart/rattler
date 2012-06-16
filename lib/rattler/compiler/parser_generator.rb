@@ -64,7 +64,7 @@ module Rattler::Compiler
     #
     # @overload generate(g, grammar)
     #   @param [RubyGenerator] g the ruby generator to use
-    #   @param [Rattler::Grammar::Grammar] grammar the grammar model
+    #   @param [Rattler::Parsers::Grammar] grammar the grammar model
     #   @return g
     #
     # @overload generate(g, rules)
@@ -94,7 +94,7 @@ module Rattler::Compiler
     # given options and return the generated code.
     #
     # @overload code_for(grammar, opts)
-    #   @param [Rattler::Grammar::Grammar] grammar the grammar model
+    #   @param [Rattler::Parsers::Grammar] grammar the grammar model
     #   @return [String] the generated code
     #
     # @overload code_for(rules, opts)

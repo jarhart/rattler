@@ -8,7 +8,7 @@ shared_examples_for 'a compiled parser with an assert' do
 
   let(:reference_parser) { combinator_parser grammar }
 
-  let(:grammar) { Rattler::Grammar::Grammar[Rattler::Parsers::RuleSet[*rules]] }
+  let(:grammar) { Rattler::Parsers::Grammar[Rattler::Parsers::RuleSet[*rules]] }
 
   context 'with a nested match rule' do
     let(:rules) { [

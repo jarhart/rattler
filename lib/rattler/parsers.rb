@@ -17,6 +17,7 @@ module Rattler
 
     autoload :Parser, 'rattler/parsers/parser'
     autoload :CombinatorParser, 'rattler/parsers/combinator_parser'
+    autoload :Grammar, 'rattler/parsers/grammar'
     autoload :RuleSet, 'rattler/parsers/rule_set'
     autoload :Rule, 'rattler/parsers/rule'
     autoload :Match, 'rattler/parsers/match'
@@ -46,5 +47,7 @@ module Rattler
     autoload :ParserScope, 'rattler/parsers/parser_scope'
     autoload :ActionCode, 'rattler/parsers/action_code'
     autoload :NodeCode, 'rattler/parsers/node_code'
+    autoload :Analysis, 'rattler/parsers/analysis'
   end
+
 end

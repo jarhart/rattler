@@ -21,7 +21,7 @@ shared_examples_for 'a compiled parser' do
 
   let(:reference_parser) { combinator_parser grammar }
 
-  let(:grammar) { Rattler::Grammar::Grammar[Rattler::Parsers::RuleSet[*rules]] }
+  let(:grammar) { Rattler::Parsers::Grammar[Rattler::Parsers::RuleSet[*rules]] }
 
   ########## match ##########
   context 'with a match rule' do

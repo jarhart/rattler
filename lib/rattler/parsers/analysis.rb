@@ -1,17 +1,12 @@
-#
-# = rattler/grammar/grammar.rb
-#
-# Author:: Jason Arhart
-# Documentation:: Author
-#
-require 'rattler/grammar'
+require 'rattler/parsers'
 require 'set'
 
-module Rattler::Grammar
+module Rattler::Parsers
+
+  # +Analysis+ represents a static analysis of a set of parse rules.
   class Analysis
 
-    include Rattler::Parsers
-
+    # @param [RuleSet] rules the rule set to analyze
     def initialize(rules)
       @rules = rules
       @references = {}
@@ -21,23 +16,34 @@ module Rattler::Grammar
       @has_super = {}
     end
 
+    # @param [Symbol] rule_name the name of a parse rule in the rule set
+    # @return +true+ if the rule referenced by +rule_name+ is non-recursive
     def regular?(rule_name)
       not recursive?(rule_name)
     end
 
+    # @param [Symbol] rule_name the name of a parse rule in the rule set
+    # @return +true+ if the rule referenced by +rule_name+ is recursive
     def recursive?(rule_name)
       has_super? rule_name or
       referenced_from? rule_name, rule_name
     end
 
+    # @param [Symbol] rule_name the name of a parse rule in the rule set
+    # @return +true+ if the rule referenced by +rule_name+ is left-recursive
     def left_recursive?(rule_name)
       left_referenced_from? rule_name, rule_name
     end
 
+    # @param [Symbol] rule_name the name of a parse rule in the rule set
+    # @return +true+ if the rule referenced by +rule_name+ is referenced by any
+    #   other rule in the rule set
     def referenced?(rule_name)
       rule_name == @rules.start_rule or
       referenced_from? @rules.start_rule, rule_name
     end
+
+    private
 
     def referenced_from?(referencer, referencee)
       references_from(referencer).include? referencee
@@ -46,8 +52,6 @@ module Rattler::Grammar
     def left_referenced_from?(referencer, referencee)
       left_references_from(referencer).include? referencee
     end
-
-    private
 
     def has_super?(rule_name)
       @has_super[rule_name] ||= expr_has_super?(@rules[rule_name].expr)

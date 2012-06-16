@@ -11,7 +11,6 @@
 module Rattler
   
   autoload :Runtime, 'rattler/runtime'
-  autoload :Grammar, 'rattler/grammar'  
   autoload :Parsers, 'rattler/parsers'
   autoload :Compiler, 'rattler/compiler'
   autoload :Util, 'rattler/util'

@@ -2,7 +2,7 @@ require File.expand_path(File.dirname(__FILE__) + '/../../spec_helper')
 
 include Rattler::Parsers
 
-describe Rattler::Grammar::GrammarParser do
+describe Rattler::Compiler::GrammarParser do
   include Rattler::Util::ParserSpecHelper
 
   let :posix_names do

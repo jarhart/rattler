@@ -1,12 +1,12 @@
-require 'rattler/grammar'
+require 'rattler/compiler'
 
-grammar Rattler::Grammar::Metagrammar
+grammar Rattler::Compiler::Metagrammar
 
 include Rattler::Parsers
 
 %whitespace (SPACE+ / comment)*
 
-grammar           <-  heading rules EOF                                         <Grammar>
+grammar           <-  heading rules EOF                                         <Rattler::Parsers::Grammar>
 
 heading           <-  requires module_decl? includes start_directive?           { heading *_ }
 

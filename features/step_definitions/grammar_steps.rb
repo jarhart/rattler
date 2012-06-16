@@ -11,7 +11,7 @@ Given /class definition:$/ do |source|
 end
 
 When /generate parser code$/ do
-  model = Rattler::Grammar.parse!(@source)
+  model = Rattler::Compiler::GrammarParser.parse!(@source)
   @parser_code = Rattler::Compiler::ParserGenerator.code_for(model)
 end
 

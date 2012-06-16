@@ -18,7 +18,7 @@ describe Rattler::Compiler do
 
   describe '.compile_parser' do
 
-    let(:grammar) { Rattler::Grammar::Grammar[Rattler::Parsers::RuleSet[*rules]] }
+    let(:grammar) { Rattler::Parsers::Grammar[Rattler::Parsers::RuleSet[*rules]] }
 
     context 'given parse rules' do
 
@@ -40,7 +40,7 @@ describe Rattler::Compiler do
 
   describe '.compile' do
 
-    let(:grammar) { Rattler::Grammar::Grammar[Rattler::Parsers::RuleSet[*rules]] }
+    let(:grammar) { Rattler::Parsers::Grammar[Rattler::Parsers::RuleSet[*rules]] }
 
     context 'given parse rules' do
 
