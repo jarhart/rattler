@@ -3,6 +3,9 @@ require 'rake'
 require 'rake/tasklib'
 
 module Rattler
+
+  # The rake task to generate parser code from a grammar
+  #
   class RakeTask < ::Rake::TaskLib
     include ::Rake::DSL if defined?(::Rake::DSL)
 

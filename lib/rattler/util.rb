@@ -1,9 +1,3 @@
-#
-# = rattler/util.rb
-#
-# Author:: Jason Arhart
-# Documentation:: Author
-#
 require 'rattler'
 
 module Rattler

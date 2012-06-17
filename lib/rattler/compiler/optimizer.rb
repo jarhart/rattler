@@ -1,29 +1,26 @@
-#
-# = rattler/compiler/optimizer.rb
-#
-# Author:: Jason Arhart
-# Documentation:: Author
-#
 require 'rattler/compiler'
 
 module Rattler::Compiler
-  #
+
   # The +Optimizer+ transforms parser models into equivalent models that can
   # result in more efficient parsing code. This is primarily achieved by
   # converting regular expressions into equivalent Regexp patterns, thus
   # reducing object instantiation and method dispatch and having StringScanner
   # do as much of the parsing work as possible.
-  #
-  # @author Jason Arhart
-  #
   module Optimizer
 
     class << self
 
+      include Rattler::Parsers
+
+      # @param [Rattler::Parsers::Grammar, Rattler::Parsers::RuleSet, Rattler::Parsers::Rule, Rattler::Parsers::Parser]
+      #   model the model to be optimized
+      # @param [Hash] opts options for the optimizer
+      # @return an optimized parser model
       def optimize(model, opts={})
         case model
-        when ::Rattler::Parsers::Grammar then optimize_grammar model, opts
-        when ::Rattler::Parsers::RuleSet then optimize_rule_set model, opts
+        when Grammar then optimize_grammar model, opts
+        when RuleSet then optimize_rule_set model, opts
         else optimizations.apply model, default_context(opts)
         end
       end

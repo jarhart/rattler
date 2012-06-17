@@ -1,19 +1,11 @@
 #
-# = rattler/compiler/optimizer/optimization.rb
-#
-# Author:: Jason Arhart
-# Documentation:: Author
-#
 require 'rattler/compiler/optimizer'
 
 module Rattler::Compiler::Optimizer
-  #
+
   # An +OptimizationSequence+ sequences a pair of optimzations so that applying
   # the sequence applies the first optimization, then applies the second
   # optimzation to the result.
-  #
-  # @author Jason Arhart
-  #
   class OptimizationSequence < Optimization
 
     def initialize(init, last)

@@ -1,19 +1,9 @@
-#
-# = rattler/parsers/rule.rb
-#
-# Author:: Jason Arhart
-# Documentation:: Author
-#
-
 require 'rattler/parsers'
 
 module Rattler::Parsers
-  #
+
   # +Rule+ is a binding for a parser that can be referenced by name from
   # another rule.
-  #
-  # @author Jason Arhart
-  #
   class Rule < Rattler::Util::Node
 
     # Create a new +Rule+.
@@ -28,13 +18,11 @@ module Rattler::Parsers
 
     alias_method :expr, :child
 
-    # Parse using +scanner+ and +rules+ and on success return the result, on
-    # failure return a false value.
+    # Parse using the rule body and on success return the result, on failure
+    # return a false value.
     #
-    # @param scanner (see Parser#parse_labeled)
-    # @param rules (see Parser#parse_labeled)
-    #
-    # @return (see Parser#parse_labeled)
+    # @param (see Match#parse)
+    # @return (see Match#parse)
     def parse(scanner, rules, scope = ParserScope.empty)
       catch(:rule_failed) do
         return expr.parse(scanner, rules, scope)
@@ -44,8 +32,7 @@ module Rattler::Parsers
 
     alias_method :with_expr, :with_children
 
-    # @param (see Parser#with_ws)
-    # @return (see Parser#with_ws)
+    # (see Parser#with_ws)
     def with_ws(ws)
       self.with_expr expr.with_ws(ws)
     end

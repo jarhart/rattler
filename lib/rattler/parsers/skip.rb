@@ -1,14 +1,7 @@
-#
-# = rattler/parsers/skip.rb
-#
-# Author:: Jason Arhart
-# Documentation:: Author
-#
-
 require 'rattler/parsers'
 
 module Rattler::Parsers
-  #
+
   # +Skip+ decorates a parser to skip over what it matches without capturing
   # the results
   #
@@ -23,7 +16,7 @@ module Rattler::Parsers
     # If the decorated parser matches return +true+, otherwise return a false
     # value.
     #
-    # @param (see Parser#parse_labeled)
+    # @param (see Match#parse)
     #
     # @return [Boolean] +true+ if the decorated parser matches at the parse
     #   position
@@ -31,7 +24,6 @@ module Rattler::Parsers
       child.parse(*args) && true
     end
 
-    # Always +false+
     # @return false
     def capturing?
       false

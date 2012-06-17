@@ -1,17 +1,7 @@
-#
-# = rattler/runtime.rb
-#
-# Author:: Jason Arhart
-# Documentation:: Author
-#
 require 'rattler'
 
 module Rattler
-  #
   # The +Runtime+ module defines the classes used by concrete parsers.
-  #
-  # @author Jason Arhart
-  #
   module Runtime
     autoload :Parser, 'rattler/runtime/parser'
     autoload :RecursiveDescentParser, 'rattler/runtime/recursive_descent_parser'

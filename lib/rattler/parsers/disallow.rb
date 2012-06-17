@@ -1,20 +1,13 @@
-#
-# = rattler/parsers/disallow.rb
-#
-# Author:: Jason Arhart
-# Documentation:: Author
-#
-
 require 'rattler/parsers'
 
 module Rattler::Parsers
-  #
+
   # +Disallow+ decorates a parser and succeeds if the decorated parser fails
-  # and vice versa.
-  #
+  # and fails if the parser succeeds and never consumes any input (zero-width
+  # negative lookahead).
   class Disallow < Predicate
 
-    # Succeed and return +true+ if and only if decorated parser fails.  Never
+    # Succeed and return +true+ if and only if decorated parser fails. Never
     # consumes any input.
     #
     # @param (see Parser#parse_labeled)

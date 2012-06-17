@@ -1,20 +1,10 @@
-#
-# = rattler/runtime/packrat_parser.rb
-#
-# Author:: Jason Arhart
-# Documentation:: Author
-#
-
 require 'rattler/runtime'
 
 module Rattler::Runtime
-  #
+
   # A +PackratParser+ is a recursive descent parser that memoizes the results
   # of applying nonterminal rules so that each rule method is invoked at most
   # once at a given parse position.
-  #
-  # @author Jason Arhart
-  #
   class PackratParser < RecursiveDescentParser
 
     # Create a new packrat parser to parse +source+.
@@ -24,27 +14,25 @@ module Rattler::Runtime
     #
     def initialize(source, options={})
       super
-      @memo = Hash.new {|h, rule_name| h[rule_name] = {} }
+      @memo = Hash.new {|h, match_method_name| h[match_method_name] = {} }
     end
 
     protected
 
-    # Apply a rule by dispatching to the method associated with the given rule
-    # name, which is named by <tt>"match_#{rule_name}"<tt>, and if the match
-    # fails set a parse error. The result of applying the rule is memoized
-    # so that the rule method is invoked at most once at a given parse
-    # position.
+    # Apply a rule by dispatching to the given match method. The result of
+    # applying the rule is memoized so that the match method is invoked at most
+    # once at a given parse position.
     #
     # @param (see RecursiveDescentParser#apply)
     # @return (see RecursiveDescentParser#apply)
     #
-    def apply(rule_name)
+    def apply(match_method_name)
       start_pos = @scanner.pos
-      if m = memo(rule_name, start_pos)
-        recall m, rule_name
+      if m = memo(match_method_name, start_pos)
+        recall m, match_method_name
       else
-        m = inject_fail rule_name, start_pos
-        save m, eval_rule(rule_name)
+        m = inject_fail match_method_name, start_pos
+        save m, eval_rule(match_method_name)
       end
     end
 
@@ -53,18 +41,18 @@ module Rattler::Runtime
     private
 
     # @private
-    def memo(rule_name, start_pos) #:nodoc:
-      @memo[rule_name][start_pos]
+    def memo(match_method_name, start_pos) #:nodoc:
+      @memo[match_method_name][start_pos]
     end
 
     # @private
-    def inject_memo(rule_name, start_pos, result, end_pos) #:nodoc:
-      @memo[rule_name][start_pos] = MemoEntry.new(result, end_pos)
+    def inject_memo(match_method_name, start_pos, result, end_pos) #:nodoc:
+      @memo[match_method_name][start_pos] = MemoEntry.new(result, end_pos)
     end
 
     # @private
-    def inject_fail(rule_name, fail_pos) #:nodoc:
-      @memo[rule_name][fail_pos] = MemoEntry.new(false, fail_pos)
+    def inject_fail(match_method_name, fail_pos) #:nodoc:
+      @memo[match_method_name][fail_pos] = MemoEntry.new(false, fail_pos)
     end
 
     # @private
@@ -74,7 +62,7 @@ module Rattler::Runtime
     end
 
     # @private
-    def recall(m, rule_name) #:nodoc:
+    def recall(m, match_method_name) #:nodoc:
       @scanner.pos = m.end_pos
       m.result
     end

@@ -1,16 +1,14 @@
-#
-# = rattler/parsers/action_code.rb
-#
-# Author:: Jason Arhart
-# Documentation:: Author
-#
-
 require 'rattler/parsers'
 
 module Rattler::Parsers
-  # @private
+
+  # +ActionCode+ defines abstract ruby code with variables that can be bound
+  # to captured parse results to produce concrete ruby code for semantic
+  # actions.
   class ActionCode #:nodoc:
 
+    # @param [String] code ruby code with optional block parameters and free
+    #   variables and block parameters that can bound to captured parse results
     def initialize(code)
       if md = /\A\s*\|([^|]*)\|(.*)\Z/.match(code)
         @param_names = md[1].split(',').map {|_| _.strip }
@@ -23,14 +21,25 @@ module Rattler::Parsers
 
     attr_reader :param_names, :body
 
+    # Bind parameters and variables in the code to parse results in +scope+
+    #
+    # @param [ParserScope] scope the scope of captured parse results
+    # @return [String] concrete ruby code with the parameters and variables
+    #   bound to the captured parse results
     def bind(scope)
       bind_in body, scope
     end
 
+    # @param [ParserScope] scope the scope of captured parse results
+    # @return [Hash] matchers for variables in the ruby code associated with
+    #   replacement values
     def scoped_bindings(scope)
       to_bindings(scope.bindings).merge(arg_bindings(scope.captures))
     end
 
+    # @param [Array] args captured parse results as arguments to the ruby code
+    # @return [Hash] matchers for parameters in the ruby code associated with
+    #   +args+ as replacements values
     def arg_bindings(args)
       if param_names.count > args.count
         raise ArgumentError, 'more parameter names than arguments'

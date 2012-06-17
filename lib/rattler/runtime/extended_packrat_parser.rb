@@ -1,20 +1,10 @@
-#
-# = rattler/runtime/extended_packrat_parser.rb
-#
-# Author:: Jason Arhart
-# Documentation:: Author
-#
-
 require 'rattler/runtime'
 
 module Rattler::Runtime
-  #
+
   # +ExtendedPackratParser+ implements the algorithm described by Alessandro
   # Warth, James R. Douglass, and Todd Millstein for extending packrat parsing
   # to support left-recursive grammars.
-  #
-  # @author Jason Arhart
-  #
   class ExtendedPackratParser < PackratParser
 
     # Create a new extended packrat parser to parse +source+.
@@ -28,20 +18,27 @@ module Rattler::Runtime
       @lr_stack = []
     end
 
-    def apply(rule_name)
+    # Apply a rule by dispatching to the given match method. The result of
+    # applying the rule is memoized so that the match method is invoked at most
+    # once at a given parse position.
+    #
+    # @param (see PackratParser#apply)
+    # @return (see PackratParser#apply)
+    #
+    def apply(match_method_name)
       start_pos = @scanner.pos
-      if m = memo_lr(rule_name, start_pos)
-        recall m, rule_name
+      if m = memo_lr(match_method_name, start_pos)
+        recall m, match_method_name
       else
-        lr = LR.new(false, rule_name, nil)
+        lr = LR.new(false, match_method_name, nil)
         @lr_stack.push lr
-        m = inject_memo rule_name, start_pos, lr, start_pos
-        result = eval_rule rule_name
+        m = inject_memo match_method_name, start_pos, lr, start_pos
+        result = eval_rule match_method_name
         @lr_stack.pop
         if lr.head
           m.end_pos = @scanner.pos
           lr.seed = result
-          lr_answer rule_name, start_pos, m
+          lr_answer match_method_name, start_pos, m
         else
           save m, result
         end
@@ -51,22 +48,22 @@ module Rattler::Runtime
     private
 
     # @private
-    def memo_lr(rule_name, start_pos) #:nodoc:
-      m = memo(rule_name, start_pos)
+    def memo_lr(match_method_name, start_pos) #:nodoc:
+      m = memo(match_method_name, start_pos)
       head = @heads[start_pos] or return m
-      if !m && !head.involves?(rule_name)
-        return inject_fail rule_name, start_pos
+      if !m && !head.involves?(match_method_name)
+        return inject_fail match_method_name, start_pos
       end
-      if head.eval_set.delete(rule_name)
-        save m, eval_rule(rule_name)
+      if head.eval_set.delete(match_method_name)
+        save m, eval_rule(match_method_name)
       end
       return m
     end
 
     # @private
-    def recall(m, rule_name) #:nodoc:
+    def recall(m, match_method_name) #:nodoc:
       if (result = m.result).is_a? LR
-        setup_lr rule_name, result
+        setup_lr match_method_name, result
         result.seed
       else
         super
@@ -74,34 +71,34 @@ module Rattler::Runtime
     end
 
     # @private
-    def setup_lr(rule_name, lr) #:nodoc:
-      lr.head ||= Head.new(rule_name)
+    def setup_lr(match_method_name, lr) #:nodoc:
+      lr.head ||= Head.new(match_method_name)
       @lr_stack.reverse_each do |_|
         return if _.head == lr.head
-        lr.head.involved_set[_.rule_name] = _.rule_name
+        lr.head.involved_set[_.match_method_name] = _.match_method_name
       end
     end
 
     # @private
-    def lr_answer(rule_name, start_pos, m) #:nodoc:
+    def lr_answer(match_method_name, start_pos, m) #:nodoc:
       head = m.result.head
-      if head.rule_name == rule_name
-        grow_lr(rule_name, start_pos, m, head) if m.result = m.result.seed
+      if head.match_method_name == match_method_name
+        grow_lr(match_method_name, start_pos, m, head) if m.result = m.result.seed
       else
         save m, m.result.seed
       end
     end
 
     # @private
-    def grow_lr(rule_name, start_pos, m, head) #:nodoc:
+    def grow_lr(match_method_name, start_pos, m, head) #:nodoc:
       @heads[start_pos] = head
       loop do
         @scanner.pos = start_pos
         head.eval_set.replace(head.involved_set)
-        result = eval_rule(rule_name)
+        result = eval_rule(match_method_name)
         if !result or @scanner.pos <= m.end_pos
           @heads.delete(start_pos)
-          return recall m, rule_name
+          return recall m, match_method_name
         end
         save m, result
       end
@@ -109,24 +106,24 @@ module Rattler::Runtime
 
     # @private
     class LR #:nodoc:
-      def initialize(seed, rule_name, head)
+      def initialize(seed, match_method_name, head)
         @seed = seed
-        @rule_name = rule_name
+        @match_method_name = match_method_name
         @head = head
       end
-      attr_accessor :seed, :rule_name, :head
+      attr_accessor :seed, :match_method_name, :head
     end
 
     # @private
     class Head #:nodoc:
-      def initialize(rule_name)
-        @rule_name = rule_name
+      def initialize(match_method_name)
+        @match_method_name = match_method_name
         @involved_set = {}
         @eval_set = {}
       end
-      attr_accessor :rule_name, :involved_set, :eval_set
-      def involves?(rule_name)
-        rule_name == self.rule_name or involved_set.has_key? rule_name
+      attr_accessor :match_method_name, :involved_set, :eval_set
+      def involves?(match_method_name)
+        match_method_name == self.match_method_name or involved_set.has_key? match_method_name
       end
     end
 

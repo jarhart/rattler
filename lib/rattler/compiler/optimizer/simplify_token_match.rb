@@ -1,17 +1,8 @@
-#
-# = rattler/compiler/optimizer/simplify_token_match.rb
-#
-# Author:: Jason Arhart
-# Documentation:: Author
-#
 require 'rattler/compiler/optimizer'
 
 module Rattler::Compiler::Optimizer
-  #
+
   # A token wrapping a terminal parser is redundant.
-  #
-  # @author Jason Arhart
-  #
   class SimplifyTokenMatch < Optimization
 
     include Rattler::Parsers

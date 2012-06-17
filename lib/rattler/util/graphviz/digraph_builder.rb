@@ -1,10 +1,3 @@
-#
-# = rattler/util/graphviz/digraph_builder.rb
-#
-# Author:: Jason Arhart
-# Documentation:: Author
-#
-
 begin
   require 'graphviz'
 rescue LoadError => e
@@ -14,22 +7,21 @@ end
 require 'rattler/util/graphviz'
 
 module Rattler::Util::GraphViz
-  #
+
   # +DigraphBuilder+ is used to build GraphViz objects representing trees of
   # nodes.
-  #
-  # @author Jason Arhart
-  #
   class DigraphBuilder
 
-    # Return a new +GraphViz+ digraph object representing +root+.
-    #
+    # @param (see #initialize)
     # @return a new +GraphViz+ digraph object representing +root+
     def self.digraph(root, name='G')
       self.new(root, name).digraph
     end
 
     # Create a new digraph builder for +root+.
+    #
+    # @param root the root node
+    # @param [String] name the name of the graph
     def initialize(root, name='G')
       @root = root
       @g = ::GraphViz.digraph(name)
@@ -49,7 +41,8 @@ module Rattler::Util::GraphViz
     # Return a <tt>GraphViz::Node</tt> object for +o+. Multiple requests with
     # the same object return the same node object.
     #
-    # @return a <tt>GraphViz::Node</tt> object for +o+
+    # @param o an object
+    # @return [GraphViz::Node] a node object for +o+
     def node(o)
       @nodes.fetch(o.object_id) do
         new_node = @g.add_node new_node_name, @node_builder.node_options(o)

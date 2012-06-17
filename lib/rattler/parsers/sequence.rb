@@ -1,19 +1,9 @@
-#
-# = rattler/parsers/sequence.rb
-#
-# Author:: Jason Arhart
-# Documentation:: Author
-#
-
 require 'rattler/parsers'
 
 module Rattler::Parsers
-  #
+
   # +Sequence+ combines two or more parsers and matches by trying each one in
   # sequence and failing unless they all succeed.
-  #
-  # @author Jason Arhart
-  #
   class Sequence < Parser
     include Sequencing
 
@@ -25,7 +15,7 @@ module Rattler::Parsers
     # Try each parser in sequence, and if they all succeed return an array of
     # captured results, or return +false+ if any parser fails.
     #
-    # @param (see Parser#parse_labeled)
+    # @param (see Match#parse)
     #
     # @return an array of captured results of each parser in sequence, or
     #   +false+
@@ -38,22 +28,17 @@ module Rattler::Parsers
       end
     end
 
-    # Return a new parser that tries both this parser and +other+ and fails
-    # unless both parse in sequence.
-    #
-    # @param other (see Parser#&)
-    # @return (see Parser#&)
+    # (see Parser#&)
     def &(other)
       Sequence[(children + [other])]
     end
 
+    # (see Parser#>>)
     def >>(semantic)
       AttributedSequence[(children + [semantic])]
     end
 
-    # The number of child parsers that are capturing
-    #
-    # @return the number of child parsers that are capturing
+    # @return [Fixnum] the number of child parsers that are capturing
     def capture_count
       @capture_count ||= count {|_| _.capturing? }
     end

@@ -1,19 +1,10 @@
-#
-# = rattler/parsers/choice.rb
-#
-# Author:: Jason Arhart
-# Documentation:: Author
-#
 
 require 'rattler/parsers'
 
 module Rattler::Parsers
-  #
+
   # +Choice+ combines two or more parsers and matches by trying each one in
   # order until one succeeds and returning that result.
-  #
-  # @author Jason Arhart
-  #
   class Choice < Parser
     include Combining
 
@@ -24,7 +15,7 @@ module Rattler::Parsers
 
     # Try each parser in order until one succeeds and return that result.
     #
-    # @param (see Parser#parse_labeled)
+    # @param (see Match#parse)
     #
     # @return the result of the first parser that matches, or +false+
     def parse(scanner, rules, scope = ParserScope.empty)
@@ -36,6 +27,7 @@ module Rattler::Parsers
       false
     end
 
+    # (see Parser#capturing_decidable?)
     def capturing_decidable?
       @capturing_decidable ||=
         children.all? {|_| _.capturing_decidable? } and

@@ -1,10 +1,3 @@
-#
-# = rattler/runtime/parser_helper.rb
-#
-# Author:: Jason Arhart
-# Documentation:: Author
-#
-
 require 'rattler/runtime'
 
 module Rattler::Runtime

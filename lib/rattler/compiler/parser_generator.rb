@@ -1,17 +1,8 @@
-#
-# = rattler/compiler/parser_generator.rb
-#
-# Author:: Jason Arhart
-# Documentation:: Author
-#
 require 'rattler/compiler'
 
 module Rattler::Compiler
-  #
+
   # A +ParserGenerator+ generates ruby parsing code from parser models.
-  #
-  # @author Jason Arhart
-  #
   module ParserGenerator
 
     autoload :GrammarGenerator, 'rattler/compiler/parser_generator/grammar_generator'

@@ -1,27 +1,18 @@
-#
-# = rattler/util/line_counter.rb
-#
-# Author:: Jason Arhart
-# Documentation:: Author
-#
 require 'rattler/util'
 
 module Rattler::Util
-  #
+
   # A +LineCounter+ takes a linear index into text and calculates line and
   # column numbers.
-  #
-  # @author Jason Arhart
-  #
   class LineCounter
-    
+
     # @private
     @@newline = "\n" #:nodoc:
-    
+
     # @private
     @@tab = "\t" #:nodoc:
-    
-    # Create a <tt>Rattler::Util::LineCounter</tt> object for +source+.
+
+    # Create a +LineCounter+ object for +source+.
     #
     # @param [String] source the text in which to count lines
     # @param [Hash] options any optional options for the line counter
@@ -31,7 +22,7 @@ module Rattler::Util
       @source = source
       @tab_size = options[:tab_size] || 8
     end
-    
+
     # Return the line number of the character at +index+.
     #
     # @param [Integer] index the (0-based) index into the text
@@ -40,7 +31,7 @@ module Rattler::Util
       count(index)
       return @line
     end
-    
+
     # Return the column number of the character at +index+. When a _tab_
     # character is encountered the next tab stop is used for the column
     # number of the character following the _tab_ character.
@@ -51,9 +42,9 @@ module Rattler::Util
       count(index)
       return @column
     end
-    
+
     private
-    
+
     def count(index)
       unless @index == index
         @index = index
@@ -69,10 +60,10 @@ module Rattler::Util
         end
       end
     end
-    
+
     def next_tab_stop
       ((@column - 1) / @tab_size + 1) * @tab_size + 1
     end
-    
+
   end
 end

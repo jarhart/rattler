@@ -11,6 +11,7 @@ module Rattler
     autoload :RubyGenerator, 'rattler/compiler/ruby_generator'
     autoload :Optimizer, 'rattler/compiler/optimizer'
 
+    # Compiler module methods
     module ModuleMethods
 
       include Rattler::Parsers

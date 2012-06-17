@@ -1,21 +1,18 @@
-#
-# = rattler/parsers/predicate.rb
-#
-# Author:: Jason Arhart
-# Documentation:: Author
-#
-
 require 'rattler/parsers'
 
 module Rattler::Parsers
-  # @private
-  class Predicate < Parser #:nodoc:
+
+  # A +Predicate+ is a parser that either succeeds or fails and never consumes
+  # any input or captures any parse results.
+  class Predicate < Parser
     include Combining
 
-    def self.parsed(results, *_)
+    # @private
+    def self.parsed(results, *_) #:nodoc:
       self[results.first]
     end
 
+    # (see Parser#capturing?)
     def capturing?
       false
     end

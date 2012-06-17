@@ -1,18 +1,9 @@
-#
-# = rattler/compiler/optimizer/join_match_choice.rb
-#
-# Author:: Jason Arhart
-# Documentation:: Author
-#
 require 'rattler/compiler/optimizer'
 
 module Rattler::Compiler::Optimizer
-  #
+
   # A choice of Regexp matches can be joined into a single Regexp match without
   # affecting how it parses.
-  #
-  # @author Jason Arhart
-  #
   class JoinMatchChoice < Optimization
     include MatchJoining
 

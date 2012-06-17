@@ -2,14 +2,24 @@ require 'rattler/util'
 require 'optparse'
 
 module Rattler::Util
+
+  # +ParserCLI+ defines a command line interface for generated parsers.
   class ParserCLI
 
+    # The supported graph file formats
     @@graph_formats = %w{jpg png svg pdf ps ps2 eps}
 
+    # Create and run the command line interface for the given parser class
+    #
+    # @param (see #initialize)
     def self.run(parser_class)
       self.new(parser_class).run
     end
 
+    # Create a new command line interface for the given parser class
+    #
+    # @param [Class] parser_class the parser class to run the command line
+    #   interface for
     def initialize(parser_class)
       @parser_class = parser_class
 
@@ -51,6 +61,7 @@ module Rattler::Util
       end.parse!(ARGV)
     end
 
+    # Run the command line interface
     def run
       show_result @parser_class.parse!(ARGF.read)
     rescue Rattler::Runtime::SyntaxError => e
@@ -59,7 +70,8 @@ module Rattler::Util
 
     private
 
-    def show_result(result)
+    # @private
+    def show_result(result) #:nodoc:
       if @graphviz
         GraphViz.digraph(result).output(@graphviz)
       else

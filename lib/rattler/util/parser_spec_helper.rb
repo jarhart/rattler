@@ -1,33 +1,27 @@
-#
-# = rattler/util/parser_spec_helper.rb
-#
-# Author:: Jason Arhart
-# Documentation:: Author
-#
 require 'rattler/util'
 
 module Rattler::Util
-  #
+
   # +ParserSpecHelper+ defines a fluent interface for writing RSpec examples
   # for parsers.
   #
   # @example
   #
-  #   require 'rattler/grammar/grammar_parser'
+  #   require 'my_awesome_language/my_awesome_parser'
   #   require 'rattler/util/parser_spec_helper'
   #
-  #   describe Rattler::Grammar::GrammarParser do
+  #   describe MyAwesomeLanguage::MyAwesomeParser do
   #     include Rattler::Util::ParserSpecHelper
   #
   #     describe '#match(:var_name)' do
   #       it 'recognizes variable names' do
   #         matching(' fooBar ').as(:var_name).should result_in('fooBar').at(7)
-  #         matching(' FooBar ').as(:var_name).should fail.with_message('variable name expected')
+  #       end
+  #       it 'rejects non-variables' do
+  #         matching(' 42 ').as(:var_name).should fail.with_message('variable name expected')
   #       end
   #     end
   #   end
-  #
-  # @author Jason Arhart
   #
   module ParserSpecHelper
 
@@ -48,6 +42,8 @@ module Rattler::Util
     def matching(source)
       Matching.new(parser(source))
     end
+
+    private
 
     def parser(source)
       (self.respond_to?(:parser_class) ? parser_class : described_class).new(source)

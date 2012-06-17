@@ -130,7 +130,8 @@ module Rattler::Compiler::ParserGenerator
 
   end
 
-  module NestedSubGenerating
+  # @private
+  module NestedSubGenerating #:nodoc:
     include SubGenerating
 
     protected
@@ -142,7 +143,8 @@ module Rattler::Compiler::ParserGenerator
     alias_method :factory_method, :default_context
   end
 
-  module TopLevelSubGenerating
+  # @private
+  module TopLevelSubGenerating #:nodoc:
     include SubGenerating
 
     protected

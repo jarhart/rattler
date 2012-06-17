@@ -1,17 +1,8 @@
-#
-# = rattler/compiler/optimizer/flatten_choice.rb
-#
-# Author:: Jason Arhart
-# Documentation:: Author
-#
 require 'rattler/compiler/optimizer'
 
 module Rattler::Compiler::Optimizer
-  #
+
   # Nested choice expressions can be flattened without affecting how they parse.
-  #
-  # @author Jason Arhart
-  #
   class FlattenChoice < Optimization
     include Flattening
 

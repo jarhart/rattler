@@ -1,9 +1,3 @@
-#
-# = rattler/grammar/grammar_parser.rb
-#
-# Author:: Jason Arhart
-# Documentation:: Author
-#
 require 'rattler/compiler'
 
 module Rattler::Compiler

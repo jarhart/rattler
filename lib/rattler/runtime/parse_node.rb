@@ -1,21 +1,11 @@
-#
-# = rattler/runtime/parse_node.rb
-#
-# Author:: Jason Arhart
-# Documentation:: Author
-#
-
 require 'rattler/runtime'
 
 module Rattler::Runtime
-  #
+
   # +ParseNode+ is intended as s a convenient class to use as a parsing
   # result type.
-  #
-  # @author Jason Arhart
-  #
   class ParseNode < Rattler::Util::Node
-    
+
     # Create a parse node from the results of a parsing expression.
     #
     # @param [Array] children the children of the parse node
@@ -26,7 +16,7 @@ module Rattler::Runtime
     def self.parsed(children, attrs={})
       self.new(children, attrs.reject {|_, val| val.nil? })
     end
-    
+
     # Access the parse node's children.
     #
     # @overload [](index)
@@ -55,13 +45,13 @@ module Rattler::Runtime
         super
       end
     end
-    
+
     # Return a hash associating labels with the labeled children
     # @return [Hash] a hash associating labels with the labeled children
     def labeled
       attrs.fetch(:labeled, {})
     end
-    
+
     # Return +true+ if the node has the same value as +other+, i.e. +other+
     # is an instance of the same class and has equal children and attributes
     # and the children are labeled the same.
@@ -71,16 +61,16 @@ module Rattler::Runtime
       super &&
       self.labeled == other.labeled
     end
-    
+
     # Allow labeled children to be accessed as methods.
     def method_missing(symbol, *args)
       (args.empty? and labeled.has_key?(symbol)) ? labeled[symbol] : super
     end
-    
+
     # @private
     def respond_to?(symbol) #:nodoc:
       super || labeled.has_key?(symbol)
     end
-    
+
   end
 end

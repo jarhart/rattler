@@ -1,20 +1,11 @@
-#
-# = rattler/compiler/ruby_generator.rb
-#
-# Author:: Jason Arhart
-# Documentation:: Author
-#
 require 'rattler/compiler'
 require 'stringio'
 
 module Rattler::Compiler
-  #
+
   # A +RubyGenerator+ is used to generate well-formatted ruby code. It keeps
   # track of the indent level and has various methods for adding code, all of
   # which return +self+ to allow method chaining.
-  #
-  # @author Jason Arhart
-  #
   class RubyGenerator
 
     # Create a new +RubyGenerator+ with the given options, yield it to the

@@ -1,20 +1,10 @@
-#
-# = rattler/runtime/parse_failure.rb
-#
-# Author:: Jason Arhart
-# Documentation:: Author
-#
-
 require 'rattler/runtime'
 
 module Rattler::Runtime
-  #
+
   # A +ParseFailure+ represents a position and explanation of a failed parse.
-  #
-  # @author Jason Arhart
-  #
   class ParseFailure
-    
+
     # Create a new parse error object.
     #
     # @overload initialize(source, pos)
@@ -46,39 +36,39 @@ module Rattler::Runtime
       end
       @lc = Rattler::Util::LineCounter.new(source)
     end
-    
+
     attr_reader :pos, :message
-    
-    # Return the (1-based) column number where the parse error occurred.
-    # @return [Integer] the column number where the parse error occurred.
+
+    # @return [Integer] the (1-based) column number where the parse error
+    #   occurred
     def column
       @lc.column(pos)
     end
-    
-    # Return the (1-based) line number where the parse error occurred.
-    # @return [Integer] the line number where the parse error occurred.
+
+    # @return [Integer] the (1-based) line number where the parse error
+    #   occurred
     def line
       @lc.line(pos)
     end
-    
+
     # Return a string representation of the parse error suitable for showing
     # to the user, e.g. "parse error at line 17, column 42: expr expected"
     #
-    # @return [String] a string representation of the parse error suitable for showing
-    #   to the user
+    # @return [String] a string representation of the parse error suitable for
+    #   showing to the user
     def to_s
       message ? "#{intro_str}:\n #{message}" : intro_str
     end
-    
+
     private
-    
+
     def intro_str
       "parse error #{pos_str}"
     end
-    
+
     def pos_str
       "at line #{line}, column #{column}"
     end
-    
+
   end
 end

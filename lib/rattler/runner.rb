@@ -1,23 +1,26 @@
-#
-# = rattler/runner.rb
-#
-# Author:: Jason Arhart
-# Documentation:: Author
-#
 require 'rattler'
 
 require 'optparse'
 require 'pathname'
 
 module Rattler
-  # <tt>Rattler::Runner</tt> defines the command-line parser generator.
+  # +Runner+ defines the command-line parser generator.
   class Runner
 
-    ERRNO_USAGE = 1         # Invalid command line arguments
-    ERRNO_READ_ERROR = 2    # Error reading grammar file
-    ERRNO_WRITE_ERROR = 3   # Error writing parser file
-    ERRNO_PARSE_ERROR = 4   # Error parsing grammar
-    ERRNO_GEN_ERROR = 5     # Error generaing ruby code
+    # Invalid command line arguments
+    ERRNO_USAGE = 1
+
+    # Error reading grammar file
+    ERRNO_READ_ERROR = 2
+
+    # Error writing parser file
+    ERRNO_WRITE_ERROR = 3
+
+    # Error parsing grammar
+    ERRNO_PARSE_ERROR = 4
+
+    # Error generaing ruby code
+    ERRNO_GEN_ERROR = 5
 
     # Run the command-line parser
     #
@@ -28,7 +31,7 @@ module Rattler
 
     # Create a new command-line parser.
     #
-    # @param [Array] args the command-line arguments
+    # @param [Array<String>] args the command-line arguments
     def initialize(args)
       @optimize = true
       options.parse!(args)

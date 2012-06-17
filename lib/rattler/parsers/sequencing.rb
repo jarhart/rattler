@@ -1,16 +1,21 @@
 require 'rattler/parsers'
 
 module Rattler::Parsers
+
+  # +Sequencing+ describes a parser that combines two or more parsers and
+  # matches in sequence.
   module Sequencing
     include Combining
 
+    # @return +true+
     def sequence?
       true
     end
 
     protected
 
-    def backtracking(scanner)
+    # @private
+    def backtracking(scanner) #:nodoc:
       pos = scanner.pos
       yield or begin
         scanner.pos = pos
@@ -18,7 +23,8 @@ module Rattler::Parsers
       end
     end
 
-    def parse_children(scanner, rules, scope)
+    # @private
+    def parse_children(scanner, rules, scope) #:nodoc:
       for child in children
         if r = child.parse(scanner, rules, scope) {|_| scope = scope.merge _ }
           scope = scope.capture(r) unless r == true

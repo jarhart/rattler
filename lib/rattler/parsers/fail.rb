@@ -1,19 +1,9 @@
-#
-# = rattler/parsers/fail.rb
-#
-# Author:: Jason Arhart
-# Documentation:: Author
-#
-
 require 'rattler/parsers'
 
 module Rattler::Parsers
-  #
+
   # +Fail+ is a parser that always fails. It can be used to define more useful
   # error messages.
-  #
-  # @author Jason Arhart
-  #
   class Fail < Parser
 
     # @private
@@ -43,17 +33,16 @@ module Rattler::Parsers
     # Always return +false+. The parser code generated for this parser should
     # use +message+ as the failure message, and should cause its parse rule
     # to fail if +type+ is <tt>:rule</tt> or cause the entire parse to fail
-    # +type+ is <tt>:parse</tt>
+    # if +type+ is <tt>:parse</tt>
     #
-    # @param (see Parser#parse_labeled)
+    # @param (see Match#parse)
     #
     # @return false
     def parse(*_)
       false
     end
 
-    # Always +false+
-    # @return false
+    # @return +false+
     def capturing?
       false
     end

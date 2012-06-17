@@ -1,20 +1,10 @@
-#
-# = rattler/parsers/label.rb
-#
-# Author:: Jason Arhart
-# Documentation:: Author
-#
-
 require 'rattler/parsers'
 
 module Rattler::Parsers
-  #
+
   # +Label+ decorates a parser and associates a label with the decorated
   # parser's parse result if successful. The label only applies if nested in a
   # +Choice+ or +Sequence+ decorated by an +Action+.
-  #
-  # @author Jason Arhart
-  #
   class Label < Parser
     include Combining
 
@@ -29,12 +19,12 @@ module Rattler::Parsers
       self.new(parser, :label => label.to_sym)
     end
 
+    # (see Parser#capturing_decidable?)
     def capturing_decidable?
       child.capturing_decidable?
     end
 
-    # Always +true+
-    # @return true
+    # @return +true+
     def labeled?
       true
     end
@@ -42,7 +32,7 @@ module Rattler::Parsers
     # Delegate to the decorated parser and associate #label with the parse
     # result if successful.
     #
-    # @param (see Parser#parse_labeled)
+    # @param (see Match#parse)
     #
     # @return the decorated parser's parse result
     def parse(scanner, rules, scope = ParserScope.empty)

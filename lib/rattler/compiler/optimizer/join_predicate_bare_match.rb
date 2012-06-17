@@ -1,18 +1,9 @@
-#
-# = rattler/compiler/optimizer/join_predicate_bare_match.rb
-#
-# Author:: Jason Arhart
-# Documentation:: Author
-#
 require 'rattler/compiler/optimizer'
 
 module Rattler::Compiler::Optimizer
-  #
+
   # A predicate and an adjacent Regexp match in a Sequence can be joined into a
   # single Regexp match.
-  #
-  # @author Jason Arhart
-  #
   class JoinPredicateBareMatch < Optimization
     include CompositeReducing
 

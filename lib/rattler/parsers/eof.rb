@@ -1,19 +1,9 @@
-#
-# = rattler/parsers/eof.rb
-#
-# Author:: Jason Arhart
-# Documentation:: Author
-#
-
 require 'rattler/parsers'
 require 'singleton'
 
 module Rattler::Parsers
-  #
+
   # +Eof+ succeeds if there is no more input to parse.
-  #
-  # @author Jason Arhart
-  #
   class Eof < Predicate
     include Atomic
     include Singleton
@@ -32,9 +22,9 @@ module Rattler::Parsers
 
     # Return +true+ if there is no more input to parse
     #
-    # @param (see Parser#parse_labeled)
+    # @param (see Match#parse)
     #
-    # @return true if there is no more input to parse
+    # @return [Boolean] +true+ if there is no more input to parse
     def parse(scanner, *_)
       scanner.eos?
     end

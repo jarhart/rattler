@@ -1,19 +1,9 @@
-#
-# = rattler/compiler/optimizer/flatten_sequence.rb
-#
-# Author:: Jason Arhart
-# Documentation:: Author
-#
 require 'rattler/compiler/optimizer'
 
 module Rattler::Compiler::Optimizer
 
-  #
   # Nested sequence expressions can be flattened without affecting how they
   # match.
-  #
-  # @author Jason Arhart
-  #
   class FlattenMatchingSequence < Optimization
     include Flattening
     include Rattler::Parsers
@@ -31,12 +21,8 @@ module Rattler::Compiler::Optimizer
     end
   end
 
-  #
   # Nested sequence expressions can be flattened without affecting how they
   # parse if the nested sequence expressions are not multi-capturing.
-  #
-  # @author Jason Arhart
-  #
   class FlattenCapturingSequence < Optimization
     include Flattening
     include Rattler::Parsers
@@ -54,6 +40,8 @@ module Rattler::Compiler::Optimizer
     end
   end
 
+  # Nested sequence expressions can be flattened without affecting how they
+  # parse given certain conditions
   FlattenSequence = FlattenMatchingSequence >> FlattenCapturingSequence
 
 end

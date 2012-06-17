@@ -15,7 +15,7 @@ module Rattler::Compiler::ParserGenerator
     intermediate_skip
   }
 
-  @private
+  # @private
   GEN_METHOD_NAMES = GEN_METHOD_TYPES.map {|_| :"gen_#{_}" }
 
 end

@@ -1,25 +1,15 @@
-#
-# = rattler/parsers/assert.rb
-#
-# Author:: Jason Arhart
-# Documentation:: Author
-#
-
 require 'rattler/parsers'
 
 module Rattler::Parsers
-  #
+
   # +Assert+ decorates a parser and succeeds or fails like the decorated
-  # parser but never consumes any input.
-  #
-  # @author Jason Arhart
-  #
+  # parser but never consumes any input (zero-width positive lookahead).
   class Assert < Predicate
 
     # Succeed or fail like the decorated parser but do not consume any input
     # and return +true+ on success.
     #
-    # @param (see Parser#parse_labeled)
+    # @param (see Match#parse)
     #
     # @return [Boolean] +true+ if the decorated parser succeeds
     def parse(scanner, rules, scope = ParserScope.empty)

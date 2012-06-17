@@ -1,17 +1,8 @@
-#
-# = rattler/compiler/optimizer/remove_meaningless_wrapper.rb
-#
-# Author:: Jason Arhart
-# Documentation:: Author
-#
 require 'rattler/compiler/optimizer'
 
 module Rattler::Compiler::Optimizer
-  #
+
   # Token and skip wrappers only have meaning in a capturing context.
-  #
-  # @author Jason Arhart
-  #
   class RemoveMeaninglessWrapper < Optimization
 
     include Rattler::Parsers

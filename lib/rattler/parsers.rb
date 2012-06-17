@@ -1,20 +1,10 @@
-#
-# = rattler/parsers.rb
-#
-# Author:: Jason Arhart
-# Documentation:: Author
-#
 require 'rattler'
 
 module Rattler
-  #
-  # The +Parsers+ module defines the basic parsers and combinators used to
-  # compose more complex parsers.
-  #
-  # @author Jason Arhart
-  #
-  module Parsers
 
+  # The +Parsers+ module defines the basic parsers and combinators used to
+  # compose recursive descent parsers.
+  module Parsers
     autoload :Parser, 'rattler/parsers/parser'
     autoload :CombinatorParser, 'rattler/parsers/combinator_parser'
     autoload :Grammar, 'rattler/parsers/grammar'

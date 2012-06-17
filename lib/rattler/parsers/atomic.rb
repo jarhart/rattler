@@ -1,16 +1,9 @@
-#
-# = rattler/parsers/atomic.rb
-#
-# Author:: Jason Arhart
-# Documentation:: Author
-#
-
 module Rattler::Parsers
-  # @private
+
+  # +Atomic+ describes a parser that is not a combination of other parsers.
   module Atomic #:nodoc:
 
-    # @param (see Parser#with_ws)
-    # @return (see Parser#with_ws)
+    # (see Parser#with_ws)
     def with_ws(ws)
       ws.skip & self
     end

@@ -1,48 +1,33 @@
-#
-# = rattler/util/node.rb
-#
-# Author:: Jason Arhart
-# Documentation:: Author
-#
 require 'rattler/util'
 
 module Rattler::Util
-  #
+
   # A +Node+ is a node that can be used as-is to compose tree structures or
-  # as a base class for nodes. It is the base class used for all tree
-  # structures in the +Rattler+ framework.
-  #
-  # @author Jason Arhart
-  #
+  # as a base class for user-defined node types. It is the base class used for
+  # all tree structures in the +Rattler+ framework.
   class Node
     include Enumerable
 
-    # Create a +Node+ object.
-    #
-    # @return [Node]
-    #
     # @overload Node.[]()
-    #   @return [Node]
+    #   @return [Node] a +Node+ object with no children or attributes
     # @overload Node.[](child...)
-    #   @return [Node]
+    #   @return [Node] a +Node+ object with children and no attributes
     # @overload Node.[](attribute...)
-    #   @return [Node]
+    #   @return [Node] a +Node+ object with attributes and no children
     # @overload Node.[](child..., attribute...)
-    #   @return [Node]
+    #   @return [Node] a +Node+ object with children and attributes
     def self.[](*args)
       self.new(*args)
     end
 
-    # Create a +Node+ object.
-    #
     # @overload initialize()
-    #   @return [Node]
+    #   Create a +Node+ object with no children or attributes.
     # @overload initialize(child...)
-    #   @return [Node]
+    #   Create a +Node+ object with children and no attributes.
     # @overload initialize(attribute...)
-    #   @return [Node]
+    #   Create a +Node+ object with attributes and no children.
     # @overload initialize(child..., attribute...)
-    #   @return [Node]
+    #   Create a +Node+ object with children and attributes.
     def initialize(*args)
       @attrs = args.last.respond_to?(:to_hash) ? args.pop : {}
       @__children__ = args
@@ -95,16 +80,25 @@ module Rattler::Util
       block_given? ? children.each { |_| yield _ } : children.each
     end
 
+    # @param [Array] new_children a new array of children
+    # @return [Node] a new code with the new children replacing the node's
+    #   children
     def with_children(new_children)
       self.class.new(new_children, attrs)
     end
 
     alias_method :with_child, :with_children
 
+    # @param (see #new_attrs!)
+    # @return [Node] a new node with the new attributes added to the node's
+    #   attributes
     def with_attrs(new_attrs)
       self.with_attrs!(attrs.merge new_attrs)
     end
 
+    # @param [Hash] new_attrs a new set of attributes
+    # @return [Node] a new node with the new attributes replacing the node's
+    #   attributes
     def with_attrs!(new_attrs)
       self.class.new(children, new_attrs)
     end
@@ -119,18 +113,14 @@ module Rattler::Util
     # Access the node's children as if the node were an array of its children.
     #
     # @overload [](index)
-    #   Return the node's child at +index+.
     #   @param [Integer] index index of the child
     #   @return the child at +index+
     # @overload [](start, length)
-    #   Return an array of the node's children starting at +start+ and
-    #   continuing for +length+ children.
     #   @param [Integer] start the index of the first child
     #   @param [Integer] length the number of children to return
     #   @return [Array] the node's children starting at +start+ and
     #     continuing for +length+ children
     # @overload [](range)
-    #   Return an array of the node's children specified by +range+.
     #   @param [Range] range the range of children
     #   @return [Array] the node's children specified by +range+
     def [](*args)
@@ -206,6 +196,7 @@ module Rattler::Util
       pretty_print_name(q)
     end
 
+    # @return a new +GraphViz+ digraph object representing the node
     def to_graphviz
       Rattler::Util::GraphViz.digraph(self)
     end

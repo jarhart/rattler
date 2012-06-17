@@ -1,17 +1,8 @@
-#
-# = rattler/compiler/optimizer/flatten_choice.rb
-#
-# Author:: Jason Arhart
-# Documentation:: Author
-#
 require 'rattler/compiler/optimizer'
 
 module Rattler::Compiler::Optimizer
-  #
+
   # Optimizes all of the children of a parser model in the appropriate context.
-  #
-  # @author Jason Arhart
-  #
   class OptimizeChildren < Optimization
 
     include Optimizations

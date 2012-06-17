@@ -1,21 +1,11 @@
-#
-# = rattler/parsers/list_parser.rb
-#
-# Author:: Jason Arhart
-# Documentation:: Author
-#
-
 require 'rattler/parsers'
 
 module Rattler::Parsers
-  #
+
   # +ListParser+ matches terms matched by a term parser in a list with
   # separators matched by a separator parser. +ListParser+ fails unless at
   # least <tt>#lower_bound</tt> terms are matched and stops matching at
   # <tt>#upper_bound</tt>.
-  #
-  # @author Jason Arhart
-  #
   class ListParser < Parser
     include Combining
 
@@ -25,15 +15,22 @@ module Rattler::Parsers
       self[term_parser, sep_parser, *bounds]
     end
 
+    # @param [Parser] term_parser the parser for matching list terms
+    # @param [Parser] sep_parser the parser for matching the list separator
+    # @param [Integer] lower_bound the minimum number of terms to match
+    # @param [Integer] upper_bound the maximum number of terms to match
+    # @return [ListParser] a parser that matches lists
     def self.[](term_parser, sep_parser, lower_bound, upper_bound)
       self.new(term_parser, sep_parser.skip,
                 :lower_bound => lower_bound, :upper_bound => upper_bound)
     end
 
+    # @return [Parser] the parser for matching list terms
     def term_parser
       children[0]
     end
 
+    # @return [Parser] the parser for matching the list separator
     def sep_parser
       children[1]
     end
@@ -44,9 +41,9 @@ module Rattler::Parsers
     # least <tt>#lower_bound</tt> terms are matched and stops matching at
     # <tt>#upper_bound</tt>.
     #
-    # @param (see Parser#parse_labeled)
+    # @param (see Match#parse)
     #
-    # @return [Array, Boolean] an array containing the term parser's parse
+    # @return [Array or Boolean] an array containing the term parser's parse
     #   results, or +true+ if the term parser is not <tt>capturing?</tt> or
     #   +false+ if the parse fails.
     def parse(scanner, rules, scope = ParserScope.empty)
@@ -67,14 +64,17 @@ module Rattler::Parsers
       end
     end
 
+    # @return [Fixnum] lower_bound the minimum number of terms to match
     def lower_bound?
       lower_bound > 0
     end
 
+    # @return [Fixnum] upper_bound the maximum number of terms to match
     def upper_bound?
       not upper_bound.nil?
     end
 
+    # @return +true+
     def variable_capture_count?
       true
     end

@@ -1,19 +1,9 @@
-#
-# = rattler/runtime/parser.rb
-#
-# Author:: Jason Arhart
-# Documentation:: Author
-#
-
 require 'rattler/runtime'
 require 'strscan'
 
 module Rattler::Runtime
-  #
+
   # +Parser+ is the base class for all parsers in the Rattler framework.
-  #
-  # @author Jason Arhart
-  #
   class Parser < Rattler::Util::Node
 
     # Parse +source+ and raise a {SyntaxError} if the parse fails.
@@ -38,15 +28,14 @@ module Rattler::Runtime
     # Create a new parser to parse +source+.
     #
     # @param [String] source the source to parse
-    # @option options [Int] :tab_size (8) tab size to use to calculate column
-    #   numbers
+    # @option options [Integer] :tab_size (8) tab size to use to calculate
+    #   column numbers
     def initialize(source, options={})
       @source = source
       @scanner = StringScanner.new(source)
       @tab_size = options[:tab_size]
     end
 
-    # The source that this parser parses
     # @return [String] the source that this parser parses
     attr_reader :source
 
@@ -84,15 +73,14 @@ module Rattler::Runtime
       parse_fully or raise_error
     end
 
-    # The current parse position
-    # @return [Integer] the current parse position
+    # @return [Fixnum] the current parse position
     def pos
       @scanner.pos
     end
 
     # Set the current parse position
     # @param [Integer] n the new parse position
-    # @return [Integer] n
+    # @return [Fixnum] the new parse position
     def pos=(n)
       @scanner.pos = n
     end
@@ -167,7 +155,7 @@ module Rattler::Runtime
     # Register a parse failure
     #
     # @param [Integer] position the position of the failure
-    # @param [String, Symbol] a failure message or rule name or +nil+
+    # @param [String, Symbol] message a failure message or rule name or +nil+
     #
     # @return [false]
     def register_failure(position, message)

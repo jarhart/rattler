@@ -1,19 +1,9 @@
-#
-# = rattler/parsers/e_symbol.rb
-#
-# Author:: Jason Arhart
-# Documentation:: Author
-#
-
 require 'rattler/parsers'
 require 'singleton'
 
 module Rattler::Parsers
-  #
+
   # +ESymbol+ always succeeds without advancing.
-  #
-  # @author Jason Arhart
-  #
   class ESymbol < Parser
     include Atomic
     include Singleton
@@ -32,13 +22,14 @@ module Rattler::Parsers
 
     # Return +true+ without advancing
     #
-    # @param (see Parser#parse)
+    # @param (see Match#parse)
     #
-    # @return true
+    # @return [Boolean] +true+
     def parse(*_)
       true
     end
 
+    # (see Parser#capturing?)
     def capturing?
       false
     end
