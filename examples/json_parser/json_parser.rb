@@ -193,7 +193,7 @@ class JsonParser < Rattler::Runtime::PackratParser #:nodoc:
         false
       end
     end ||
-    (fail! { "value expected" })
+    fail! { :value }
   end
   
   # @private

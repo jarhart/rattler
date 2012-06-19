@@ -33,7 +33,6 @@ into Ruby hashes, arrays, and values.
                 / `true`                                    { :true }
                 / `false`                                   { :false }
                 / `null`                                    { :null }
-                / fail "value expected"
 
     string    <-  @('"' char* '"')                          { string _ }
 
