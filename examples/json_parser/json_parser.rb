@@ -18,18 +18,21 @@ class JsonParser < Rattler::Runtime::PackratParser #:nodoc:
   
   # @private
   def match_json_text! #:nodoc:
-    p0 = @scanner.pos
     begin
-      (r0_0 = begin
-        match(:object) ||
-        match(:array)
-      end) &&
-      @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\/\*)(?>(?>(?!\*\/)(?>.))*)(?>\*\/)|(?>\/\/)(?>(?>[^\n])*))*)\z/) &&
-      r0_0
-    end || begin
-      @scanner.pos = p0
-      false
-    end
+      p0 = @scanner.pos
+      begin
+        (r0_0 = begin
+          match(:object) ||
+          match(:array)
+        end) &&
+        @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\/\*)(?>(?>(?!\*\/)(?>.))*)(?>\*\/)|(?>\/\/)(?>(?>[^\n])*))*)\z/) &&
+        r0_0
+      end || begin
+        @scanner.pos = p0
+        false
+      end
+    end ||
+    fail { :json_text }
   end
   
   # @private
@@ -39,16 +42,19 @@ class JsonParser < Rattler::Runtime::PackratParser #:nodoc:
   
   # @private
   def match_object! #:nodoc:
-    p0 = @scanner.pos
     begin
-      @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\/\*)(?>(?>(?!\*\/)(?>.))*)(?>\*\/)|(?>\/\/)(?>(?>[^\n])*))*)(?>\{)/) &&
-      (r0_0 = match(:members)) &&
-      @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\/\*)(?>(?>(?!\*\/)(?>.))*)(?>\*\/)|(?>\/\/)(?>(?>[^\n])*))*)(?>\})/) &&
-      (object r0_0)
-    end || begin
-      @scanner.pos = p0
-      false
-    end
+      p0 = @scanner.pos
+      begin
+        @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\/\*)(?>(?>(?!\*\/)(?>.))*)(?>\*\/)|(?>\/\/)(?>(?>[^\n])*))*)(?>\{)/) &&
+        (r0_0 = match(:members)) &&
+        @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\/\*)(?>(?>(?!\*\/)(?>.))*)(?>\*\/)|(?>\/\/)(?>(?>[^\n])*))*)(?>\})/) &&
+        (object r0_0)
+      end || begin
+        @scanner.pos = p0
+        false
+      end
+    end ||
+    fail { :object }
   end
   
   # @private
@@ -58,15 +64,18 @@ class JsonParser < Rattler::Runtime::PackratParser #:nodoc:
   
   # @private
   def match_members! #:nodoc:
-    a0 = []
-    ep0 = nil
-    while r = match(:pair)
-      ep0 = @scanner.pos
-      a0 << r
-      break unless @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\/\*)(?>(?>(?!\*\/)(?>.))*)(?>\*\/)|(?>\/\/)(?>(?>[^\n])*))*)(?>,)/)
-    end
-    @scanner.pos = ep0 unless ep0.nil?
-    a0
+    begin
+      a0 = []
+      ep0 = nil
+      while r = match(:pair)
+        ep0 = @scanner.pos
+        a0 << r
+        break unless @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\/\*)(?>(?>(?!\*\/)(?>.))*)(?>\*\/)|(?>\/\/)(?>(?>[^\n])*))*)(?>,)/)
+      end
+      @scanner.pos = ep0 unless ep0.nil?
+      a0
+    end ||
+    fail { :members }
   end
   
   # @private
@@ -76,16 +85,19 @@ class JsonParser < Rattler::Runtime::PackratParser #:nodoc:
   
   # @private
   def match_pair! #:nodoc:
-    p0 = @scanner.pos
     begin
-      (r0_0 = match(:string)) &&
-      @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\/\*)(?>(?>(?!\*\/)(?>.))*)(?>\*\/)|(?>\/\/)(?>(?>[^\n])*))*)(?>:)/) &&
-      (r0_1 = match(:value)) &&
-      select_captures([r0_0, r0_1])
-    end || begin
-      @scanner.pos = p0
-      false
-    end
+      p0 = @scanner.pos
+      begin
+        (r0_0 = match(:string)) &&
+        @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\/\*)(?>(?>(?!\*\/)(?>.))*)(?>\*\/)|(?>\/\/)(?>(?>[^\n])*))*)(?>:)/) &&
+        (r0_1 = match(:value)) &&
+        select_captures([r0_0, r0_1])
+      end || begin
+        @scanner.pos = p0
+        false
+      end
+    end ||
+    fail { :pair }
   end
   
   # @private
@@ -95,16 +107,19 @@ class JsonParser < Rattler::Runtime::PackratParser #:nodoc:
   
   # @private
   def match_array! #:nodoc:
-    p0 = @scanner.pos
     begin
-      @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\/\*)(?>(?>(?!\*\/)(?>.))*)(?>\*\/)|(?>\/\/)(?>(?>[^\n])*))*)(?>\[)/) &&
-      (r0_0 = match(:elements)) &&
-      @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\/\*)(?>(?>(?!\*\/)(?>.))*)(?>\*\/)|(?>\/\/)(?>(?>[^\n])*))*)(?>\])/) &&
-      (array r0_0)
-    end || begin
-      @scanner.pos = p0
-      false
-    end
+      p0 = @scanner.pos
+      begin
+        @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\/\*)(?>(?>(?!\*\/)(?>.))*)(?>\*\/)|(?>\/\/)(?>(?>[^\n])*))*)(?>\[)/) &&
+        (r0_0 = match(:elements)) &&
+        @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\/\*)(?>(?>(?!\*\/)(?>.))*)(?>\*\/)|(?>\/\/)(?>(?>[^\n])*))*)(?>\])/) &&
+        (array r0_0)
+      end || begin
+        @scanner.pos = p0
+        false
+      end
+    end ||
+    fail { :array }
   end
   
   # @private
@@ -114,15 +129,18 @@ class JsonParser < Rattler::Runtime::PackratParser #:nodoc:
   
   # @private
   def match_elements! #:nodoc:
-    a0 = []
-    ep0 = nil
-    while r = match(:value)
-      ep0 = @scanner.pos
-      a0 << r
-      break unless @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\/\*)(?>(?>(?!\*\/)(?>.))*)(?>\*\/)|(?>\/\/)(?>(?>[^\n])*))*)(?>,)/)
-    end
-    @scanner.pos = ep0 unless ep0.nil?
-    a0
+    begin
+      a0 = []
+      ep0 = nil
+      while r = match(:value)
+        ep0 = @scanner.pos
+        a0 << r
+        break unless @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\/\*)(?>(?>(?!\*\/)(?>.))*)(?>\*\/)|(?>\/\/)(?>(?>[^\n])*))*)(?>,)/)
+      end
+      @scanner.pos = ep0 unless ep0.nil?
+      a0
+    end ||
+    fail { :elements }
   end
   
   # @private
@@ -185,17 +203,20 @@ class JsonParser < Rattler::Runtime::PackratParser #:nodoc:
   
   # @private
   def match_string! #:nodoc:
-    p0 = @scanner.pos
     begin
-      (r0_0 = begin
-        @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\/\*)(?>(?>(?!\*\/)(?>.))*)(?>\*\/)|(?>\/\/)(?>(?>[^\n])*))*)((?>")(?>(?>(?!"|\\|[[:cntrl:]])(?>.)|(?>\\)(?>["\\\/bfnrt]|(?>u)(?>[[:xdigit:]])(?>[[:xdigit:]])(?>[[:xdigit:]])(?>[[:xdigit:]])))*)(?>"))/) &&
-        @scanner[1]
-      end) &&
-      (string r0_0)
-    end || begin
-      @scanner.pos = p0
-      false
-    end
+      p0 = @scanner.pos
+      begin
+        (r0_0 = begin
+          @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\/\*)(?>(?>(?!\*\/)(?>.))*)(?>\*\/)|(?>\/\/)(?>(?>[^\n])*))*)((?>")(?>(?>(?!"|\\|[[:cntrl:]])(?>.)|(?>\\)(?>["\\\/bfnrt]|(?>u)(?>[[:xdigit:]])(?>[[:xdigit:]])(?>[[:xdigit:]])(?>[[:xdigit:]])))*)(?>"))/) &&
+          @scanner[1]
+        end) &&
+        (string r0_0)
+      end || begin
+        @scanner.pos = p0
+        false
+      end
+    end ||
+    fail { :string }
   end
   
   # @private
@@ -205,17 +226,20 @@ class JsonParser < Rattler::Runtime::PackratParser #:nodoc:
   
   # @private
   def match_number! #:nodoc:
-    p0 = @scanner.pos
     begin
-      (r0_0 = begin
-        @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\/\*)(?>(?>(?!\*\/)(?>.))*)(?>\*\/)|(?>\/\/)(?>(?>[^\n])*))*)((?>(?>(?>\-)?)(?>(?>0)(?![[:digit:]])|(?>[1-9])(?>(?>[[:digit:]])*)))(?>(?>(?>\.)(?>(?>[[:digit:]])+))?)(?>(?>(?>[eE])(?>(?>[+-])?)(?>(?>[[:digit:]])+))?))/) &&
-        @scanner[1]
-      end) &&
-      (number r0_0)
-    end || begin
-      @scanner.pos = p0
-      false
-    end
+      p0 = @scanner.pos
+      begin
+        (r0_0 = begin
+          @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\/\*)(?>(?>(?!\*\/)(?>.))*)(?>\*\/)|(?>\/\/)(?>(?>[^\n])*))*)((?>(?>(?>\-)?)(?>(?>0)(?![[:digit:]])|(?>[1-9])(?>(?>[[:digit:]])*)))(?>(?>(?>\.)(?>(?>[[:digit:]])+))?)(?>(?>(?>[eE])(?>(?>[+-])?)(?>(?>[[:digit:]])+))?))/) &&
+          @scanner[1]
+        end) &&
+        (number r0_0)
+      end || begin
+        @scanner.pos = p0
+        false
+      end
+    end ||
+    fail { :number }
   end
   
 end
