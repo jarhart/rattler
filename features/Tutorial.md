@@ -1,5 +1,8 @@
 To demonstrate how to get started using Rattler, we'll walk through writing the
-ubiquitous arithmetic expression parser.
+ubiquitous arithmetic expression parser. This tutorial assumes that your are
+familiar with parsing expression grammars. If you are not, you may wish to read
+the [Wikipedia article](http://en.wikipedia.org/wiki/Parsing_expression_grammar)
+on them to familiarize yourself.
 
 ### Install Rattler
 
@@ -37,27 +40,28 @@ recursion. Actually, there is an
 parsing that handles left recursion. Rattler includes an implementation of that
 algorithm, so left-recursive grammars are fine.
 
-The first line of our grammar requires the Rattler library. Any `require`
-statements in the grammar heading are placed at the top of the generated parser.
+Our grammar starts with a [require](/jarhart/rattler/docs/grammar-heading/require)
+statement to require the Rattler library. Any `require` statements in the
+grammar heading are placed at the top of the generated parser.
 
-Next we declare our parser class and extend the ExtendedPackratParser base
-class, which implements the packrat parsing algorithm that supports left
-recursion. We could also use a `grammar` declaration here instead to generate a
-module that can be mixed into a parser class.
+Next we declare our parser class with a
+[grammar declaration](/jarhart/rattler/docs/grammar-heading/grammar-declaration).
+We extend the ExtendedPackratParser base class, which implements the packrat
+parsing algorithm that supports left recursion.
 
-After that the
+After the declaring our parser class, we use the
 [`%whitespace`](/jarhart/rattler/docs/extended-matching-syntax/whitespace-skipping)
-directive tells Rattler to generate a parser that automatically ignores any
+directive to tell Rattler to generate a parser that automatically ignores any
 whitespace characters. `SPACE` is a
 [POSIX character class](/jarhart/rattler/docs/extended-matching-syntax/posix-character-classes)
 that matches any whitespace character.
 
-The rest of the grammar is a standard Parsing Expression Grammar until we get
-to the last line. We use `DIGIT` character class to match decimal digits, and
-we put the entire expression in parentheses and prefix it with `@` which is the
-[Token Operator](/jarhart/rattler/docs/extended-matching-syntax/token-operator).
-This causes the entire expression to be matched as a single string instead of
-producing a parse tree.
+The rest of the grammar is a standard parsing expression grammar until we get
+to the last line. The expression "`@("-"? DIGIT+ ("." DIGIT+)?)`" will match a
+decimal number. The `@` is the 
+[Token Operator](/jarhart/rattler/docs/extended-matching-syntax/token-operator)
+which causes the expression to be matched as a single string instead of
+producing a parse tree. The `DIGIT` character class matches decimal digits.
 
 ### Generate the parser
 
@@ -108,22 +112,13 @@ The grouping works, but we get the parentheses in the parse tree, which we
 really don't need. Let's fix that by using the `~` operator to
 [skip](/jarhart/rattler/docs/extended-matching-syntax/skip-operator) those:
 
-    require 'rattler'
+Change the line
 
-    parser ArithmeticParser < Rattler::Runtime::ExtendedPackratParser
+    primary <-  "(" expr ")"
 
-    %whitespace SPACE*
-
-    expr    <-  expr "+" term
-              / expr "-" term
-              / term
-
-    term    <-  term "*" primary
-              / term "/" primary
-              / primary
+To read:
 
     primary <-  ~"(" expr ~")"
-              / @("-"? DIGIT+ ("." DIGIT+)?)
 
 
 And regenerate the parser, using `-f` to force overwriting the file.
@@ -146,13 +141,9 @@ information is partially lost by making everything an array. We can add
 the different operations.
 
 We'll start by just using generic parse nodes and giving them mnemonic names.
-We can also discard the matched operator tokens themselves at this point:
+We can also discard the matched operator tokens themselves at this point.
 
-    require 'rattler'
-
-    parser ArithmeticParser < Rattler::Runtime::ExtendedPackratParser
-
-    %whitespace SPACE*
+Change the `expr` and `term` rules to look like this:
 
     expr    <-  expr ~"+" term      <"ADD">
               / expr ~"-" term      <"SUB">
@@ -162,27 +153,23 @@ We can also discard the matched operator tokens themselves at this point:
               / term ~"/" primary   <"DIV">
               / primary
 
-    primary <-  ~"(" expr ~")"
-              / @("-"? DIGIT+ ("." DIGIT+)?)
+Don't forget the `~` in front of the operators to omit them from the parse
+results.
 
-This makes it very easy to see the parse tree with graphviz, especially with
-more complex expressions.
+Using parse nodes like this makes it very easy to see the parse tree with
+graphviz, especially with more complex expressions.
 
     $ rtlr arithmetic.rtlr -f
     arithmetic.rtlr -> arithmetic_parser.rb
     $ echo "1+2*3/4-5+6-7*8/9" | ruby arithmetic_parser.rb -g
 
 This feature is useful for debugging more complex grammars, but we can see that
-our parser is parsing correctly, so let's finish by replacing the node
+our parser is parsing correctly, so let's finish by replacing the parse node
 attributes with
 [semantic actions](/jarhart/rattler/docs/semantics/semantic-actions) to perform
-the operations as it parses:
+the arithmetic operations as it parses.
 
-    require 'rattler'
-
-    parser ArithmeticParser < Rattler::Runtime::ExtendedPackratParser
-
-    %whitespace SPACE*
+Change the `expr` and `term` rules to look like this:
 
     expr    <-  expr ~"+" term                  {|a, b| a + b }
               / expr ~"-" term                  {|a, b| a - b }
@@ -191,9 +178,6 @@ the operations as it parses:
     term    <-  term ~"*" primary               {|a, b| a * b }
               / term ~"/" primary               {|a, b| a / b }
               / primary
-
-    primary <-  ~"(" expr ~")"
-              / @("-"? DIGIT+ ("." DIGIT+)?)    { _.to_f }
 
 Semantic actions look like ruby blocks and, for the most part, act like them
 too. The parse results are bound to the parameters and the actions are
@@ -213,6 +197,13 @@ any input the starts with a valid expression no matter what comes after it.
 We'll add a new rule at the top so that it only matches if the entire input is
 a valid expression:
 
+    start   <-  expr EOF
+
+The [`EOF`](/jarhart/rattler/docs/extended-matching-syntax/eof-symbol) symbol
+matches only if there is no more input to parse.
+
+Our final grammar looks like this:
+
     require 'rattler'
 
     parser ArithmeticParser < Rattler::Runtime::ExtendedPackratParser
@@ -231,6 +222,3 @@ a valid expression:
 
     primary <-  ~"(" expr ~")"
               / @("-"? DIGIT+ ("." DIGIT+)?)    { _.to_f }
-
-The [`EOF`](/jarhart/rattler/docs/extended-matching-syntax/eof-symbol) symbol
-matches only if there is no more input to parse.

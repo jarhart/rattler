@@ -30,6 +30,7 @@ pkg
 ## PROJECT::SPECIFIC
 archive
 tmp
+.relish
 
 # Have editor/IDE/OS specific files you need to ignore? Consider using a global gitignore: 
 #
