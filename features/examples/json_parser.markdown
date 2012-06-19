@@ -62,7 +62,7 @@ objects and arrays.
     module JsonHelper
 
       def object(members)
-        Hash[*members.map {|k, v| [k, decode(v)] }.flatten(1)]
+        Hash[members.map {|k, v| [k, decode(v)] }]
       end
 
       def array(a)
