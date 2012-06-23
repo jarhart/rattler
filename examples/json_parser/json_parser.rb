@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 require 'rattler'
 require File.expand_path('json_helper', File.dirname(__FILE__))
 

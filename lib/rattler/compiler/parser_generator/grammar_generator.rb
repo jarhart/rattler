@@ -13,6 +13,7 @@ module Rattler::Compiler::ParserGenerator
     end
 
     def gen_parser(grammar, opts={})
+      gen_encoding
       gen_requires grammar.requires
       gen_module(grammar) do
         gen_includes grammar.includes
@@ -20,9 +21,13 @@ module Rattler::Compiler::ParserGenerator
       end
     end
 
+    def gen_encoding
+      (@g << "# encoding: utf-8").newline
+    end
+
     def gen_requires(requires)
-      requires.each {|_| (@g << "require #{_}").newline }
-      @g.newline
+      requires.each {|_| @g.newline << "require #{_}" }
+      @g.newline unless requires.empty?
     end
 
     def gen_module(grammar)
@@ -43,6 +48,7 @@ module Rattler::Compiler::ParserGenerator
     end
 
     def gen_grammar_def(grammar_name)
+      @g.newline
       nest_modules(grammar_name.split('::')) do |name|
         (@g << "# @private").newline
         module_block("module #{name} #:nodoc:") { yield }
@@ -51,6 +57,7 @@ module Rattler::Compiler::ParserGenerator
     end
 
     def gen_parser_def(parser_name, base_name)
+      @g.newline
       nest_modules(parser_name.split('::')) do |name|
         (@g << "# @private").newline
         module_block("class #{name} < #{base_name} #:nodoc:") { yield }

@@ -1,3 +1,4 @@
+# encoding: utf-8
 
 # @private
 module IniGrammar #:nodoc:
@@ -14,24 +15,27 @@ module IniGrammar #:nodoc:
   
   # @private
   def match_configuration! #:nodoc:
-    p0 = @scanner.pos
     begin
-      (r0_0 = begin
-        a0 = []
-        while r = begin
-          match(:property) ||
-          match(:section_name)
-        end
-          a0 << r
-        end
-        select_captures(a0)
-      end) &&
-      @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>[;#])(?>(?>[^\n])*))*)\z/) &&
-      (@properties)
-    end || begin
-      @scanner.pos = p0
-      false
-    end
+      p0 = @scanner.pos
+      begin
+        (r0_0 = begin
+          a0 = []
+          while r = begin
+            match(:property) ||
+            match(:section_name)
+          end
+            a0 << r
+          end
+          select_captures(a0)
+        end) &&
+        @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>[;#])(?>(?>[^\n])*))*)\z/) &&
+        (@properties)
+      end || begin
+        @scanner.pos = p0
+        false
+      end
+    end ||
+    fail { :configuration }
   end
   
   # @private
@@ -41,16 +45,19 @@ module IniGrammar #:nodoc:
   
   # @private
   def match_property! #:nodoc:
-    p0 = @scanner.pos
     begin
-      (r0_0 = match(:name)) &&
-      @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>[;#])(?>(?>[^\n])*))*)(?>=)/) &&
-      (r0_1 = match(:value)) &&
-      (property r0_0, r0_1)
-    end || begin
-      @scanner.pos = p0
-      false
-    end
+      p0 = @scanner.pos
+      begin
+        (r0_0 = match(:name)) &&
+        @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>[;#])(?>(?>[^\n])*))*)(?>=)/) &&
+        (r0_1 = match(:value)) &&
+        (property r0_0, r0_1)
+      end || begin
+        @scanner.pos = p0
+        false
+      end
+    end ||
+    fail { :property }
   end
   
   # @private
@@ -60,17 +67,20 @@ module IniGrammar #:nodoc:
   
   # @private
   def match_section_name! #:nodoc:
-    p0 = @scanner.pos
     begin
-      @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>[;#])(?>(?>[^\n])*))*)(?>\[)/) &&
-      (r0_0 = match(:name)) &&
-      @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>[;#])(?>(?>[^\n])*))*)(?>\])/) &&
-      @scanner.skip(/(?>(?>[[:blank:]])*)(?>\z|(?>(?>\r)?)(?>\n)|(?>;)(?>(?>[^\n])*))/) &&
-      (section r0_0)
-    end || begin
-      @scanner.pos = p0
-      false
-    end
+      p0 = @scanner.pos
+      begin
+        @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>[;#])(?>(?>[^\n])*))*)(?>\[)/) &&
+        (r0_0 = match(:name)) &&
+        @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>[;#])(?>(?>[^\n])*))*)(?>\])/) &&
+        @scanner.skip(/(?>(?>[[:blank:]])*)(?>\z|(?>(?>\r)?)(?>\n)|(?>[;#])(?>(?>[^\n])*))/) &&
+        (section r0_0)
+      end || begin
+        @scanner.pos = p0
+        false
+      end
+    end ||
+    fail { :section_name }
   end
   
   # @private
@@ -80,17 +90,20 @@ module IniGrammar #:nodoc:
   
   # @private
   def match_name! #:nodoc:
-    p0 = @scanner.pos
     begin
-      (r0_0 = begin
-        @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>[;#])(?>(?>[^\n])*))*)((?>[[:alnum:]_])+)/) &&
-        @scanner[1]
-      end) &&
-      (r0_0.to_sym)
-    end || begin
-      @scanner.pos = p0
-      false
-    end
+      p0 = @scanner.pos
+      begin
+        (r0_0 = begin
+          @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>[;#])(?>(?>[^\n])*))*)((?>[[:alnum:]_])+)/) &&
+          @scanner[1]
+        end) &&
+        (r0_0.to_sym)
+      end || begin
+        @scanner.pos = p0
+        false
+      end
+    end ||
+    fail { :name }
   end
   
   # @private
@@ -143,7 +156,7 @@ module IniGrammar #:nodoc:
       p0 = @scanner.pos
       begin
         (r0_0 = begin
-          @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>[;#])(?>(?>[^\n])*))*)((?>(?!(?>(?>[[:blank:]])*)(?>\z|(?>(?>\r)?)(?>\n)|(?>;)(?>(?>[^\n])*)))(?>.))*)/) &&
+          @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>[;#])(?>(?>[^\n])*))*)((?>(?!(?>(?>[[:blank:]])*)(?>\z|(?>(?>\r)?)(?>\n)|(?>[;#])(?>(?>[^\n])*)))(?>.))*)/) &&
           @scanner[1]
         end) &&
         (r0_0.strip)
@@ -151,7 +164,8 @@ module IniGrammar #:nodoc:
         @scanner.pos = p0
         false
       end
-    end
+    end ||
+    fail { :value }
   end
   
 end

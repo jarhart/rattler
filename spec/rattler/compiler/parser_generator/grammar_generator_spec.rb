@@ -17,6 +17,8 @@ describe Rattler::Compiler::ParserGenerator::GrammarGenerator do
       it 'generates a grammar module with a CLI' do
         trim_lines(generated_code {|g| g.generate grammar }).strip.
         should == (<<-CODE).strip
+# encoding: utf-8
+
 # @private
 module ExprGrammar #:nodoc:
 
@@ -56,6 +58,8 @@ end
       it 'generates a parser module with a CLI' do
         trim_lines(generated_code {|g| g.generate grammar }).strip.
         should == (<<-CODE).strip
+# encoding: utf-8
+
 # @private
 class ExprParser < Rattler::Runtime::PackratParser #:nodoc:
 

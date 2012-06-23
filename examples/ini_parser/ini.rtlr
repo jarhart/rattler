@@ -17,6 +17,6 @@ value         <-  @('"' ('\\' . / [^"])* '"')                   { unquote _ }
 
 %fragments
 
-eol           <-  BLANK* (EOF / ("\r"? "\n") / (';' [^\n]*))
+eol           <-  ~(BLANK* (EOF / "\r"? "\n" / comment))
 
-comment       <-  [;#] [^\n]*
+comment       <-  ~([;#] [^\n]*)

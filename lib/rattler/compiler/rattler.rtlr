@@ -6,7 +6,7 @@ include Rattler::Parsers
 
 %whitespace (SPACE+ / comment)*
 
-grammar           <-  heading rules EOF                                         <Rattler::Parsers::Grammar>
+grammar           <-  heading rules EOF                                         <Grammar>
 
 heading           <-  requires module_decl? includes start_directive?           { heading *_ }
 
@@ -193,6 +193,6 @@ class_char        <-  '\\' [0-3] [0-7] [0-7]
                     / '\\' .
                     / [^\\\]]
 
-eol               <-  ~(BLANK* (EOF / ';' / ("\r"? "\n") / comment))
+eol               <-  ~(BLANK* (EOF / ';' / "\r"? "\n" / comment))
 
 comment           <-  ~('#' [^\n]*)

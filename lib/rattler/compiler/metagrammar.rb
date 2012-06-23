@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 require 'rattler/compiler'
 
 module Rattler
@@ -25,7 +27,7 @@ module Rattler
             (r0_0 = match(:heading)) &&
             (r0_1 = match(:rules)) &&
             @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)\z/) &&
-            Rattler::Parsers::Grammar.parsed(select_captures([r0_0, r0_1]))
+            Grammar.parsed(select_captures([r0_0, r0_1]))
           end || begin
             @scanner.pos = p0
             false
