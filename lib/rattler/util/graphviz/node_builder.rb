@@ -4,7 +4,7 @@ module Rattler::Util::GraphViz
 
   # +NodeBuilder+ is used by {DigraphBuilder} to build nodes for a GraphViz
   # digraph object representing a tree of nodes.
-  class NodeBuilder
+  module NodeBuilder
 
     # Run the block with any children of +o+ that should be represented as
     # separate nodes in the graph.
@@ -12,7 +12,7 @@ module Rattler::Util::GraphViz
     # @param o an object
     # @yield [child] each child of +o+ that should be represented as a separate
     #   node in the graph
-    def each_child_of(o)
+    def each_child_node_of(o)
       if array_like? o and not record_like? o
         if o.respond_to? :to_hash
           o.each {|k, v| yield Mapping.new(k, v) }
@@ -107,5 +107,6 @@ module Rattler::Util::GraphViz
       end
     end
 
+    extend self
   end
 end

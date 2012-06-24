@@ -11,6 +11,7 @@ module Rattler::Util::GraphViz
   # +DigraphBuilder+ is used to build GraphViz objects representing trees of
   # nodes.
   class DigraphBuilder
+    include NodeBuilder
 
     # @param (see #initialize)
     # @return a new +GraphViz+ digraph object representing +root+
@@ -27,7 +28,6 @@ module Rattler::Util::GraphViz
       @g = ::GraphViz.digraph(name)
       @nodes = {}
       @node_serial = 0
-      @node_builder = NodeBuilder.new
     end
 
     # @return a new +GraphViz+ digraph object representing the root object
@@ -45,9 +45,9 @@ module Rattler::Util::GraphViz
     # @return [GraphViz::Node] a node object for +o+
     def node(o)
       @nodes.fetch(o.object_id) do
-        new_node = @g.add_nodes new_node_name, @node_builder.node_options(o)
+        new_node = @g.add_nodes new_node_name, node_options(o)
         @nodes[o.object_id] = new_node
-        @node_builder.each_child_of(o) {|_| new_node << node(_) }
+        each_child_node_of(o) {|_| new_node << node(_) }
         new_node
       end
     end
