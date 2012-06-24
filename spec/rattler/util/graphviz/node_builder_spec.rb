@@ -14,7 +14,7 @@ describe Rattler::Util::GraphViz::NodeBuilder do
     end
 
     context 'given a string' do
-      it 'returns the string surrounded by escaped quotes' do
+      it 'returns the string surrounded by quotes' do
         builder.node_label('abc').should == '"abc"'
       end
     end
@@ -41,6 +41,20 @@ describe Rattler::Util::GraphViz::NodeBuilder do
     context 'given a hash with compound values' do
       it 'returns "{}" escaped' do
         builder.node_label({:a => 'a', :b => ['a1', 'a2']}).should == '\\{\\}'
+      end
+    end
+
+    context 'given a hash with simple values' do
+      it 'returns a record label with the values' do
+        builder.node_label({:a => 'a', :b => 'b'}).should ==
+          '{\\{\\}|{:a|"a"}|{:b|"b"}}'
+      end
+
+      context 'with special characters' do
+        it 'escapes the special characters' do
+          builder.node_label({:a => '<|>\\'}).should ==
+            '{\\{\\}|{:a|"\\<\\|\\>\\\\"}}'
+        end
       end
     end
   end

@@ -51,7 +51,7 @@ module Rattler::Util::GraphViz
       elsif array_like? o
         type_label(o)
       elsif o.respond_to? :to_str
-        "\"#{o}\""
+        string_label(o)
       else
         o.inspect
       end
@@ -73,12 +73,24 @@ module Rattler::Util::GraphViz
 
     private
 
+    def string_label(s)
+      "\"#{s}\""
+    end
+
     def record_label(o, fields)
       '{' + ([type_label(o)] + hash_content_labels(fields)).join('|') + '}'
     end
 
     def hash_content_labels(h)
-      h.map {|pair| '{' + pair.map {|_| _.inspect }.join('|') + '}' }
+      h.map {|k, v| "{#{k.inspect}|#{record_value v}}" }
+    end
+
+    def record_value(v)
+      if v.respond_to? :to_str
+        string_label(v)
+      else
+        v.inspect
+      end.gsub(/([|<>\\])/) { "\\#{$1}" }
     end
 
     def type_label(o)
