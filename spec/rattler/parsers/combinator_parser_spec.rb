@@ -8,7 +8,8 @@ describe Rattler::Parsers::CombinatorParser do
   it_behaves_like 'a recursive descent parser'
 
   let :parser_class do
-    Rattler::Parsers::CombinatorParser.as_class(grammar.start_rule, grammar.rules)
+    Rattler::Parsers::CombinatorParser.as_class(
+      grammar.rules[grammar.start_rule], grammar.rules)
   end
 
 end

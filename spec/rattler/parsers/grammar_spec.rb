@@ -15,8 +15,8 @@ describe Grammar do
 
       subject { Grammar.new(rules) }
 
-      it 'returns the first rule' do
-        subject.start_rule.should == rule_a
+      it 'returns the name of the first rule' do
+        subject.start_rule.should == :a
       end
     end
 
@@ -24,8 +24,8 @@ describe Grammar do
 
       subject { Grammar.new(rules, :start_rule => :b) }
 
-      it 'uses the specified start_rule option' do
-        subject.start_rule.should == rule_b
+      it 'returns the specified start_rule option' do
+        subject.start_rule.should == :b
       end
     end
   end

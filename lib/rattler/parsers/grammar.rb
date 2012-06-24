@@ -24,34 +24,23 @@ module Rattler::Parsers
 
     # @param rules [RuleSet] the parse rules that define the parser
     #
-    # @option opts [String] start_rule (rules.first)
+    # @option opts [String] start_rule (rules.first.name)
     # @option opts [String] grammar_name (nil)
     # @option opts [String] parser_name (nil)
     # @option opts [String] base_name (Rattler::Runtime::RecursiveDescentParser)
     # @option opts [Array<String>] requires ([])
     # @option opts [Array<String>] includes ([])
     def initialize(rules, opts={})
-      super @@default_opts.merge(opts)
+      start_rule =
+        opts[:start_rule] || rules.start_rule || (rules.first && rules.first.name)
 
-      case attrs[:start_rule]
-      when Symbol, String
-        attrs[:start_rule] = rules[start_rule.to_sym]
-      when nil
-        attrs[:start_rule] = rules.first
-      end
-
-      @rules = if start_rule.nil?
-        rules
-      else
-        rules.with_attrs(:start_rule => start_rule.name)
-      end
+      super rules.with_attrs(:start_rule => start_rule),
+        @@default_opts.merge(:start_rule => start_rule).merge(opts)
 
       attrs[:name] ||= grammar_name || parser_name
     end
 
-    # @return [RuleSet] the parse rules that define the
-    #   grammar
-    attr_reader :rules
+    alias_method :rules, :child
 
     # @param [Symbol] name the name of a parse rule in the grammar
     # @return [Rule] the parse rule referenced by +name+
