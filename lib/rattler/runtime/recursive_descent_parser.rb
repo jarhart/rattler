@@ -11,8 +11,8 @@ module Rattler::Runtime
 
     class <<self
       private
-      def grammar(source=nil, &block)
-        Rattler.compile(self, source, &block)
+      def grammar(source)
+        Rattler.compile(self, source)
       end
     end
 
