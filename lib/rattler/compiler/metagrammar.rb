@@ -1155,6 +1155,7 @@ module Rattler
       
       # @private
       def match_prefixable! #:nodoc:
+        match(:prefixed) ||
         match(:suffixed) ||
         match(:primary) ||
         (fail! { :primary })

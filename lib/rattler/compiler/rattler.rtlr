@@ -96,7 +96,7 @@ prefixed          <-  ~'&' prefixable                                           
                     / ~'~' prefixable                                           <Skip>
                     / ~'@' prefixable                                           <Token>
 
-prefixable        <-  suffixed / primary
+prefixable        <-  prefixed / suffixed / primary
                     / expected 'primary'
 
 suffixed          <-  primary ~'?'                                              { optional _ }

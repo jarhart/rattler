@@ -316,6 +316,13 @@ describe Rattler::Compiler::GrammarParser do
       end
     end
 
+    context 'given a term prefixed with "~@"' do
+      it 'parses as a skip of a token' do
+        matching(' ~@(foo bar) ').as(:expression).
+          should result_in(Skip[Token[Apply[:foo] & Apply[:bar]]])
+      end
+    end
+
     context 'given a term prefixed with a name followed by ":"' do
       it 'parses as a labeled expression' do
         matching(' val:foo ').as(:expression).
