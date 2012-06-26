@@ -9,6 +9,107 @@ describe Rattler::Compiler::GrammarParser do
     %w{alnum alpha blank cntrl digit graph lower print punct space upper xdigit}
   end
 
+  describe '#match(:heading)' do
+
+    context 'given no contents' do
+      it 'parses as a hash with empty :requires and :includes' do
+        matching('  ').as(:heading).should result_in({
+          :requires => [],
+          :includes => []
+        })
+      end
+    end
+
+    context 'given require statements' do
+      it 'parses as a hash with :requires' do
+        matching(%{
+          require 'rattler'
+          require 'my_language/semantics'
+        }).as(:heading).should result_in({
+          :requires => ["'rattler'", "'my_language/semantics'"],
+          :includes => []
+        })
+      end
+    end
+
+    context 'given a require_relative statement' do
+      it 'translates the require_relative into ruby 1.8' do
+        matching("require_relative 'my_semantics'").as(:heading).should result_in({
+          :requires => ["File.expand_path('my_semantics', File.dirname(__FILE__))"],
+          :includes => []
+        })
+      end
+    end
+
+    context 'given a parser declaration' do
+      it 'parses as a hash with :parser_name and base_name' do
+        matching(%{
+          parser FooParser < Rattler::Runtime::RecursiveDescentParser
+        }).as(:heading).should result_in({
+          :parser_name => 'FooParser',
+          :base_name => 'Rattler::Runtime::RecursiveDescentParser',
+          :requires => [],
+          :includes => []
+        })
+      end
+    end
+
+    context 'given a grammar declaration' do
+      it 'parses as a hash with :grammar_name' do
+        matching('grammar FooGrammar').as(:heading).should result_in({
+          :grammar_name => 'FooGrammar',
+          :requires => [],
+          :includes => []
+        })
+      end
+    end
+
+    context 'given include statements' do
+      it 'parses as a hash with :includes' do
+        matching(%{
+          include MyHelpers
+          include MyLanguage::Semantics
+        }).as(:heading).should result_in({
+          :requires => [],
+          :includes => ['MyHelpers', 'MyLanguage::Semantics']
+        })
+      end
+    end
+
+    context 'given a %start directive' do
+      it 'parses as a hash with :start_rule' do
+        matching(' %start expr ').as(:heading).should result_in({
+          :start_rule => 'expr',
+          :requires => [],
+          :includes => []
+        })
+      end
+    end
+  end
+
+  describe '#match(:rules)' do
+
+    context 'given a single rule' do
+      it 'parses as a RuleSet with a single Rule' do
+        matching(%{ int <- DIGIT+ }).as(:rules).should result_in(RuleSet[
+          Rule[:int, Match[/[[:digit:]]/].one_or_more, {:inline => false}]
+        ])
+      end
+    end
+
+    context 'given multiple rules' do
+      it 'parses as a RuleSet with multiple Rules' do
+        matching(%{
+          word  <- ALPHA+
+          int   <- DIGIT+
+        }).as(:rules).should result_in(RuleSet[
+          Rule[:word, Match[/[[:alpha:]]/].one_or_more, {:inline => false}],
+          Rule[:int, Match[/[[:digit:]]/].one_or_more, {:inline => false}]
+        ])
+      end
+    end
+  end
+
   describe '#match(:expression)' do
 
     context 'given a string literal' do
@@ -156,6 +257,13 @@ describe Rattler::Compiler::GrammarParser do
       end
     end
 
+    context 'given "super"' do
+      it 'parses as Super[:pending]' do
+        matching(' super ').as(:expression).
+          should result_in(Super[:pending]).at(6)
+      end
+    end
+
     context 'given an upper-case POSIX class name' do
       it 'parses as a Match of a POSIX character class' do
         for name in posix_names
@@ -170,6 +278,75 @@ describe Rattler::Compiler::GrammarParser do
       it 'parses as syntactic sugar for [[:alnum:]_]' do
         matching(' WORD ').as(:expression).
           should result_in(Match[/[[:alnum:]_]/]).at(5)
+      end
+    end
+
+    context 'given a word prefixed with "$"' do
+      it 'parses as a back-reference' do
+        matching(' $foobar ').as(:expression).
+          should result_in(BackReference[:foobar]).at(8)
+      end
+    end
+
+    context 'given a term prefixed with "&"' do
+      it 'parses as an assert' do
+        matching(' &foo ').as(:expression).
+          should result_in(Assert[Apply[:foo]]).at(5)
+      end
+    end
+
+    context 'given a term prefixed with "!"' do
+      it 'parses as a disallow' do
+        matching(' !foo ').as(:expression).
+          should result_in(Disallow[Apply[:foo]]).at(5)
+      end
+    end
+
+    context 'given a term prefixed with "~"' do
+      it 'parses as a skip' do
+        matching(' ~foo ').as(:expression).
+          should result_in(Skip[Apply[:foo]]).at(5)
+      end
+    end
+
+    context 'given a term prefixed with "@"' do
+      it 'parses as a token' do
+        matching(' @foo ').as(:expression).
+          should result_in(Token[Apply[:foo]]).at(5)
+      end
+    end
+
+    context 'given a term prefixed with a name followed by ":"' do
+      it 'parses as a labeled expression' do
+        matching(' val:foo ').as(:expression).
+          should result_in(Label[:val, Apply[:foo]]).at(8)
+      end
+    end
+
+    context 'given a fail expression' do
+      it 'parses as a Fail of type :expr' do
+        matching(' fail("bad!") ').as(:expression).
+          should result_in(Fail[:expr, 'bad!']).at(13)
+        matching(' fail "bad!" ').as(:expression).
+          should result_in(Fail[:expr, 'bad!']).at(12)
+      end
+    end
+
+    context 'given a fail_rule expression' do
+      it 'parses as a Fail of type :rule' do
+        matching(' fail_rule("bad!") ').as(:expression).
+          should result_in(Fail[:rule, 'bad!']).at(18)
+        matching(' fail_rule "bad!" ').as(:expression).
+          should result_in(Fail[:rule, 'bad!']).at(17)
+      end
+    end
+
+    context 'given a fail_parse expression' do
+      it 'parses as a Fail of type :parse' do
+        matching(' fail_parse("bad!") ').as(:expression).
+          should result_in(Fail[:parse, 'bad!']).at(19)
+        matching(' fail_parse "bad!" ').as(:expression).
+          should result_in(Fail[:parse, 'bad!']).at(18)
       end
     end
 
@@ -485,15 +662,15 @@ describe Rattler::Compiler::GrammarParser do
         matching(' string / number ').as(:expression).
           should result_in(Choice[Apply[:string], Apply[:number]]).at(16)
       end
-    end
 
-    context 'given an ordered choice with sequences' do
-      it 'parses as a Choice of Sequences' do
-        matching(' foo bar / boo far ').as(:expression).
-          should result_in(Choice[
-            Sequence[Apply[:foo], Apply[:bar]],
-            Sequence[Apply[:boo], Apply[:far]]
-          ]).at(18)
+      context 'with sequences' do
+        it 'parses as a Choice of Sequences' do
+          matching(' foo bar / boo far ').as(:expression).
+            should result_in(Choice[
+              Sequence[Apply[:foo], Apply[:bar]],
+              Sequence[Apply[:boo], Apply[:far]]
+            ]).at(18)
+        end
       end
     end
 
@@ -506,48 +683,4 @@ describe Rattler::Compiler::GrammarParser do
         should result_in(Apply[:foo]).at(18)
     end
   end
-
-  describe '#match(:term)' do
-    it 'recognizes assert terms' do
-      matching(' &expr ').as(:term).should result_in(Assert[Apply[:expr]]).at(6)
-    end
-
-    it 'recognizes disallow terms' do
-      matching(' !expr ').as(:term).should result_in(Disallow[Apply[:expr]]).at(6)
-    end
-
-    it 'recognizes skip terms' do
-      matching(' ~expr ').as(:term).should result_in(Skip[Apply[:expr]]).at(6)
-    end
-
-    it 'recognizes token terms' do
-      matching(' @expr ').as(:term).should result_in(Token[Apply[:expr]]).at(6)
-    end
-
-    it 'recognizes labeled terms' do
-      matching(' val:expr ').as(:term).should result_in(Label[:val, Apply[:expr]]).at(9)
-    end
-
-    it 'recognizes fail expressions' do
-      matching(' fail("bad!") ').as(:term).
-        should result_in(Fail[:expr, 'bad!']).at(13)
-      matching(' fail "bad!" ').as(:term).
-        should result_in(Fail[:expr, 'bad!']).at(12)
-    end
-
-    it 'recognizes fail_rule expressions' do
-      matching(' fail_rule("bad!") ').as(:term).
-        should result_in(Fail[:rule, 'bad!']).at(18)
-      matching(' fail_rule "bad!" ').as(:term).
-        should result_in(Fail[:rule, 'bad!']).at(17)
-    end
-
-    it 'recognizes fail_parse expressions' do
-      matching(' fail_parse("bad!") ').as(:term).
-        should result_in(Fail[:parse, 'bad!']).at(19)
-      matching(' fail_parse "bad!" ').as(:term).
-        should result_in(Fail[:parse, 'bad!']).at(18)
-    end
-  end
-
 end
