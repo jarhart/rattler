@@ -427,6 +427,13 @@ describe Rattler::Compiler::GrammarParser do
           end
         end
       end
+
+      context 'with an "?" suffix' do
+        it 'parses as an optional Repeat' do
+          matching(' expr 3.. ? ').as(:expression).
+            should result_in(Repeat[Apply[:expr], 3, nil].optional).at(11)
+        end
+      end
     end
 
     context 'given a zero-or-more list expression' do

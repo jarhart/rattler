@@ -96,17 +96,20 @@ prefixed          <-  ~'&' prefixable                                           
                     / ~'~' prefixable                                           <Skip>
                     / ~'@' prefixable                                           <Token>
 
-prefixable        <-  prefixed / suffixed / primary
+prefixable        <-  prefixed / suffixable
                     / expected 'primary'
 
-suffixed          <-  primary ~'?'                                              { optional _ }
-                    / primary ~'*' !','                                         { zero_or_more _ }
-                    / primary ~'+' !','                                         { one_or_more _ }
-                    / primary repeat_count !','                                 <Repeat>
+suffixed          <-  suffixable ~'?'                                           { optional _ }
+                    / suffixable ~'*' !','                                      { zero_or_more _ }
+                    / suffixable ~'+' !','                                      { one_or_more _ }
+                    / suffixable repeat_count !','                              <Repeat>
 
 repeat_count      <-  @DIGIT+ ~'..' @DIGIT+                                     { _.map {|s| s.to_i } }
                     / @DIGIT+ ~'..'                                             { [_.to_i, nil] }
                     / @DIGIT+                                                   { [_.to_i] * 2 }
+
+suffixable        <-  suffixed / primary
+                    / expected 'primary'
 
 primary           <-  ~'(' expression ~')'
                     / atom

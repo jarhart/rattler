@@ -1156,8 +1156,7 @@ module Rattler
       # @private
       def match_prefixable! #:nodoc:
         match(:prefixed) ||
-        match(:suffixed) ||
-        match(:primary) ||
+        match(:suffixable) ||
         (fail! { :primary })
       end
       
@@ -1171,7 +1170,7 @@ module Rattler
         begin
           p0 = @scanner.pos
           begin
-            (r0_0 = match(:primary)) &&
+            (r0_0 = match(:suffixable)) &&
             @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>\?)/) &&
             (optional r0_0)
           end || begin
@@ -1182,7 +1181,7 @@ module Rattler
         begin
           p0 = @scanner.pos
           begin
-            (r0_0 = match(:primary)) &&
+            (r0_0 = match(:suffixable)) &&
             @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>\*)/) &&
             @scanner.skip(/(?!(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>,))/) &&
             (zero_or_more r0_0)
@@ -1194,7 +1193,7 @@ module Rattler
         begin
           p0 = @scanner.pos
           begin
-            (r0_0 = match(:primary)) &&
+            (r0_0 = match(:suffixable)) &&
             @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>\+)/) &&
             @scanner.skip(/(?!(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>,))/) &&
             (one_or_more r0_0)
@@ -1206,7 +1205,7 @@ module Rattler
         begin
           p0 = @scanner.pos
           begin
-            (r0_0 = match(:primary)) &&
+            (r0_0 = match(:suffixable)) &&
             (r0_1 = match(:repeat_count)) &&
             @scanner.skip(/(?!(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>,))/) &&
             Repeat.parsed(select_captures([r0_0, r0_1]))
@@ -1271,6 +1270,18 @@ module Rattler
           end
         end ||
         fail { :repeat_count }
+      end
+      
+      # @private
+      def match_suffixable #:nodoc:
+        apply :match_suffixable!
+      end
+      
+      # @private
+      def match_suffixable! #:nodoc:
+        match(:suffixed) ||
+        match(:primary) ||
+        (fail! { :primary })
       end
       
       # @private
