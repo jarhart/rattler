@@ -16,7 +16,7 @@ PEG grammars.
 
 For the best documentation see the {cucumber features}[http://www.relishapp.com/jarhart/rattler]
 
-You may also wish to browse the {API Docs}[http://rubydoc.info/gems/rattler/0.5.0/frames]
+You may also wish to browse the {API Docs}[http://rubydoc.info/gems/rattler/0.6.0/frames]
 
 == REQUIREMENTS:
 
