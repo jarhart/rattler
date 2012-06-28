@@ -25,8 +25,15 @@ module Rattler::Parsers
     end
 
     # @return false
+    # @see Parser#capturing?
     def capturing?
       false
+    end
+
+    # @return true
+    # @see Parser#capturing_decidable?
+    def capturing_decidable?
+      true
     end
 
     # @return (see Parser#skip)

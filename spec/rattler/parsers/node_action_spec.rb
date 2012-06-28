@@ -68,6 +68,12 @@ describe NodeAction do
     end
   end
 
+  describe '#capturing_decidable?' do
+    it 'is true' do
+      NodeAction['Expr'].should be_capturing_decidable
+    end
+  end
+
   describe '#with_ws' do
 
     subject { NodeAction['Expr'] }

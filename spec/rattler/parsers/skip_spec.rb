@@ -28,6 +28,27 @@ describe Skip do
     end
   end
 
+  describe '#capturing_decidable?' do
+
+    context 'with a capturing_decidable parser' do
+
+      let(:nested) { Match[/\w+/] }
+
+      it 'is true' do
+        subject.should be_capturing_decidable
+      end
+    end
+
+    context 'with a non-capturing_decidable parser' do
+
+      let(:nested) { Apply[:foo] }
+
+      it 'is true' do
+        subject.should be_capturing_decidable
+      end
+    end
+  end
+
   describe '#with_ws' do
 
     let(:ws) { Match[/\s*/] }

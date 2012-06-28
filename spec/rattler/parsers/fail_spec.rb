@@ -19,4 +19,10 @@ describe Rattler::Parsers::Fail do
     end
   end
 
+  describe '#capturing_decidable?' do
+    it 'is true' do
+      subject.should be_capturing_decidable
+    end
+  end
+
 end

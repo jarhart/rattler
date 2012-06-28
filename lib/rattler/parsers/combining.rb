@@ -8,6 +8,11 @@ module Rattler::Parsers
       @capturing ||= any? {|child| child.capturing? }
     end
 
+    # (see Parser#capturing_decidable?)
+    def capturing_decidable?
+      @capturing_decidable ||= all? {|child| child.capturing_decidable? }
+    end
+
     # (see Parser#semantic?)
     def semantic?
       @semantic = any? {|child| child.semantic? }

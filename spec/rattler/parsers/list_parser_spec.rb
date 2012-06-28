@@ -6,6 +6,7 @@ describe ListParser do
   subject { ListParser[term_parser, sep_parser, *bounds] }
 
   let(:sep_parser) { Match[/[,;]/] }
+  let(:bounds) { [0, nil] }
 
   describe '#parse' do
 
@@ -149,8 +150,6 @@ describe ListParser do
 
   describe '#capturing?' do
 
-    let(:bounds) { [2, 4] }
-
     context 'with a capturing term parser' do
 
       let(:term_parser) { Match[/\w+/] }
@@ -166,6 +165,36 @@ describe ListParser do
 
       it 'is false' do
         subject.should_not be_capturing
+      end
+    end
+  end
+
+  describe '#capturing_decidable?' do
+
+    context 'with a decidably capturing parser' do
+
+      let(:term_parser) { Match[/\w+/] }
+
+      it 'is true' do
+        subject.should be_capturing_decidable
+      end
+    end
+
+    context 'with a decidably non-capturing parser' do
+
+      let(:term_parser) { Skip[Match[/\w+/]] }
+
+      it 'is true' do
+        subject.should be_capturing_decidable
+      end
+    end
+
+    context 'with a non-capturing_decidable parser' do
+
+      let(:term_parser) { Apply[:foo] }
+
+      it 'is false' do
+        subject.should_not be_capturing_decidable
       end
     end
   end

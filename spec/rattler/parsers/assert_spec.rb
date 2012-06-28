@@ -24,8 +24,44 @@ describe Assert do
   end
 
   describe '#capturing?' do
-    it 'is false' do
-      subject.should_not be_capturing
+
+    context 'with a capturing parser' do
+
+      let(:nested) { Match[/\w+/] }
+
+      it 'is false' do
+        subject.should_not be_capturing
+      end
+    end
+
+    context 'with a non-capturing parser' do
+
+      let(:nested) { Skip[Match[/\w+/]] }
+
+      it 'is false' do
+        subject.should_not be_capturing
+      end
+    end
+  end
+
+  describe '#capturing_decidable?' do
+
+    context 'with a decidably capturing parser' do
+
+      let(:nested) { Match[/\w+/] }
+
+      it 'is true' do
+        subject.should be_capturing_decidable
+      end
+    end
+
+    context 'with a non capturing_decidable parser' do
+
+      let(:nested) { Apply[:foo] }
+
+      it 'is true' do
+        subject.should be_capturing_decidable
+      end
     end
   end
 

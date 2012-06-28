@@ -17,5 +17,10 @@ module Rattler::Parsers
       false
     end
 
+    # (see Parser#capturing_decidable?)
+    def capturing_decidable?
+      true
+    end
+
   end
 end

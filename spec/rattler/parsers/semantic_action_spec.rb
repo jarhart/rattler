@@ -69,6 +69,12 @@ describe SemanticAction do
     end
   end
 
+  describe '#capturing_decidable?' do
+    it 'is true' do
+      SemanticAction['@foo'].should be_capturing_decidable
+    end
+  end
+
   describe '#with_ws' do
 
     subject { SemanticAction['@foo'] }

@@ -29,6 +29,12 @@ describe Rattler::Parsers::BackReference do
     end
   end
 
+  describe '#capturing_decidable?' do
+    it 'is true' do
+      subject.should be_capturing_decidable
+    end
+  end
+
   describe '#re_source' do
     it 'returns the source for a Regexp that will match the referenced result' do
       subject.re_source(:a => 'r0').should == '#{r0}'

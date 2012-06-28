@@ -207,6 +207,27 @@ describe Sequence do
     end
   end
 
+  describe '#capturing_decidable?' do
+
+    context 'with all capturing_decidable parsers' do
+
+      let(:children) { [Match[/\w+/], Skip[Match[/\s*/]]] }
+
+      it 'is true' do
+        subject.should be_capturing_decidable
+      end
+    end
+
+    context 'with any non-capturing_decidable parsers' do
+
+      let(:children) { [Match[/\w+/], Apply[:foo]] }
+
+      it 'is false' do
+        subject.should_not be_capturing_decidable
+      end
+    end
+  end
+
   describe '#&' do
 
     let(:children) { [Match[/[a-z]+/], Match[/\d+/]] }

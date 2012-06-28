@@ -4,7 +4,7 @@ require 'singleton'
 module Rattler::Parsers
 
   # +Eof+ succeeds if there is no more input to parse.
-  class Eof < Predicate
+  class Eof < Parser
     include Atomic
     include Singleton
 
@@ -27,6 +27,11 @@ module Rattler::Parsers
     # @return [Boolean] +true+ if there is no more input to parse
     def parse(scanner, *_)
       scanner.eos?
+    end
+
+    # (see Parser#capturing?)
+    def capturing?
+      false
     end
 
   end

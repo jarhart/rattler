@@ -241,7 +241,7 @@ module Rattler
               end
               select_captures(a0)
             end) &&
-            RuleSet.parsed([r0_0])
+            RuleSet.parsed(select_captures([r0_0]))
           end || begin
             @scanner.pos = p0
             false

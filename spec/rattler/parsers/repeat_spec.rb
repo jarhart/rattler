@@ -147,6 +147,36 @@ describe Repeat do
 
   end
 
+  describe '#capturing_decidable?' do
+
+    context 'with a decidably capturing parser' do
+
+      subject { Repeat[capturing_child, 0, nil] }
+
+      it 'is true' do
+        subject.should be_capturing_decidable
+      end
+    end
+
+    context 'with a decidably non-capturing parser' do
+
+      subject { Repeat[skipping_child, 0, nil] }
+
+      it 'is true' do
+        subject.should be_capturing_decidable
+      end
+    end
+
+    context 'with a non-capturing_decidable parser' do
+
+      subject { Repeat[Apply[:foo], 0, nil] }
+
+      it 'is false' do
+        subject.should_not be_capturing_decidable
+      end
+    end
+  end
+
   describe '#with_ws' do
 
     let(:ws) { Match[/\s*/] }

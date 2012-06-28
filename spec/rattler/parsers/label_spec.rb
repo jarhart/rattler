@@ -40,6 +40,36 @@ describe Label do
 
   end
 
+  describe '#capturing_decidable?' do
+
+    context 'with a decidably capturing parser' do
+
+      let(:nested) { Match[/\w+/] }
+
+      it 'is true' do
+        subject.should be_capturing_decidable
+      end
+    end
+
+    context 'with a decidably non-capturing parser' do
+
+      let(:nested) { Skip[Match[/\w+/]] }
+
+      it 'is true' do
+        subject.should be_capturing_decidable
+      end
+    end
+
+    context 'with a non capturing_decidable parser' do
+
+      let(:nested) { Apply[:foo] }
+
+      it 'is false' do
+        subject.should_not be_capturing_decidable
+      end
+    end
+  end
+
   describe '#with_ws' do
 
     let(:ws) { Match[/\s*/] }

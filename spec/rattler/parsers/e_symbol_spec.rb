@@ -18,6 +18,12 @@ describe ESymbol do
     end
   end
 
+  describe '#capturing_decidable?' do
+    it 'is true' do
+      subject.should be_capturing_decidable
+    end
+  end
+
   describe '#with_ws' do
 
     let(:ws) { Match[/\s*/] }
