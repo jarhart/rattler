@@ -1,3 +1,32 @@
+== 0.6.0 2012-06-27
+
+=== New Features
+* Semantic results
+* "%fragments" directive
+* Composable grammars with new "super" keyword
+* "%start" directive to in grammar syntax to specify an explicit start rule
+* "require_relative" in grammar syntax compatible with Ruby 1.8.7
+* Generated parsers now include a convenient driver CLI
+* Support for generator options in compiler API
+* TextMate bundle for Rattler grammar syntax
+
+=== Removed Features
+* Standalone optimization option
+* Internal DSL for defining parsers
+
+=== Documentation
+* README in cucumber features (for relishapp)
+* Rough draft of a Tutorial
+* JSON Parser example in cucumber docs
+* Improved narratives in cucumber features
+* Updated API docs
+
+=== Bugfixes
+* Lots of bugfixes in semantics
+* Over-zealous optimization
+* Numerous parsing bugs
+* GraphViz output errors
+
 == 0.5.0 2011-07-29
 
 === New Features
