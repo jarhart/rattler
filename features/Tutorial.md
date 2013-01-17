@@ -169,7 +169,7 @@ attributes with
 [semantic actions](/jarhart/rattler/docs/semantics/semantic-actions) to perform
 the arithmetic operations as it parses.
 
-Change the `expr` and `term` rules to look like this:
+Change the `expr`, `term`, and `primary` rules to look like this:
 
     expr    <-  expr ~"+" term                  {|a, b| a + b }
               / expr ~"-" term                  {|a, b| a - b }
@@ -178,6 +178,9 @@ Change the `expr` and `term` rules to look like this:
     term    <-  term ~"*" primary               {|a, b| a * b }
               / term ~"/" primary               {|a, b| a / b }
               / primary
+
+    primary <-  ~"(" expr ~")"
+              / @("-"? DIGIT+ ("." DIGIT+)?)    { _.to_f }
 
 Semantic actions look like ruby blocks and, for the most part, act like them
 too. The parse results are bound to the parameters and the actions are
