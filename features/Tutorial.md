@@ -58,7 +58,7 @@ that matches any whitespace character.
 
 The rest of the grammar is a standard parsing expression grammar until we get
 to the last line. The expression "`@("-"? DIGIT+ ("." DIGIT+)?)`" will match a
-decimal number. The `@` is the 
+decimal number. The `@` is the
 [Token Operator](/jarhart/rattler/docs/extended-matching-syntax/token-operator)
 which causes the expression to be matched as a single string instead of
 producing a parse tree. The `DIGIT` character class matches decimal digits.
@@ -191,12 +191,12 @@ can be used to refer to the entire parse results.
     -2.7222222222222223
 
 Success! Of course we could have accomplished the same thing with
-"`eval ARGV.join`" but it's just a tutorial.
+"`eval`" but it's just a tutorial.
 
 ### Finish
 
 There's one last finishing touch to add. As it is now, the parser will accept
-any input the starts with a valid expression no matter what comes after it.
+any input that starts with a valid expression no matter what comes after it.
 We'll add a new rule at the top so that it only matches if the entire input is
 a valid expression:
 
