@@ -25,14 +25,14 @@ module Rattler
     # Run the command-line parser
     #
     # @param (see #initialize)
-    def self.run(args)
-      self.new(args).run
+    def self.run(args, opts={})
+      self.new(args, opts).run
     end
 
     # Create a new command-line parser.
     #
     # @param [Array<String>] args the command-line arguments
-    def initialize(args)
+    def initialize(args, opts={})
       @optimize = true
       options.parse!(args)
       if args.size == 1
@@ -41,6 +41,7 @@ module Rattler
         puts options
         exit ERRNO_USAGE
       end
+      @verbose = opts.fetch(:verbose, true)
     end
 
     # Run the command-line parser.
@@ -137,7 +138,7 @@ module Rattler
     end
 
     def report(dest)
-      puts "#{relative_path @srcfname} -> #{relative_path dest}"
+      puts "#{relative_path @srcfname} -> #{relative_path dest}" if @verbose
     end
 
     def open_to_write(dest)

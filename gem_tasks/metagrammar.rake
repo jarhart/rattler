@@ -1,18 +1,19 @@
 require 'rattler/rake_task'
 
-desc 'Regenerate Metagrammar module from rattler.rtlr'
-task :metagrammar => [:archive_metagrammar, :generate_metagrammar]
+METAGRAMMAR_SRC = 'lib/rattler/compiler/rattler.rtlr'
+METAGRAMMAR_DST = 'lib/rattler/compiler/metagrammar.rb'
 
-require 'rattler/rake_task'
-Rattler::RakeTask.new :generate_metagrammar do |t|
-  t.grammar = File.join *%w(lib rattler compiler rattler.rtlr)
-  t.rtlr_opts = ['-l', 'lib', '-f']
+desc 'Generate Metagrammar module from rattler.rtlr'
+task :metagrammar => METAGRAMMAR_DST
+
+Rattler.file METAGRAMMAR_DST => METAGRAMMAR_SRC do |t|
+  t.before { archive_metagrammar }
 end
 
-task :archive_metagrammar do
-  source_file = File.join *%w(lib rattler compiler metagrammar.rb)
+def archive_metagrammar
+  source_file = 'lib/rattler/compiler/metagrammar.rb'
   timestamp = Time.now.strftime '%Y%m%d_%H%M%S'
-  target_file = File.join 'archive', "metagrammar_#{timestamp}.rb"
+  target_file = "archive/metagrammar_#{timestamp}.rb"
   mkdir_p File.dirname(target_file)
   cp source_file, target_file
 end

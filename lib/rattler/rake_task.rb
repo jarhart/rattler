@@ -4,47 +4,51 @@ require 'rake/tasklib'
 
 module Rattler
 
-  # The rake task to generate parser code from a grammar
-  #
-  class RakeTask < ::Rake::TaskLib
+  def self.file(files, &block)
+    RakeFileTask.new(files, &block)
+  end
+
+  # The rake file task to generate parser code from a grammar
+  class RakeFileTask < ::Rake::TaskLib
     include ::Rake::DSL if defined?(::Rake::DSL)
 
-    attr_accessor :name
-    attr_accessor :grammar
-    attr_accessor :rtlr_opts
+    attr_accessor :force
+    attr_accessor :optimize
     attr_accessor :verbose
 
-    def initialize(name = :rattler)
-      @name = name
-      @grammar = nil
-      @rtlr_opts = []
+    def initialize(files)
+      @before = nil
+      @force = true
+      @optimize = true
       @verbose = true
 
       yield self if block_given?
 
-      define_task
+      files.each { |dst, src| define_task dst, src }
+    end
+
+    def before(&block)
+      @before = block
     end
 
     private
 
-    def define_task
-      task name do
+    def define_task(dst, src)
+      file dst => src do
         RakeFileUtils.send(:verbose, verbose) do
-          ::Rattler::Runner.run(run_args) if valid?
+          @before.call if @before
+          args = run_args(dst, src)
+          puts 'rtlr ' + args.join(' ') if verbose
+          ::Rattler::Runner.run args, :verbose => verbose
         end
       end
     end
 
-    def run_args
-      [grammar] + rtlr_opts
-    end
-
-    def valid?
-      unless grammar
-        puts "No grammar specified"
-        return false
+    def run_args(dst, src)
+      [src, '-d', File.dirname(dst), '-o', File.basename(dst)].tap do |args|
+        args << '-f' if @force
+        args << '-n' unless @optimize
       end
-      true
     end
   end
 end
