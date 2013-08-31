@@ -4,7 +4,6 @@ gemspec
 
 group :development do
   gem 'ruby-graphviz', '~> 1.0'
-  gem 'jeweler', '~> 1.8'
   gem 'rspec', '~> 2.10'
   gem 'cucumber', '~> 1.2'
   gem 'aruba', '~> 0.5'
