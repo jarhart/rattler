@@ -82,7 +82,7 @@ module Rattler::Util::GraphViz
     end
 
     def hash_content_labels(h)
-      h.map {|k, v| "{#{k.inspect}|#{record_value v}}" }
+      h.sort_by { |k,| k.to_s }.map {|k, v| "{#{k.inspect}|#{record_value v}}" }
     end
 
     def record_value(v)
