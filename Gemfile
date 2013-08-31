@@ -7,7 +7,7 @@ group :development do
   gem 'jeweler', '~> 1.8'
   gem 'rspec', '~> 2.10'
   gem 'cucumber', '~> 1.2'
-  gem 'aruba'
+  gem 'aruba', '~> 0.5'
   gem 'rcov', :platforms => [:mri_18, :mingw_18]
   gem 'yard'
   gem 'guard-rspec'
