@@ -6,7 +6,7 @@ METAGRAMMAR_DST = 'lib/rattler/compiler/metagrammar.rb'
 desc 'Generate Metagrammar module from rattler.rtlr'
 task :metagrammar => METAGRAMMAR_DST
 
-Rattler.file METAGRAMMAR_DST => METAGRAMMAR_SRC do |t|
+Rattler::RakeTask.file METAGRAMMAR_DST => METAGRAMMAR_SRC do |t|
   t.before { archive_metagrammar }
 end
 

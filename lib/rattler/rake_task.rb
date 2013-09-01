@@ -4,13 +4,19 @@ require 'rake/tasklib'
 
 module Rattler
 
-  def self.file(files, &block)
-    RakeFileTask.new(files, &block)
-  end
-
-  # The rake file task to generate parser code from a grammar
-  class RakeFileTask < ::Rake::TaskLib
+  # The rake file task to generate parser code from a grammar.
+  #
+  # @example
+  #
+  #   require 'rattler/rake_task'
+  #   Rattler::RakeTask.file 'my_parser.rb' => 'my_language.rtlr'
+  #
+  class RakeTask < ::Rake::TaskLib
     include ::Rake::DSL if defined?(::Rake::DSL)
+
+    class << self
+      alias_method :file, :new
+    end
 
     attr_accessor :force
     attr_accessor :optimize
@@ -45,7 +51,9 @@ module Rattler
     end
 
     def run_args(dst, src)
-      [src, '-d', File.dirname(dst), '-o', File.basename(dst)].tap do |args|
+      [ src,
+        '-d', File.dirname(dst),
+        '-o', File.basename(dst) ].tap do |args|
         args << '-f' if @force
         args << '-n' unless @optimize
       end
