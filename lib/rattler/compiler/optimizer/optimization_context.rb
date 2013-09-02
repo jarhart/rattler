@@ -48,8 +48,14 @@ module Rattler::Compiler::Optimizer
     def inlineable?(rule_name)
       if rule = rules[rule_name]
         rule.attrs[:inline] and
-        analysis.regular? rule_name
+        analysis.non_recursive?(rule_name)
       end
+    end
+
+    # @return [RuleSet] only the rules in the context that are relavent to
+    #   the optimized parser
+    def relavent_rules
+      rules.select_rules { |rule| relavent? rule }
     end
 
     # @param [Rattler::Parsers::Rule] rule a rule in the context

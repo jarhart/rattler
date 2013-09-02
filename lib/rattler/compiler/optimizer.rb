@@ -9,47 +9,10 @@ module Rattler::Compiler
   # do as much of the parsing work as possible.
   module Optimizer
 
-    class << self
-
-      include Rattler::Parsers
-
-      # @param [Rattler::Parsers::Grammar, Rattler::Parsers::RuleSet, Rattler::Parsers::Rule, Rattler::Parsers::Parser]
-      #   model the model to be optimized
-      # @param [Hash] opts options for the optimizer
-      # @return an optimized parser model
-      def optimize(model, opts={})
-        case model
-        when Grammar then optimize_grammar model, opts
-        when RuleSet then optimize_rule_set model, opts
-        else optimizations.apply model, default_context(opts)
-        end
-      end
-
-      private
-
-      def default_context(opts)
-        OptimizationContext[opts.merge :type => :capturing]
-      end
-
-      def optimize_grammar(grammar, opts)
-        grammar.with_rules optimize_rule_set(grammar.rules, opts)
-      end
-
-      def optimize_rule_set(rule_set, opts)
-        context = default_context(opts).with(:rules => rule_set)
-        rule_set = rule_set.map_rules {|_| optimizations.apply _, context }
-        context = context.with(:rules => rule_set)
-        rule_set.select_rules {|_| context.relavent? _ }
-      end
-
-    end
-
     autoload :OptimizationContext, 'rattler/compiler/optimizer/optimization_context'
     autoload :Optimization, 'rattler/compiler/optimizer/optimization'
     autoload :OptimizationSequence, 'rattler/compiler/optimizer/optimization_sequence'
-    autoload :Optimizations, 'rattler/compiler/optimizer/optimizations'
-    autoload :OptimizeChildren, 'rattler/compiler/optimizer/optimize_children'
-    autoload :InlineRegularRules, 'rattler/compiler/optimizer/inline_regular_rules'
+    autoload :InlineNonrecursiveRules, 'rattler/compiler/optimizer/inline_nonrecursive_rules'
     autoload :SimplifyRedundantRepeat, 'rattler/compiler/optimizer/simplify_redundant_repeat'
     autoload :RemoveMeaninglessWrapper, 'rattler/compiler/optimizer/remove_meaningless_wrapper'
     autoload :SimplifyTokenMatch, 'rattler/compiler/optimizer/simplify_token_match'
@@ -70,8 +33,67 @@ module Rattler::Compiler
     autoload :Flattening, 'rattler/compiler/optimizer/flattening'
     autoload :CompositeReducing, 'rattler/compiler/optimizer/composite_reducing'
 
+    class << self
+
+      include Rattler::Parsers
+
+      @@optimizations =
+        InlineNonrecursiveRules >>
+        SimplifyRedundantRepeat >>
+        RemoveMeaninglessWrapper >>
+        SimplifyTokenMatch >>
+        FlattenSequence >>
+        FlattenChoice >>
+        ReduceRepeatMatch >>
+        JoinPredicateMatch >>
+        JoinPredicateOrMatch >>
+        JoinMatchSequence >>
+        JoinMatchChoice
+
+      # @param [Rattler::Parsers::Grammar, Rattler::Parsers::RuleSet, Rattler::Parsers::Rule, Rattler::Parsers::Parser]
+      #   model the model to be optimized
+      # @param [Hash] opts options for the optimizer
+      # @return an optimized parser model
+      def optimize(model, opts={})
+        context = default_context(opts)
+        case model
+        when Grammar
+          optimize_grammar(model, context)
+        when RuleSet
+          optimize_rule_set(model, context)
+        when Rule
+          optimize_rule(model, context)
+        else
+          optimize_parser(model, context)
+        end
+      end
+
+      private
+
+      def optimize_grammar(grammar, context)
+        grammar.with_rules(optimize_rule_set(grammar.rules, context))
+      end
+
+      def optimize_rule_set(rule_set, context)
+        context.with(
+          :rules => rule_set.map_rules { |rule|
+            optimize_rule(rule, context.with(:rules => rule_set))
+          }
+        ).relavent_rules
+      end
+
+      def optimize_rule(rule, context)
+        rule.with_expr(optimize_parser(rule.expr, context))
+      end
+
+      def optimize_parser(parser, context)
+        @@optimizations.deep_apply(parser, context)
+      end
+
+      def default_context(opts)
+        OptimizationContext[opts.merge :type => :capturing].with(:rules => RuleSet[])
+      end
+
+    end
   end
-
-  Optimizer.extend Optimizer::Optimizations
-
 end

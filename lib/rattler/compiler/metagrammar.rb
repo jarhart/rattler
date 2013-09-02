@@ -93,7 +93,7 @@ module Rattler
       # @private
       def match_require_statement! #:nodoc:
         begin
-          @scanner.skip(/(?>(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>(?>require)(?![[:alnum:]_])))(?>(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)((?>(?!(?>(?>[[:blank:]])*)(?>\z|;|(?>(?>\r)?)(?>\n)|(?>\#)(?>(?>[^\n])*)))(?>.))+))(?>(?>(?>[[:blank:]])*)(?>\z|;|(?>(?>\r)?)(?>\n)|(?>\#)(?>(?>[^\n])*)))/) &&
+          @scanner.skip(/(?>(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>(?>require)(?![[:alnum:]_])))(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)((?>(?!(?>(?>[[:blank:]])*)(?>\z|;|(?>(?>\r)?)(?>\n)|(?>\#)(?>(?>[^\n])*)))(?>.))+)(?>(?>(?>[[:blank:]])*)(?>\z|;|(?>(?>\r)?)(?>\n)|(?>\#)(?>(?>[^\n])*)))/) &&
           @scanner[1]
         end ||
         begin
@@ -199,17 +199,8 @@ module Rattler
           begin
             @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>(?>%start)(?![[:alnum:]_]))/) &&
             (r0_0 = begin
-              p1 = @scanner.pos
-              begin
-                @scanner.skip(/(?!(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>(?>EOF)(?![[:alnum:]_])))/) &&
-                begin
-                  @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)((?>[[:alpha:]])(?>(?>[[:alnum:]_])*))/) &&
-                  @scanner[1]
-                end
-              end || begin
-                @scanner.pos = p1
-                false
-              end
+              @scanner.skip(/(?>(?!(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>(?>EOF)(?![[:alnum:]_])))(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*))((?>[[:alpha:]])(?>(?>[[:alnum:]_])*))/) &&
+              @scanner[1]
             end) &&
             ({ :start_rule => r0_0 })
           end || begin
@@ -459,17 +450,8 @@ module Rattler
           p0 = @scanner.pos
           begin
             (r0_0 = begin
-              p1 = @scanner.pos
-              begin
-                @scanner.skip(/(?!(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>(?>EOF)(?![[:alnum:]_])))/) &&
-                begin
-                  @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)((?>[[:alpha:]])(?>(?>[[:alnum:]_])*))/) &&
-                  @scanner[1]
-                end
-              end || begin
-                @scanner.pos = p1
-                false
-              end
+              @scanner.skip(/(?>(?!(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>(?>EOF)(?![[:alnum:]_])))(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*))((?>[[:alpha:]])(?>(?>[[:alnum:]_])*))/) &&
+              @scanner[1]
             end) &&
             @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?><\-)/) &&
             (r0_1 = match(:expression)) &&
@@ -1046,7 +1028,7 @@ module Rattler
           p0 = @scanner.pos
           begin
             (r0_0 = match(:list_term)) &&
-            @scanner.skip(/(?>(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>\*))(?>(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>,))/) &&
+            @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>\*)(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>,)/) &&
             (r0_1 = match(:list_term)) &&
             (list0 r0_0, r0_1)
           end || begin
@@ -1058,7 +1040,7 @@ module Rattler
           p0 = @scanner.pos
           begin
             (r0_0 = match(:list_term)) &&
-            @scanner.skip(/(?>(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>\+))(?>(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>,))/) &&
+            @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>\+)(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>,)/) &&
             (r0_1 = match(:list_term)) &&
             (list1 r0_0, r0_1)
           end || begin
@@ -1415,17 +1397,8 @@ module Rattler
           p0 = @scanner.pos
           begin
             (r0_0 = begin
-              p1 = @scanner.pos
-              begin
-                @scanner.skip(/(?!(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>(?>EOF)(?![[:alnum:]_])))/) &&
-                begin
-                  @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)((?>[[:alpha:]])(?>(?>[[:alnum:]_])*))/) &&
-                  @scanner[1]
-                end
-              end || begin
-                @scanner.pos = p1
-                false
-              end
+              @scanner.skip(/(?>(?!(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>(?>EOF)(?![[:alnum:]_])))(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*))((?>[[:alpha:]])(?>(?>[[:alnum:]_])*))/) &&
+              @scanner[1]
             end) &&
             @scanner.skip(/(?!(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?><\-))/) &&
             Apply.parsed([r0_0])
@@ -1537,7 +1510,7 @@ module Rattler
           p0 = @scanner.pos
           begin
             (r0_0 = begin
-              @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)((?>\$)(?>[[:lower:]])(?>(?>[[:alnum:]_])*))/) &&
+              @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)((?>(?>\$)(?>[[:lower:]]))(?>(?>[[:alnum:]_])*))/) &&
               @scanner[1]
             end) &&
             BackReference.parsed([r0_0])

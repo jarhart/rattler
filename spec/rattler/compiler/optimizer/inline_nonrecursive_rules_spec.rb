@@ -3,7 +3,7 @@ require File.expand_path(File.dirname(__FILE__) + '/../../../spec_helper')
 include Rattler::Compiler::Optimizer
 include Rattler::Parsers
 
-describe InlineRegularRules do
+describe InlineNonrecursiveRules do
 
   let(:context) { OptimizationContext[
     :type => :capturing,
@@ -44,6 +44,15 @@ describe InlineRegularRules do
         it 'returns false' do
           subject.applies_to?(Apply[:a], context).should be_false
         end
+      end
+    end
+
+    context 'given something other than a rule reference' do
+
+      let(:rule_set) { RuleSet[] }
+
+      it 'returns false' do
+        subject.applies_to?(Match[/a/], context).should be_false
       end
     end
   end

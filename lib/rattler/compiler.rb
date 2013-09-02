@@ -5,6 +5,7 @@ module Rattler
   # The +Compiler+ module contains the classes and methods used to turn
   # parser models into ruby code.
   module Compiler
+
     autoload :GrammarParser, 'rattler/compiler/grammar_parser'
     autoload :Metagrammar, 'rattler/compiler/metagrammar'
     autoload :ParserGenerator, 'rattler/compiler/parser_generator'

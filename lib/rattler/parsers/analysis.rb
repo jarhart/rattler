@@ -18,7 +18,7 @@ module Rattler::Parsers
 
     # @param [Symbol] rule_name the name of a parse rule in the rule set
     # @return +true+ if the rule referenced by +rule_name+ is non-recursive
-    def regular?(rule_name)
+    def non_recursive?(rule_name)
       not recursive?(rule_name)
     end
 
