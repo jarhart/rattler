@@ -55,7 +55,7 @@ module Rattler::Compiler::Optimizer
     # @return [RuleSet] only the rules in the context that are relavent to
     #   the optimized parser
     def relavent_rules
-      rules.select_rules { |rule| relavent? rule }
+      rules.select_rules { |rule| relavent?(rule) }
     end
 
     # @param [Rattler::Parsers::Rule] rule a rule in the context
@@ -68,12 +68,12 @@ module Rattler::Compiler::Optimizer
     # @param [Hash] new_attrs additional attributes
     # @return [OptimizationContext] a new context with +new_attrs+ added
     def with(new_attrs)
-      self.class[@attrs.merge new_attrs]
+      self.class[@attrs.merge(new_attrs)]
     end
 
     # @private
     def method_missing(symbol, *args) #:nodoc:
-      if args.empty? and @attrs.has_key? symbol
+      if args.empty? and @attrs.has_key?(symbol)
         @attrs[symbol]
       else
         super
@@ -82,7 +82,7 @@ module Rattler::Compiler::Optimizer
 
     # @private
     def respond_to?(symbol) #:nodoc:
-      super or @attrs.has_key? symbol
+      super or @attrs.has_key?(symbol)
     end
 
   end

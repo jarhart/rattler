@@ -30,6 +30,11 @@ module Rattler::Compiler
     autoload :JoinMatchMatchingSequence, 'rattler/compiler/optimizer/join_match_matching_sequence'
     autoload :JoinMatchChoice, 'rattler/compiler/optimizer/join_match_choice'
     autoload :MatchJoining, 'rattler/compiler/optimizer/match_joining'
+    autoload :PredicateMatchJoining, 'rattler/compiler/optimizer/predicate_match_joining'
+    autoload :PredicateBareMatchJoining, 'rattler/compiler/optimizer/predicate_bare_match_joining'
+    autoload :PredicateNestedMatchJoining, 'rattler/compiler/optimizer/predicate_nested_match_joining'
+    autoload :PredicateMatchSequenceJoining, 'rattler/compiler/optimizer/predicate_match_sequence_joining'
+    autoload :PredicateMatchChoiceJoining, 'rattler/compiler/optimizer/predicate_match_choice_joining'
     autoload :Flattening, 'rattler/compiler/optimizer/flattening'
     autoload :CompositeReducing, 'rattler/compiler/optimizer/composite_reducing'
 

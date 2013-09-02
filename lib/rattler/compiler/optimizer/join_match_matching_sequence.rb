@@ -14,11 +14,11 @@ module Rattler::Compiler::Optimizer
     def _applies_to?(parser, context)
       context.matching? and
       parser.is_a?(Sequence) and
-      any_neighbors?(parser) {|_| eligible_child? _ }
+      any_neighbors?(parser) { |child| eligible_child?(child) }
     end
 
     def eligible_child?(child)
-      child.is_a? Match
+      child.is_a?(Match)
     end
 
     def create_pattern(match)

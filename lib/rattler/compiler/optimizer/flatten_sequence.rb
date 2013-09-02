@@ -17,7 +17,7 @@ module Rattler::Compiler::Optimizer
     end
 
     def eligible_child?(child)
-      child.is_a? Sequence
+      child.is_a?(Sequence)
     end
   end
 

@@ -11,14 +11,14 @@ module Rattler::Compiler::Optimizer
     protected
 
     def _applies_to?(parser, context)
-      any_neighbors?(parser) {|_| eligible_child? _ }
+      any_neighbors?(parser) { |child| eligible_child?(child) }
     end
 
     def _apply(parser, context)
       new_children = []
       matches = []
-      for child in parser
-        if eligible_child? child
+      parser.each do |child|
+        if eligible_child?(child)
           matches << child
         else
           join_matches(matches) {|match| new_children << match }
@@ -27,11 +27,11 @@ module Rattler::Compiler::Optimizer
         end
       end
       join_matches(matches) {|match| new_children << match }
-      finish_reduce parser, new_children
+      finish_reduce(parser, new_children)
     end
 
     def any_neighbors?(parser)
-      parser.each_cons(2).any? {|a| a.all? {|_| yield _ } }
+      parser.each_cons(2).any? { |pair| pair.all? { |child| yield child } }
     end
 
     def join_matches(matches)
@@ -41,7 +41,7 @@ module Rattler::Compiler::Optimizer
     end
 
     def create_patterns(matches)
-      matches.map {|_| create_pattern _ }
+      matches.map { |match| create_pattern(match) }
     end
 
     def join_patterns(patterns)

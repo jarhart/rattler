@@ -11,7 +11,7 @@ module Rattler::Compiler::Optimizer
 
     def _applies_to?(parser, context)
       context.matching? and
-      [Token, Skip].any? {|_| parser.is_a? _ }
+      [Token, Skip].any? { |c| parser.is_a?(c) }
     end
 
     def _apply(parser, context)

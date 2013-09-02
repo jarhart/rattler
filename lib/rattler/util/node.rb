@@ -113,6 +113,11 @@ module Rattler::Util
       self.with_children(children.map {|child| yield child })
     end
 
+    def flat_map_children
+      return self if children.empty?
+      self.with_children(children.map {|child| yield child }.flatten(1))
+    end
+
     # Return +true+ if the node has no children.
     #
     # @return [Boolean] +true+ if the node has no children

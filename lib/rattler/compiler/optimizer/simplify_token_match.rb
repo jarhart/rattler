@@ -10,8 +10,8 @@ module Rattler::Compiler::Optimizer
     protected
 
     def _applies_to?(parser, context)
-      parser.is_a? Token and
-      terminal? parser.child
+      parser.is_a?(Token) and
+      terminal?(parser.child)
     end
 
     def _apply(parser, context)

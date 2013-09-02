@@ -12,8 +12,8 @@ module Rattler::Compiler::Optimizer
     protected
 
     def _applies_to?(parser, context)
-      parser.is_a? Apply and
-      context.inlineable? parser.rule_name
+      parser.is_a?(Apply) and
+      context.inlineable?(parser.rule_name)
     end
 
     def _apply(parser, context)

@@ -16,22 +16,22 @@ module Rattler::Compiler::Optimizer
       context.capturing? and
       parser.is_a?(Sequence) and
       not disqualifying_captures?(parser) and
-      any_neighbors?(parser) {|_| eligible_child? _ }
+      any_neighbors?(parser) { |child| eligible_child?(child) }
     end
 
     def eligible_child?(child)
-      child.is_a? Match or
-      (child.is_a? GroupMatch and child.num_groups == 1) or
-      (child.is_a? Skip and child.child.is_a? Match)
+      child.is_a?(Match) or
+      (child.is_a?(GroupMatch) and child.num_groups == 1) or
+      (child.is_a?(Skip) and child.child.is_a?(Match))
     end
 
     def disqualifying_captures?(parser)
-      parser.any? {|_| _.capturing? and eligible_child? _ } and
-      parser.any? {|_| capture_incompatible? _ }
+      parser.any? { |child| child.capturing? and eligible_child?(child) } and
+      parser.any? { |child| capture_incompatible?(child) }
     end
 
     def capture_incompatible?(child)
-      (child.capturing? and not eligible_child? child) or
+      (child.capturing? and not eligible_child?(child)) or
       child.semantic?
     end
 
@@ -53,11 +53,12 @@ module Rattler::Compiler::Optimizer
 
         end
       end
-      return {:patterns => patterns, :num_groups => num_groups }
+
+      {:patterns => patterns, :num_groups => num_groups }
     end
 
     def join_patterns(info)
-      return info.merge(:pattern => info[:patterns].join)
+      info.merge(:pattern => info[:patterns].join)
     end
 
     def create_match(info)

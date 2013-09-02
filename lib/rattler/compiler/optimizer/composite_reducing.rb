@@ -10,7 +10,7 @@ module Rattler::Compiler::Optimizer
       if new_children.size == 1
         new_children[0]
       else
-        parser.with_children new_children
+        parser.with_children(new_children)
       end
     end
 

@@ -5,12 +5,11 @@ module Rattler::Compiler::Optimizer
   module Flattening #:nodoc:
 
     def _applies_to?(parser, context)
-      parser.any? {|_| eligible_child? _ }
+      parser.any? { |child| eligible_child?(child) }
     end
 
     def _apply(parser, context)
-      children = parser.map {|_| eligible_child?(_) ? _.to_a : [_] }.reduce(:+)
-      parser.class.new(children, parser.attrs)
+      parser.flat_map_children { |c| eligible_child?(c) ? c.to_a : [c] }
     end
 
   end

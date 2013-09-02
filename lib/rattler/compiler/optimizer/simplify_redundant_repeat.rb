@@ -11,7 +11,7 @@ module Rattler::Compiler::Optimizer
 
     def _applies_to?(parser, context)
       context.matching? and
-      [parser, parser.child].all? {|_| simple_repeat? _ }
+      [parser, parser.child].all? { |parser| simple_repeat?(parser) }
     end
 
     def _apply(parser, context)
@@ -27,7 +27,7 @@ module Rattler::Compiler::Optimizer
     private
 
     def simple_repeat?(parser)
-      parser.is_a? Repeat and
+      parser.is_a?(Repeat) and
       ( parser.zero_or_more? or
         parser.one_or_more? or
         parser.optional? )

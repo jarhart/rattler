@@ -11,8 +11,8 @@ module Rattler::Compiler::Optimizer
 
     def _applies_to?(parser, context)
       context.matching? and
-      parser.is_a? Repeat and
-      parser.child.is_a? Match
+      parser.is_a?(Repeat) and
+      parser.child.is_a?(Match)
     end
 
     def _apply(parser, context)
@@ -29,7 +29,7 @@ module Rattler::Compiler::Optimizer
       elsif parser.optional?
         '?'
       else
-        general_suffix parser.lower_bound, parser.upper_bound
+        general_suffix(parser.lower_bound, parser.upper_bound)
       end
     end
 

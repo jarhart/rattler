@@ -63,9 +63,9 @@ module Rattler::Compiler::Optimizer
     #
     # @return +true+ if this optimzation applies to +parser+ in +context+
     def applies_to?(parser, context)
-      @applies_to_cache[context].fetch(parser) do
+      @applies_to_cache[context].fetch(parser) {
         @applies_to_cache[context][parser] = _applies_to?(parser, context)
-      end
+      }
     end
 
   end

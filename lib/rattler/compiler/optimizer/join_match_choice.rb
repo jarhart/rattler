@@ -17,11 +17,11 @@ module Rattler::Compiler::Optimizer
     end
 
     def join_patterns(patterns)
-      patterns.join '|'
+      patterns.join('|')
     end
 
     def eligible_child?(child)
-      child.is_a? Match
+      child.is_a?(Match)
     end
 
   end

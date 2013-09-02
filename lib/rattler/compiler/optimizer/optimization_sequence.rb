@@ -32,8 +32,8 @@ module Rattler::Compiler::Optimizer
     protected
 
     def _applies_to?(parser, context)
-      @last.applies_to? parser, context or
-      @init.applies_to? parser, context
+      @last.applies_to?(parser, context) or
+      @init.applies_to?(parser, context)
     end
 
     def _apply(parser, context)
