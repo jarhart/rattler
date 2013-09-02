@@ -99,6 +99,7 @@ DEPENDENCIES
   rb-fsevent
   rb-inotify
   rb-notifu
+  rb-readline
   rcov
   rspec (~> 2.10)
   ruby-graphviz (~> 1.0)

@@ -27,6 +27,7 @@ group :development do
   gem 'rb-inotify', :require => false
 
   platforms :mswin, :mingw do
+    gem 'rb-readline'
     gem 'rb-notifu'
     gem 'win32console'
     # gem 'ruby_gntp'
