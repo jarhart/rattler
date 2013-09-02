@@ -103,6 +103,16 @@ module Rattler::Util
       self.class.new(children, new_attrs)
     end
 
+    # @yield Run the block once for each child
+    # @yieldparam [Node] child one child
+    # @yieldreturn [Node] a child to replace the one yielded to the block
+    # @return [Node] a new node with the result of running the block once for
+    #   each child
+    def map_children
+      return self if children.empty?
+      self.with_children(children.map {|child| yield child })
+    end
+
     # Return +true+ if the node has no children.
     #
     # @return [Boolean] +true+ if the node has no children

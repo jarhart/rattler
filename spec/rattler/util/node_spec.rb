@@ -315,6 +315,26 @@ describe Node do
     end
   end
 
+  describe '#with_attrs' do
+
+    subject { Node.new(:name => 'foo', :type => 'Foo') }
+
+    it 'returns a new node with updated attributes' do
+      subject.with_attrs(:name => 'bar').should ==
+        Node.new(:name => 'bar', :type => 'Foo')
+    end
+  end
+
+  describe '#map_children' do
+
+    subject { Node.new(Node.new(:name => 'foo'), Node.new(:name => 'bar')) }
+
+    it 'returns a new node with the children mapped over' do
+      subject.map_children { |c| c.with_attrs(:name => c.name.reverse) }.should ==
+        Node.new(Node.new(:name => 'oof'), Node.new(:name => 'rab'))
+    end
+  end
+
   describe '#method_missing' do
 
     subject { Node.new(:foo => 'bar', :bar => nil) }

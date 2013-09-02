@@ -53,12 +53,7 @@ module Rattler::Parsers
       rules.analysis
     end
 
-    # @param [RuleSet] new_rules
-    # @return [Grammar] a new grammar with the parse rules replaced by
-    #   +new_rules+
-    def with_rules(new_rules)
-      self.class.new new_rules, attrs
-    end
+    alias_method :with_rules, :with_children
 
   end
 end

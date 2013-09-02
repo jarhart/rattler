@@ -75,30 +75,8 @@ module Rattler::Parsers
       end
     end
 
-    # @param [Hash] new_attrs a hash of attributes to merge with the existing
-    #   attributes
-    # @return [RuleSet] a new rule set with the same rules and the new
-    #   attributes merged
-    def with_attrs(new_attrs)
-      self.class.new(children, attrs.merge(new_attrs))
-    end
-
-    # @param [Array<Rule>] new_rules the new list of rules to replace the
-    #   existing rules
-    # @return [RuleSet] a new rule set with a new list of rules and the same
-    #   attributes
-    def with_rules(new_rules)
-      self.class.new(new_rules, attrs)
-    end
-
-    # @yield Run the block once for each rule
-    # @yieldparam [Rule] rule one rule in the rule set
-    # @yieldreturn [Rule] a rule to replace the one yielded to the block
-    # @return [RuleSet] a new rule set with the result of running the block
-    #   once for each rule
-    def map_rules
-      self.with_rules rules.map {|rule| yield rule }
-    end
+    alias_method :with_rules, :with_children
+    alias_method :map_rules, :map_children
 
     # @yield Run the block as a predicate once for each rule
     # @yieldparam [Rule] rule one rule in the rule set
@@ -106,7 +84,7 @@ module Rattler::Parsers
     # @return [RuleSet] a new rule set with the rules for which the block
     #   returns +true+
     def select_rules
-      self.with_rules rules.select {|rule| yield rule }
+      self.with_rules(rules.select {|rule| yield rule })
     end
 
     # @return [Analysis] a static analysis of the rules
