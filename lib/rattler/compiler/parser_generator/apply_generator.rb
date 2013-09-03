@@ -6,7 +6,7 @@ module Rattler::Compiler::ParserGenerator
   class ApplyGenerator < ExprGenerator #:nodoc:
 
     def gen_basic(apply, scope = ParserScope.empty)
-      @g << "match(:#{apply.rule_name})"
+      @g << "match_#{apply.rule_name}"
     end
 
     def gen_assert(apply, scope = ParserScope.empty)

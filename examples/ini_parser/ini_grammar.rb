@@ -21,8 +21,8 @@ module IniGrammar #:nodoc:
         (r0_0 = begin
           a0 = []
           while r = begin
-            match(:property) ||
-            match(:section_name)
+            match_property ||
+            match_section_name
           end
             a0 << r
           end
@@ -48,9 +48,9 @@ module IniGrammar #:nodoc:
     begin
       p0 = @scanner.pos
       begin
-        (r0_0 = match(:name)) &&
+        (r0_0 = match_name) &&
         @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>[;#])(?>(?>[^\n])*))*)(?>=)/) &&
-        (r0_1 = match(:value)) &&
+        (r0_1 = match_value) &&
         (property r0_0, r0_1)
       end || begin
         @scanner.pos = p0
@@ -71,7 +71,7 @@ module IniGrammar #:nodoc:
       p0 = @scanner.pos
       begin
         @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>[;#])(?>(?>[^\n])*))*)(?>\[)/) &&
-        (r0_0 = match(:name)) &&
+        (r0_0 = match_name) &&
         @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>[;#])(?>(?>[^\n])*))*)(?>\])/) &&
         @scanner.skip(/(?>(?>[[:blank:]])*)(?>\z|(?>(?>\r)?)(?>\n)|(?>[;#])(?>(?>[^\n])*))/) &&
         (section r0_0)
@@ -130,7 +130,7 @@ module IniGrammar #:nodoc:
       p0 = @scanner.pos
       begin
         (r0_0 = begin
-          @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>[;#])(?>(?>[^\n])*))*)((?>(?>[[:digit:]])+)(?>(?>\.)(?>(?>[[:digit:]])+)))/) &&
+          @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>[;#])(?>(?>[^\n])*))*)((?>(?>[[:digit:]])+)(?>\.)(?>(?>[[:digit:]])+))/) &&
           @scanner[1]
         end) &&
         (r0_0.to_f)

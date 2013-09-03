@@ -14,14 +14,14 @@ describe ApplyGenerator do
     context 'when nested' do
       it 'generates basic apply-rule code' do
         nested_code {|g| g.gen_basic apply }.
-          should == 'match(:foo)'
+          should == 'match_foo'
       end
     end
 
     context 'when top-level' do
       it 'generates basic apply-rule code' do
         top_level_code {|g| g.gen_basic apply }.
-          should == 'match(:foo)'
+          should == 'match_foo'
       end
     end
   end
@@ -34,7 +34,7 @@ describe ApplyGenerator do
           should == (<<-CODE).strip
 begin
   p = @scanner.pos
-  r = (match(:foo) && true)
+  r = (match_foo && true)
   @scanner.pos = p
   r
 end
@@ -47,7 +47,7 @@ end
         top_level_code {|g| g.gen_assert apply }.
           should == (<<-CODE).strip
 p = @scanner.pos
-r = (match(:foo) && true)
+r = (match_foo && true)
 @scanner.pos = p
 r
         CODE
@@ -63,7 +63,7 @@ r
           should == (<<-CODE).strip
 begin
   p = @scanner.pos
-  r = !match(:foo)
+  r = !match_foo
   @scanner.pos = p
   r
 end
@@ -76,7 +76,7 @@ end
         top_level_code {|g| g.gen_disallow apply }.
           should == (<<-CODE).strip
 p = @scanner.pos
-r = !match(:foo)
+r = !match_foo
 @scanner.pos = p
 r
           CODE
@@ -92,7 +92,7 @@ r
           should == (<<-CODE).strip
 begin
   tp = @scanner.pos
-  match(:foo) &&
+  match_foo &&
   @scanner.string[tp...(@scanner.pos)]
 end
           CODE
@@ -104,7 +104,7 @@ end
         top_level_code {|g| g.gen_token apply }.
           should == (<<-CODE).strip
 tp = @scanner.pos
-match(:foo) &&
+match_foo &&
 @scanner.string[tp...(@scanner.pos)]
           CODE
       end
@@ -116,14 +116,14 @@ match(:foo) &&
     context 'when nested' do
       it 'generates nested rule skipping code' do
         nested_code {|g| g.gen_skip apply }.
-          should == '(match(:foo) && true)'
+          should == '(match_foo && true)'
       end
     end
 
     context 'when top-level' do
       it 'generates top level rule skipping code' do
         top_level_code {|g| g.gen_skip apply }.
-          should == 'match(:foo) && true'
+          should == 'match_foo && true'
       end
     end
   end
@@ -131,7 +131,7 @@ match(:foo) &&
   describe '#gen_intermediate' do
     it 'generates basic apply-rule code' do
       nested_code {|g| g.gen_intermediate apply }.
-        should == 'match(:foo)'
+        should == 'match_foo'
     end
   end
 
@@ -141,7 +141,7 @@ match(:foo) &&
         should == (<<-CODE).strip
 begin
   p = @scanner.pos
-  r = (match(:foo) && true)
+  r = (match_foo && true)
   @scanner.pos = p
   r
 end
@@ -155,7 +155,7 @@ end
         should == (<<-CODE).strip
 begin
   p = @scanner.pos
-  r = !match(:foo)
+  r = !match_foo
   @scanner.pos = p
   r
 end
@@ -166,7 +166,7 @@ end
   describe '#gen_intermediate_skip' do
     it 'generates basic apply-rule code' do
       nested_code {|g| g.gen_intermediate_skip apply }.
-        should == 'match(:foo)'
+        should == 'match_foo'
     end
   end
 

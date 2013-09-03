@@ -83,7 +83,7 @@ end
           should == (<<-'CODE').strip
 p0 = @scanner.pos
 begin
-  (r0_0 = match(:a)) &&
+  (r0_0 = match_a) &&
   Expr.parsed(select_captures([r0_0]))
 end || begin
   @scanner.pos = p0

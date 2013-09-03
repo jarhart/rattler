@@ -180,7 +180,7 @@ end
 p0 = @scanner.pos
 begin
   (r0_0 = @scanner.scan(/a/)) &&
-  (r0_1 = match(:b)) &&
+  (r0_1 = match_b) &&
   (r0_2 = @scanner.scan(/c/)) &&
   select_captures([r0_0, r0_1, r0_2])
 end || begin

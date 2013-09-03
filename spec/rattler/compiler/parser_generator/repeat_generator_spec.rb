@@ -116,7 +116,7 @@ end
       it 'generates repeat code that selects only the captures for the result' do
         top_level_code {|g| g.gen_basic repeat }.should == <<-CODE.strip
 a = []
-while r = match(:a)
+while r = match_a
   a << r
 end
 select_captures(a)

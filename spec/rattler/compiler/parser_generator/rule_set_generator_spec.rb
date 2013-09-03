@@ -31,7 +31,7 @@ end
 # @private
 def match_a! #:nodoc:
   @scanner.scan("a") ||
-  match(:b) ||
+  match_b ||
   fail! { :a }
 end
 
