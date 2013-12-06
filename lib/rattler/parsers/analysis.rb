@@ -25,14 +25,14 @@ module Rattler::Parsers
     # @param [Symbol] rule_name the name of a parse rule in the rule set
     # @return +true+ if the rule referenced by +rule_name+ is recursive
     def recursive?(rule_name)
-      has_super? rule_name or
-      referenced_from? rule_name, rule_name
+      has_super?(rule_name) or
+      referenced_from?(rule_name, rule_name)
     end
 
     # @param [Symbol] rule_name the name of a parse rule in the rule set
     # @return +true+ if the rule referenced by +rule_name+ is left-recursive
     def left_recursive?(rule_name)
-      left_referenced_from? rule_name, rule_name
+      left_referenced_from?(rule_name, rule_name)
     end
 
     # @param [Symbol] rule_name the name of a parse rule in the rule set
@@ -40,7 +40,7 @@ module Rattler::Parsers
     #   other rule in the rule set
     def referenced?(rule_name)
       rule_name == @rules.start_rule or
-      referenced_from? @rules.start_rule, rule_name
+      referenced_from?(@rules.start_rule, rule_name)
     end
 
     private
@@ -69,43 +69,48 @@ module Rattler::Parsers
     end
 
     def references_from(rule_name)
-      @references[rule_name] ||= trace_references rule_name, :direct_references
+      @references[rule_name] ||=
+        trace_references(rule_name) { |expr| direct_references(expr) }
     end
 
     def left_references_from(rule_name)
-      @left_references[rule_name] ||= trace_references rule_name, :direct_left_references
+      @left_references[rule_name] ||=
+        trace_references(rule_name) { |expr| direct_left_references(expr) }
     end
 
-    def trace_references(rule_name, enum, references=nil)
+    def trace_references(rule_name, references=nil)
       references ||= Set[]
-      for r in send(enum, @rules[rule_name].expr)
-        trace_references(r, enum, references << r) unless references.include? r
+      for r in yield(@rules[rule_name].expr)
+        next if references.include?(r)
+        trace_references(r, references << r) { |expr| yield(expr) }
       end
       references
     end
 
     def direct_references(expr)
-      @direct_references[expr] ||= case expr
-      when Apply
-        Set[expr.rule_name]
-      when Rattler::Parsers::Parser
-        expr.map {|_| direct_references _ }.to_set.flatten
-      else
-        Set[]
-      end
+      @direct_references[expr] ||=
+        case expr
+        when Apply
+          Set[expr.rule_name]
+        when Rattler::Parsers::Parser
+          expr.children.map {|child| direct_references(child) }.to_set.flatten
+        else
+          Set[]
+        end
     end
 
     def direct_left_references(expr)
-      @direct_left_references[expr] ||= case expr
-      when Apply
-        Set[expr.rule_name]
-      when Choice
-        expr.map {|_| direct_left_references _ }.to_set.flatten
-      when Rattler::Parsers::Parser
-        direct_left_references expr.child
-      else
-        Set[]
-      end
+      @direct_left_references[expr] ||=
+        case expr
+        when Apply
+          Set[expr.rule_name]
+        when Choice
+          expr.children.map {|child| direct_left_references(child) }.to_set.flatten
+        when Rattler::Parsers::Parser
+          direct_left_references expr.child
+        else
+          Set[]
+        end
     end
 
   end
