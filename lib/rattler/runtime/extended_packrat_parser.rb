@@ -20,7 +20,8 @@ module Rattler::Runtime
 
     # Apply a rule by dispatching to the given match method. The result of
     # applying the rule is memoized so that the match method is invoked at most
-    # once at a given parse position.
+    # once at a given parse position. Left-recursion is detected and parsed
+    # correctly.
     #
     # @param (see PackratParser#apply)
     # @return (see PackratParser#apply)
