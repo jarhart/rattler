@@ -1,5 +1,5 @@
 group 'spec' do
-  guard 'rspec', :all_on_start => true, :all_after_pass => true, :focus_on_failed => true, :keep_failed => true do
+  guard 'rspec', :all_on_start => true, :all_after_pass => true, :failed_mode => :keep do
     watch(%r{^spec/.+_spec\.rb$})
     watch(%r{^lib/(.+\.rb)$})       { |m| "spec/#{File.dirname m[1]}" }
     watch(%r{spec/.*_examples\.rb}) { |m| File.dirname(m[0]) }
