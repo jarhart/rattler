@@ -7,7 +7,7 @@ group :development do
   gem 'rspec', '~> 2.10'
   gem 'cucumber', '~> 1.2'
   gem 'aruba', '~> 0.5'
-  gem 'rcov', :platforms => [:mri_18, :mingw_18]
+  gem 'simplecov', '~> 0.7.1', :require => false
   gem 'yard'
   gem 'guard-rspec'
   gem 'guard-cucumber'

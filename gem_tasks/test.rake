@@ -15,23 +15,20 @@ Cucumber::Rake::Task.new do |t|
   end
 end
 
-if RUBY_VERSION.to_f == 1.8
-  namespace :rcov do
-    desc 'Run RSpec code examples with code coverage'
-    RSpec::Core::RakeTask.new do |t|
-      t.rcov = true
-      t.rcov_opts = ['--exclude', 'gems/*,features,spec']
-    end
+namespace :coverage do
 
-    desc 'Run Cucumber features with code coverage'
-    Cucumber::Rake::Task.new do |t|
-      if Cucumber::JRUBY
-        t.profile = 'jruby'
-      elsif Cucumber::WINDOWS_MRI
-        t.profile = 'windows_mri'
-      end
-      t.rcov = true
-      t.rcov_opts =  ['--exclude', 'gems/*,features,spec']
-    end
+  desc 'Run all tests with code coverage'
+  task :test => [:spec, :cucumber]
+
+  desc 'Run RSpec code examples with code coverage'
+  task :spec do
+    ENV['COVERAGE'] = 'true'
+    Rake::Task['spec'].execute
+  end
+
+  desc 'Run Cucumber features with code coverage'
+  task :cucumber do
+    ENV['COVERAGE'] = 'true'
+    Rake::Task['cucumber'].execute
   end
 end
