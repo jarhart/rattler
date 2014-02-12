@@ -7,10 +7,7 @@ rescue Bundler::BundlerError => e
   exit e.status_code
 end
 
-if ENV['COVERAGE']
-  require 'simplecov'
-  SimpleCov.start
-end
+require 'simplecov' if ENV['COVERAGE']
 
 $LOAD_PATH.unshift(File.dirname(__FILE__) + '/../../lib')
 require 'rattler'
