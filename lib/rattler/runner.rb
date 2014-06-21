@@ -19,8 +19,11 @@ module Rattler
     # Error parsing grammar
     ERRNO_PARSE_ERROR = 4
 
-    # Error generaing ruby code
+    # Error generating ruby code
     ERRNO_GEN_ERROR = 5
+
+    # Internal error (Ruby syntax error, etc.).
+    ERRNO_INTERNAL_ERROR = 6
 
     # Run the command-line parser
     #
@@ -52,6 +55,10 @@ module Rattler
         puts parser.failure
         exit ERRNO_PARSE_ERROR
       end
+    rescue Exception => e
+      puts e
+      puts e.backtrace
+      exit ERRNO_INTERNAL_ERROR
     end
 
     private
@@ -102,7 +109,7 @@ module Rattler
 
     def analyze
       parser.parse
-    rescue Exception => e
+    rescue SystemCallError => e
       puts e
       exit ERRNO_READ_ERROR
     end
@@ -111,12 +118,12 @@ module Rattler
       open_output(g) do |io|
         begin
           io.puts code_for(g)
-        rescue Exception => e
+        rescue StandardError => e
           puts e
           exit ERRNO_GEN_ERROR
         end
       end
-    rescue Exception => e
+    rescue SystemCallError => e
       puts e
       exit ERRNO_WRITE_ERROR
     end
