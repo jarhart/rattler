@@ -249,6 +249,7 @@ module Rattler
       # @private
       def match_directive! #:nodoc:
         match_ws_directive ||
+        match_no_ws_directive ||
         match_wc_directive ||
         match_inline_directive ||
         match_fragments ||
@@ -287,6 +288,37 @@ module Rattler
       end
       
       # @private
+      def match_no_ws_directive #:nodoc:
+        apply :match_no_ws_directive!
+      end
+      
+      # @private
+      def match_no_ws_directive! #:nodoc:
+        begin
+          p0 = @scanner.pos
+          begin
+            (r0_0 = match_no_ws_decl) &&
+            @scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>\{)/) &&
+            (start_ws nil)
+          end || begin
+            @scanner.pos = p0
+            false
+          end
+        end ||
+        begin
+          p0 = @scanner.pos
+          begin
+            (r0_0 = match_no_ws_decl) &&
+            (set_ws nil)
+          end || begin
+            @scanner.pos = p0
+            false
+          end
+        end ||
+        fail { :no_ws_directive }
+      end
+      
+      # @private
       def match_ws_decl #:nodoc:
         apply :match_ws_decl!
       end
@@ -304,6 +336,17 @@ module Rattler
           end
         end ||
         fail { :ws_decl }
+      end
+      
+      # @private
+      def match_no_ws_decl #:nodoc:
+        apply :match_no_ws_decl!
+      end
+      
+      # @private
+      def match_no_ws_decl! #:nodoc:
+        (@scanner.skip(/(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>%no\-whitespace)/) && true) ||
+        fail { :no_ws_decl }
       end
       
       # @private
