@@ -119,6 +119,13 @@ module Rattler::Compiler
       Token[Sequence[literal("%q#{e}"), Disallow[@wc]]]
     end
 
+    def char_sequence(e)
+      literals = e.chars.map do |char|
+        literal(char.inspect)
+      end
+      Sequence[literals]
+    end
+
     def char_class(e)
       Match[Regexp.compile(e)]
     end
