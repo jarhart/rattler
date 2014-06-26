@@ -5,8 +5,8 @@ Feature: Character sequence
   allows whitespace to be skipped between the characters of a literal,
   provided that a %whitespace directive is in effect.
 
-  A character sequence is written like `%c"..."` or %c'...'`.  The "c"
-  stands for "characters."
+  A character sequence is written like `%c"..."` or `%c'...'`.  The
+  "c" stands for "characters."
 
   The character sequence:
 
