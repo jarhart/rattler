@@ -4,6 +4,10 @@ Feature: Labels
   before an expression. Labels are meaningful in actions: they can be used as
   identifiers in normal semantic actions, and in node actions the mappings are
   passed as a :labeled attribute.
+
+  Labels in normal semantic actions are implemented by _textual
+  substitution_: any instance of that label in the semantic action is
+  replaced with the label's value, without regard to Ruby syntax.
   
   Scenario: Normal symantic action
     Given a grammar with:
