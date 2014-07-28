@@ -28,8 +28,10 @@ loop do
   begin
     puts
     print "> "
-    puts Calculator.parse!(gets)
+    break unless (s = gets)
+    puts Calculator.parse!(s)
   rescue Rattler::Runtime::SyntaxError => e
     puts e
   end
 end
+puts
