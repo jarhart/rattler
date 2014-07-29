@@ -24,12 +24,17 @@ start_directive   <-  ~`%start` identifier                                      
 
 rules             <-  (directive / rule / block_close)*                         <RuleSet>
 
-directive         <-  ws_directive / wc_directive / inline_directive / fragments
+directive         <-  ws_directive / no_ws_directive / wc_directive / inline_directive / fragments
 
 ws_directive      <-  ws_decl ~'{'                                              { start_ws _ }
                     / ws_decl                                                   { set_ws _ }
 
+no_ws_directive   <-  no_ws_decl ~'{'                                           { start_ws nil }
+                    / no_ws_decl                                                { set_ws nil }
+
 ws_decl           <-  ~`%whitespace` unattributed
+
+no_ws_decl        <- ~'%no-whitespace'
 
 wc_directive      <-  wc_decl ~'{'                                              { start_wc _ }
                     / wc_decl                                                   { set_wc _ }
