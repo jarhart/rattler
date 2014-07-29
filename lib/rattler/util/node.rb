@@ -70,7 +70,7 @@ module Rattler::Util
     #
     # @return the node's name
     def name
-      attrs.fetch(:name, self.class.name)
+      attrs[:name] || self.class.name
     end
 
     # Call _block_ once for each child, passing that child as an argument.

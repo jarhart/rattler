@@ -117,7 +117,7 @@ describe Node do
   end
 
   describe '#name' do
-    context 'when the Node as a name attribute' do
+    context 'when the Node has a name attribute' do
 
       subject { Node.new(:name => 'foo' ) }
 
@@ -129,6 +129,15 @@ describe Node do
     context 'when the Node has no name attribute' do
 
       subject { Node.new }
+
+      it 'uses the class name as name' do
+        subject.name.should == 'Rattler::Util::Node'
+      end
+    end
+
+    context 'when the Node has a nil name attribute' do
+
+      subject { Node.new(:name => nil) }
 
       it 'uses the class name as name' do
         subject.name.should == 'Rattler::Util::Node'
