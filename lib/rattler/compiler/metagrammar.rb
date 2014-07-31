@@ -1328,8 +1328,47 @@ module Rattler
             false
           end
         end ||
+        match_molecule ||
         match_atom ||
         fail! { :primary }
+      end
+      
+      # @private
+      def match_molecule #:nodoc:
+        apply :match_molecule!
+      end
+      
+      # @private
+      def match_molecule! #:nodoc:
+        begin
+          p0 = @scanner.pos
+          begin
+            (r0_0 = match_char_sequence) &&
+            (char_sequence r0_0)
+          end || begin
+            @scanner.pos = p0
+            false
+          end
+        end ||
+        fail { :molecule }
+      end
+      
+      # @private
+      def match_char_sequence #:nodoc:
+        apply :match_char_sequence!
+      end
+      
+      # @private
+      def match_char_sequence! #:nodoc:
+        begin
+          @scanner.skip(/(?>(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>%c"))(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)((?>(?>\\)(?>.)|[^"])*)(?>(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>"))/) &&
+          @scanner[1]
+        end ||
+        begin
+          @scanner.skip(/(?>(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>%c'))(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)((?>(?>\\)(?>.)|[^'])*)(?>(?>(?>(?>[[:space:]])+|(?>\#)(?>(?>[^\n])*))*)(?>'))/) &&
+          @scanner[1]
+        end ||
+        fail { :char_sequence }
       end
       
       # @private

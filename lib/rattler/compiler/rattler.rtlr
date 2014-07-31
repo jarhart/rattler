@@ -117,7 +117,13 @@ suffixable        <-  suffixed / primary
                     / expected 'primary'
 
 primary           <-  ~'(' expression ~')'
+                    / molecule
                     / atom
+
+molecule          <- char_sequence                                              { char_sequence _ }
+
+char_sequence     <-  (~'%c"' @('\\' . / [^"])* ~'"')
+                    / (~"%c'" @('\\' . / [^'])* ~"'")
 
 atom              <-  ~`EOF`                                                    <Eof>
                     / ~`E`                                                      <ESymbol>
